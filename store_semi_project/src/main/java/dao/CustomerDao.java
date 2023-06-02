@@ -72,7 +72,7 @@ public class CustomerDao {
 		ResultSet rs = stmt.executeQuery();
 		//ResultSet->ArrayList
 		Customer customer = new Customer();
-		while(rs.next()) {
+		if(rs.next()) {
 			customer.setId(rs.getString("id"));
 			customer.setCstmName(rs.getString("cstmName"));
 			customer.setCstmAddress(rs.getString("cstmName"));
@@ -131,14 +131,16 @@ public class CustomerDao {
 		return row;
 	}
 	
-	//수정: 포인트 업데이트(작업중)
+	//수정: 포인트 업데이트
 	public int updatePoint(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
 		String sql = "UPDATE customer SET cstm_point = ? WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, id);
+		PointHistoryDao pHistory = new PointHistoryDao();
+		stmt.setInt(1, pHistory.SelectIdPointSum(id));
+		stmt.setString(3, id);
 		int row = stmt.executeUpdate();
 		return row;
 	}

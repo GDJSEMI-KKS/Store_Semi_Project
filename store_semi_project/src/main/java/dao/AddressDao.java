@@ -58,8 +58,9 @@ public class AddressDao {
 		stmt.setString(1, addressName);
 		ResultSet rs = stmt.executeQuery();
 		//ResultSet->Address
-		Address address = new Address();
+		Address address = null;
 		if(rs.next()) {
+			address = new Address();
 			address.setAddressNo(rs.getInt("addressNo"));
 			address.setAddressName(rs.getString("addressName"));
 			address.setAddress(rs.getString("address"));
@@ -81,8 +82,9 @@ public class AddressDao {
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		ResultSet rs = stmt.executeQuery();
 		//ResultSet->Address
-		Address address = new Address();
+		Address address = null;
 		if(rs.next()) {
+			address = new Address();
 			address.setAddressNo(rs.getInt("addressNo"));
 			address.setAddressName(rs.getString("addressName"));
 			address.setAddress(rs.getString("address"));
