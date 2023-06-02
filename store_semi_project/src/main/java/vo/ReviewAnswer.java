@@ -1,11 +1,8 @@
 package vo;
 
-public class Review {
+public class ReviewAnswer {
 	private int reviewNo;
-	private int orderNo;
-	private String reviewTitle;
 	private String reviewContent;
-	private int reviewCheckCnt;
 	private String createdate;
 	private String updatedate;
 	public int getReviewNo() {
@@ -14,29 +11,11 @@ public class Review {
 	public void setReviewNo(int reviewNo) {
 		this.reviewNo = reviewNo;
 	}
-	public int getOrderNo() {
-		return orderNo;
-	}
-	public void setOrderNo(int orderNo) {
-		this.orderNo = orderNo;
-	}
-	public String getReviewTitle() {
-		return reviewTitle;
-	}
-	public void setReviewTitle(String reviewTitle) {
-		this.reviewTitle = reviewTitle;
-	}
 	public String getReviewContent() {
 		return reviewContent;
 	}
 	public void setReviewContent(String reviewContent) {
 		this.reviewContent = reviewContent;
-	}
-	public int getReviewCheckCnt() {
-		return reviewCheckCnt;
-	}
-	public void setReviewCheckCnt(int reviewCheckCnt) {
-		this.reviewCheckCnt = reviewCheckCnt;
 	}
 	public String getCreatedate() {
 		return createdate;
@@ -50,7 +29,5 @@ public class Review {
 	public void setUpdatedate(String updatedate) {
 		this.updatedate = updatedate;
 	}
-	
-	
 	
 }
