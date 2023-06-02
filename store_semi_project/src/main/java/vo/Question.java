@@ -7,6 +7,7 @@ public class Question {
 	private String qCategory;
 	private String qTitle;
 	private String qContent;
+	private int qCheckCnt;
 	private String createdate;
 	private String updatedate;
 	public int getqNo() {
@@ -45,6 +46,12 @@ public class Question {
 	public void setqContent(String qContent) {
 		this.qContent = qContent;
 	}
+	public int getqCheckCnt() {
+		return qCheckCnt;
+	}
+	public void setqCheckCnt(int qCheckCnt) {
+		this.qCheckCnt = qCheckCnt;
+	}
 	public String getCreatedate() {
 		return createdate;
 	}
@@ -57,5 +64,6 @@ public class Question {
 	public void setUpdatedate(String updatedate) {
 		this.updatedate = updatedate;
 	}
+	
 	
 }

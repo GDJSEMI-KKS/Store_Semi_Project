@@ -6,6 +6,7 @@ public class BoardQuestion {
 	private String boardQCategory;
 	private String boardQTitle;
 	private String boardQContent;
+	private int boardQCheckCnt;
 	private String createdate;
 	private String updatedate;
 	public int getBoardQNo() {
@@ -37,6 +38,12 @@ public class BoardQuestion {
 	}
 	public void setBoardQContent(String boardQContent) {
 		this.boardQContent = boardQContent;
+	}
+	public int getBoardQCheckCnt() {
+		return boardQCheckCnt;
+	}
+	public void setBoardQCheckCnt(int boardQCheckCnt) {
+		this.boardQCheckCnt = boardQCheckCnt;
 	}
 	public String getCreatedate() {
 		return createdate;
