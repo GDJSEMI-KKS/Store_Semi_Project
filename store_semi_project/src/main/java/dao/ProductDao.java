@@ -7,7 +7,7 @@ import util.DBUtil;
 import vo.*;
 
 public class ProductDao {
-	// 상품 상세보기 : 내용 수정  
+	// 상품 상세보기 : 내용 수정 
 	public int updateProduct(Product product) throws Exception {
 		
 		// sql 실행시 영향받은 행의 수 
