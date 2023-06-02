@@ -16,10 +16,30 @@
 </head>
 <body>
 	<form action="<%=request.getContextPath()%>/test.jsp" method="post">
-		<input type = "radio" name = "createdate" value="onewWeek" selected>
-		<input type = "radio" name = "createdate" value="oneMonth">
-		<input type = "radio" name = "createdate" value="all">
-		<input type = "radio" name = ""
+		<table>
+			<tr>
+				<td>
+					<input type = "radio" name = "createdate" value="onewWeek" selected>
+					<input type = "radio" name = "createdate" value="oneMonth">
+					<input type = "radio" name = "createdate" value="all">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type = "radio" name = "paymentStatus">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type = "radio" name = "deliveryStatus">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type = "radio" name = "category">
+				</td>
+			</tr>
+		</table>
 	</form>
 	<table>
 		<tr></tr>
