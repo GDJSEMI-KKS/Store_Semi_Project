@@ -24,11 +24,11 @@ public class IdList {
 	public void setActive(String active) {
 		this.active = active;
 	}
-	public int getLevel() {
+	public int getIdLevel() {
 		return idLevel;
 	}
-	public void setLevel(int level) {
-		this.idLevel = level;
+	public void setIdLevel(int idLevel) {
+		this.idLevel = idLevel;
 	}
 	public String getCreatedate() {
 		return createdate;
@@ -36,6 +36,7 @@ public class IdList {
 	public void setCreatedate(String createdate) {
 		this.createdate = createdate;
 	}
+	
 	
 	
 }
