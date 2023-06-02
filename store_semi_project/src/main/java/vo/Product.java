@@ -9,6 +9,7 @@ public class Product {
 	private int productStock;
 	private String productInfo;
 	private String createdate;
+	private int productSumCnt;
 	private String updatedate;
 	public int getProductNo() {
 		return productNo;
@@ -64,6 +65,13 @@ public class Product {
 	public void setUpdatedate(String updatedate) {
 		this.updatedate = updatedate;
 	}
+	public int getProductSumCnt() {
+		return productSumCnt;
+	}
+	public void setProductSumCnt(int productSumCnt) {
+		this.productSumCnt = productSumCnt;
+	}
+	
 	
 	
 }
