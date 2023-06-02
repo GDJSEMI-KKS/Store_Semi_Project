@@ -4,7 +4,7 @@ public class IdList {
 	private String id;
 	private String lastPw;
 	private String active;
-	private int level;
+	private int idLevel;
 	private String createdate;
 	public String getId() {
 		return id;
@@ -25,10 +25,10 @@ public class IdList {
 		this.active = active;
 	}
 	public int getLevel() {
-		return level;
+		return idLevel;
 	}
 	public void setLevel(int level) {
-		this.level = level;
+		this.idLevel = level;
 	}
 	public String getCreatedate() {
 		return createdate;

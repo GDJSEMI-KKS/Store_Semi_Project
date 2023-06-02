@@ -5,8 +5,7 @@ public class Review {
 	private String reviewTitle;
 	private String reviewContent;
 	private String createdate;
-	private String updaetdate;
-	
+	private String updatedate;
 	public int getOrderNo() {
 		return orderNo;
 	}
@@ -31,11 +30,13 @@ public class Review {
 	public void setCreatedate(String createdate) {
 		this.createdate = createdate;
 	}
-	public String getUpdaetdate() {
-		return updaetdate;
+	public String getUpdatedate() {
+		return updatedate;
 	}
-	public void setUpdaetdate(String updaetdate) {
-		this.updaetdate = updaetdate;
+	public void setUpdatedate(String updatedate) {
+		this.updatedate = updatedate;
 	}
+	
+	
 	
 }
