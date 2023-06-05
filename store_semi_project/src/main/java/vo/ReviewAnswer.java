@@ -2,7 +2,7 @@ package vo;
 
 public class ReviewAnswer {
 	private int reviewNo;
-	private String reviewContent;
+	private String reviewAContent;
 	private String createdate;
 	private String updatedate;
 	public int getReviewNo() {
@@ -11,11 +11,11 @@ public class ReviewAnswer {
 	public void setReviewNo(int reviewNo) {
 		this.reviewNo = reviewNo;
 	}
-	public String getReviewContent() {
-		return reviewContent;
+	public String getReviewAContent() {
+		return reviewAContent;
 	}
-	public void setReviewContent(String reviewContent) {
-		this.reviewContent = reviewContent;
+	public void setReviewAContent(String reviewAContent) {
+		this.reviewAContent = reviewAContent;
 	}
 	public String getCreatedate() {
 		return createdate;
@@ -29,5 +29,6 @@ public class ReviewAnswer {
 	public void setUpdatedate(String updatedate) {
 		this.updatedate = updatedate;
 	}
+	
 	
 }
