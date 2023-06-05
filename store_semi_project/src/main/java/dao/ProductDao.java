@@ -1,13 +1,172 @@
 package dao;
 
+import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import util.DBUtil;
 import vo.*;
 
 public class ProductDao {
-	// 상품 상세보기 : 내용 수정 
+	// 관리자 상품 이미지 삽입
+	public int insertProductImg(ProductImg productImg) throws Exception {
+		ProductImg request = new ProductImg();
+		// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		System.out.println(dir);
+		int max = 10 * 1024 * 1024; 
+		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
+		String productFiletype = mRequest.getContentType("boardFile");
+		String productOriFilename = mRequest.getOriginalFileName("boardFile");
+		String productSaveFileName = mRequest.getFilesystemName("boardFile");
+		int productNo = productImg.getProductNo();
+		System.out.println(productFiletype + " <-- insert productFiletype");
+		System.out.println(productOriFilename + " <-- insert productOriFilename");
+		System.out.println(productSaveFileName + " <-- insert productSaveFileName");
+		System.out.println(productNo + " <-- insert productNo");
+		/*
+		 INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) \r\n"
+				+ "VALUES(?, ?, ?, ?, NOW(), NOW())
+		 */
+		String sql = "INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) \r\n"
+				+ "VALUES(?, ?, ?, ?, NOW(), NOW())";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, productImg.getProductNo());
+		stmt.setString(2, productImg.getProductOriFilename());
+		stmt.setString(3, productImg.getProductSaveFileName());
+		stmt.setString(4, productImg.getProductFiletype());
+		row = stmt.executeUpdate(); // board_file 입력
+		return row;
+	}
+	// 관리자 상품 이미지 수정
+	public int updateProductImg(ProductImg productImg) throws Exception {
+		ProductImg request = new ProductImg();
+		// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		System.out.println(dir);
+		int max = 10 * 1024 * 1024; 
+		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
+		
+		int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
+		// 이전 File 삭제, 새로운 File추가 테이블을 수정 
+		if(mRequest.getOriginalFileName("boardFile") != null) {
+			// 수정할 파일이 있으면
+			// JPED 파일 유효성 검사, 아니면 새로 업로드 한 파일을 삭제
+			if(mRequest.getContentType("boardFile").equals("application/jpeg") == false) {
+				System.out.println("JPG파일이 아닙니다");
+				String saveFilename = mRequest.getFilesystemName("boardFile");
+				File f = new File(dir+"/"+saveFilename);
+				if(f.exists()) {
+					f.delete();
+					System.out.println(saveFilename+"파일삭제");
+				}
+			} else { 
+				// PDF파일이면  
+				// 1) 이전 파일(saveFilename) 삭제
+				// 2) db수정(update)
+				String productFiletype = mRequest.getContentType("boardFile");
+				String productOriFilename = mRequest.getOriginalFileName("boardFile");
+				String productSaveFileName = mRequest.getFilesystemName("boardFile");
+				
+				ProductImg file = new ProductImg();
+				file.setProductNo(productNo);
+				file.setProductFiletype(productFiletype);
+				file.setProductOriFilename(productOriFilename);
+				file.setProductSaveFileName(productSaveFileName);
+				
+				// 1) 이전파일 삭제
+				String saveFilenameSql = "SELECT product_save_filename FROM product_img WHERE product_no=?";
+				PreparedStatement saveFilenameStmt = conn.prepareStatement(saveFilenameSql);
+				saveFilenameStmt.setInt(1, file.getProductNo());
+				ResultSet saveFilenameRs = saveFilenameStmt.executeQuery();
+				String preSaveFilename = "";
+				if(saveFilenameRs.next()) {
+					preSaveFilename = saveFilenameRs.getString("save_filename");
+				}
+				File f = new File(dir+"/"+preSaveFilename);
+				if(f.exists()) {
+					f.delete();
+				}
+				// 2) 수정된 파일의 정보로 db를 수정
+				/*
+					UPDATE product_img 
+					SET product_ori_filename=?, product_save_filename=? 
+					WHERE product_no=?
+				*/
+				String boardFileSql = "UPDATE product_img SET product_ori_filename=?, product_save_filename=? WHERE product_no=?";
+				PreparedStatement boardFileStmt = conn.prepareStatement(boardFileSql);
+				boardFileStmt.setString(1, productImg.getProductOriFilename());
+				boardFileStmt.setString(2, productImg.getProductSaveFileName());
+				boardFileStmt.setInt(3, productImg.getProductNo());
+				row = boardFileStmt.executeUpdate();
+			}
+		}
+		
+		return row;
+	}
+	// 관리자 상품 이미지 삭제
+	public int deleteProductImg(ProductImg productImg) throws Exception {
+		ProductImg request = new ProductImg();
+		// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		System.out.println(dir);
+		int max = 10 * 1024 * 1024; 
+		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
+		int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
+		String productSaveFileName = mRequest.getFilesystemName("boardFile");
+		System.out.println(productSaveFileName + " <-- delete productSaveFileName");
+		System.out.println(productNo + " <-- delete productNo");
+		if (mRequest.getParameter("productNo") == null){
+			
+			return 0;
+		}
+		String saveFilename = mRequest.getParameter("saveFilename");
+		
+		// 파일 삭제
+		
+		File f = new File(dir + "/" + saveFilename);
+		if (f.exists()){
+			f.delete();
+			System.out.println(saveFilename + "파일삭제");
+		}
+		
+		String delBoardSql = "DELETE FROM product_img WHERE product_no = ?";
+	    PreparedStatement delBoardStmt = conn.prepareStatement(delBoardSql);
+	    delBoardStmt.setInt(1, productNo);
+		System.out.println(delBoardStmt + "<--- stmt deleteProductImg");
+		
+	    int delRow = delBoardStmt.executeUpdate();
+	    
+	    if(delRow == 1) {
+	    	System.out.println("삭제완료");
+	    	return row;
+	    } else {
+	    	System.out.println("삭제실패");
+	    }
+		return row;
+	}
+	// 관리자 상품 상세보기 : 내용 수정
 	public int updateProduct(Product product) throws Exception {
 		
 		// sql 실행시 영향받은 행의 수 
@@ -32,6 +191,62 @@ public class ProductDao {
 		stmt.setInt(5, product.getProductStock());
 		stmt.setInt(6, product.getProductNo());
 		row = stmt.executeUpdate();
+		return row;
+	}
+	// 관리자 상품 삽입
+	public int insertProduct(Product product) throws Exception {
+			
+			// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		// sql 전송 후 결과셋 반환받아 저장
+		/*
+		INSERT INTO product (category_name, product_name, product_price, product_status, product_stock, product_info, product_sum_cnt, createdate, updatedate) \r\n"
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		 */
+		// 물음표 7개
+		String sql = "INSERT INTO product (category_name, product_name, product_price, product_status, product_stock, product_info, product_sum_cnt, createdate, updatedate) \r\n"
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, product.getCategoryName());
+		stmt.setString(2, product.getProductName());
+		stmt.setInt(3, product.getProductPrice());
+		stmt.setString(4, product.getProductStatus());
+		stmt.setInt(5, product.getProductStock());
+		stmt.setString(5, product.getProductInfo());
+		stmt.setInt(6, product.getProductSumCnt());
+		row = stmt.executeUpdate();
+		return row;
+	}
+	// 관리자 상품 삭제
+	public int deleteProduct(int productNo) throws Exception {
+		// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		// sql 전송 후 영향받은 행의 수 반환받아 저장
+		String sql = "DELETE FROM product WHERE product_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, productNo);
+		row = stmt.executeUpdate();
+		return row;
+	}
+	// 상품 전체 row
+	public int selectProductCnt() throws Exception {
+		// 반환할 전체 행의 수
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		// sql 전송 후 결과셋 반환받아 값 저장
+		PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM product");
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			row = rs.getInt(1);
+		}
 		return row;
 	}
 	// =========== product 상세, 수정 폼 ================
