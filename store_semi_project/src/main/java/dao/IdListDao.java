@@ -56,8 +56,8 @@ public class IdListDao {
 		return idList;
 	}
 	
-	// 조회(로그인)
-	public boolean selectIdListLogin(IdList idList) throws Exception {
+	// 조회(로그인, 회원탈퇴)
+	public boolean selectIdList(IdList idList) throws Exception {
 		
 		// 유효성 검사
 		if(idList == null) {
