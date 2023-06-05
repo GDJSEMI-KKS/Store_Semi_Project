@@ -20,7 +20,7 @@ public class BoardQuestionDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate \r\n"
+		String sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
 				+ "FROM board_question WHERE board_q_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, boardQuestionNo);
@@ -52,8 +52,8 @@ public class BoardQuestionDao {
 		
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
-		String sql = "INSERT INTO board_question(id, board_q_category, board_q_title, board_q_content, createdate, updatedate) \r\n"
-				+ "VALUES (?, ?, ?, ?, NOW(), NOW())";
+		String sql = "INSERT INTO board_question(id, board_q_category, board_q_title, board_q_content, board_q_check_cnt, createdate, updatedate) "
+				+ "VALUES (?, ?, ?, ?, 0, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, boardQuestion.getId());
 		stmt.setString(2, boardQuestion.getBoardQCategory());
@@ -76,7 +76,7 @@ public class BoardQuestionDao {
 		
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
-		String sql = "UPDATE board_question SET board_q_category = ?, board_q_title = ?, board_q_content = ?, updatedate = NOW() \r\n"
+		String sql = "UPDATE board_question SET board_q_category = ?, board_q_title = ?, board_q_content = ?, updatedate = NOW() "
 				+ "WHERE board_q_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, boardQuestion.getBoardQCategory());
