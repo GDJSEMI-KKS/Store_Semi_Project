@@ -5,7 +5,6 @@ import java.sql.*;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
@@ -14,6 +13,8 @@ import util.DBUtil;
 import vo.*;
 
 public class ProductDao {
+	final String RE = "\u001B[0m"; 
+	final String SJ = "\u001B[44m";
 	// 관리자 상품 이미지 삽입
 	public int insertProductImg(ProductImg productImg) throws Exception {
 		ProductImg request = new ProductImg();
@@ -31,10 +32,10 @@ public class ProductDao {
 		String productOriFilename = mRequest.getOriginalFileName("boardFile");
 		String productSaveFileName = mRequest.getFilesystemName("boardFile");
 		int productNo = productImg.getProductNo();
-		System.out.println(productFiletype + " <-- insert productFiletype");
-		System.out.println(productOriFilename + " <-- insert productOriFilename");
-		System.out.println(productSaveFileName + " <-- insert productSaveFileName");
-		System.out.println(productNo + " <-- insert productNo");
+		System.out.println(SJ + productFiletype + " <-- insert productFiletype" + RE);
+		System.out.println(SJ + productOriFilename + " <-- insert productOriFilename"+ RE);
+		System.out.println(SJ + productSaveFileName + " <-- insert productSaveFileName"+ RE);
+		System.out.println(SJ + productNo + " <-- insert productNo"+RE);
 		/*
 		 INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) \r\n"
 				+ "VALUES(?, ?, ?, ?, NOW(), NOW())
@@ -69,12 +70,12 @@ public class ProductDao {
 			// 수정할 파일이 있으면
 			// JPED 파일 유효성 검사, 아니면 새로 업로드 한 파일을 삭제
 			if(mRequest.getContentType("boardFile").equals("application/jpeg") == false) {
-				System.out.println("JPG파일이 아닙니다");
+				System.out.println(SJ + "JPG파일이 아닙니다"+RE);
 				String saveFilename = mRequest.getFilesystemName("boardFile");
 				File f = new File(dir+"/"+saveFilename);
 				if(f.exists()) {
 					f.delete();
-					System.out.println(saveFilename+"파일삭제");
+					System.out.println(SJ+saveFilename+"파일삭제"+RE);
 				}
 			} else { 
 				// PDF파일이면  
@@ -130,13 +131,13 @@ public class ProductDao {
 		Connection conn = dbUtil.getConnection();
 		
 		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
-		System.out.println(dir);
+		System.out.println(SJ +dir+RE);
 		int max = 10 * 1024 * 1024; 
 		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
 		int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
 		String productSaveFileName = mRequest.getFilesystemName("boardFile");
-		System.out.println(productSaveFileName + " <-- delete productSaveFileName");
-		System.out.println(productNo + " <-- delete productNo");
+		System.out.println(SJ +productSaveFileName + " <-- delete productSaveFileName"+RE);
+		System.out.println(SJ +productNo + " <-- delete productNo"+RE);
 		if (mRequest.getParameter("productNo") == null){
 			
 			return 0;
@@ -154,7 +155,7 @@ public class ProductDao {
 		String delBoardSql = "DELETE FROM product_img WHERE product_no = ?";
 	    PreparedStatement delBoardStmt = conn.prepareStatement(delBoardSql);
 	    delBoardStmt.setInt(1, productNo);
-		System.out.println(delBoardStmt + "<--- stmt deleteProductImg");
+		System.out.println(SJ +delBoardStmt + "<--- stmt deleteProductImg"+RE);
 		
 	    int delRow = delBoardStmt.executeUpdate();
 	    
