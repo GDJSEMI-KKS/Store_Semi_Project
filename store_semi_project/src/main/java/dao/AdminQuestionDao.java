@@ -3,11 +3,91 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import util.DBUtil;
 import vo.*;
 
 public class AdminQuestionDao {
+	
+	// RESET ANST CODE 콘솔창 글자색, 배경색 지정
+		final String RESET = "\u001B[0m";
+		final String BLUE ="\u001B[34m";
+		final String BG_YELLOW ="\u001B[43m";	
+		
+	/* 조회
+	 *  1. 전체 조회 (category == null)
+	 *  2. category 별 검색 조회
+	 *  String categoryName : 카테고리명
+	 */
+	
+	public ArrayList<HashMap<String, Object>> adminQuestionListByPage(int beginRow, int rowPerPage, String categoryName) throws Exception{
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = null;
+		PreparedStatement stmt = null;
+		
+		if(categoryName.equals("")) {
+			
+			sql = "SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
+				+ "FROM "
+				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
+				+ "FROM question q LEFT OUTER JOIN answer a "
+				+ "ON q.q_no = a.q_no "
+				+ "GROUP BY qNo "
+				+ "UNION ALL "
+				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
+				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY  bq.board_q_no) qbq "
+				+ "ORDER BY rnum DESC LIMIT ?, ?";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,beginRow);
+			stmt.setInt(2,rowPerPage);
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 1.stmt"+RESET);
+			
+		} else {
+			
+			sql = "SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
+				+ "FROM "
+				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
+				+ "FROM question q LEFT OUTER JOIN answer a "
+				+ "ON q.q_no = a.q_no "
+				+ "GROUP BY qNo "
+				+ "UNION ALL "
+				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
+				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY  bq.board_q_no) qbq "
+				+ "WHERE qCategory = ? "
+				+ "ORDER BY rnum DESC LIMIT ?, ?";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, categoryName);
+			stmt.setInt(2, beginRow);
+			stmt.setInt(3, rowPerPage);
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 2.stmt"+RESET);
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+		while(rs.next()) {
+			HashMap<String, Object> m = new HashMap<>();
+			m.put("rnum", rs.getInt("rnum"));
+			m.put("qNo", rs.getInt("qNo"));
+			m.put("qCategory", rs.getString("qCategory"));
+			m.put("qTitle", rs.getString("qTitle"));
+			m.put("qCreatedate", rs.getString("qCreatedate"));
+			list.add(m);
+		}
+		
+		return list;
+	}
 	
 	// 상세 조회(question)
 	public Question selectQuestionOne(int questionNo) throws Exception {
