@@ -9,8 +9,11 @@ import util.DBUtil;
 import vo.Question;
 
 public class QuestionDao {
+	final String RE = "\u001B[0m"; 
+	final String SJ = "\u001B[44m";
 	// 상품문의 전체 row
 	public int selectQuestionCnt() throws Exception {
+		
 		// 반환할 전체 행의 수
 		int row = 0;
 		// db 접속
@@ -28,6 +31,10 @@ public class QuestionDao {
 	// =============상세페이지 내 상품문의==============
 	// 상품문의 리스트
 	public ArrayList<Question> selectQuestionListByPage(int beginRow, int rowPerPage) throws Exception {
+		if(rowPerPage ==0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao selectQuestionListByPage메서드" + RE);
+			return null;
+		}
 		
 		ArrayList<Question> list = new ArrayList<>();
 		Question question = null;
@@ -66,6 +73,10 @@ public class QuestionDao {
 	
 	// 상품문의 상세보기
 	public Question selectQuestion(int qNo) throws Exception {
+		if(qNo == 0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao selectQuestion메서드" + RE);
+			return null;
+		}
 	Question question = null;
 	// db 접속
 	DBUtil dbUtil = new DBUtil();
@@ -99,6 +110,10 @@ public class QuestionDao {
 	}
 	// 상품문의 삽입
 	public int insertQuestion(Question question) throws Exception {
+		if(question == null) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao insertQuestion메서드" + RE);
+			return 0;
+		}
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
@@ -117,6 +132,10 @@ public class QuestionDao {
 	}
 	// 상품문의 수정
 	public int updateQuestion(Question question) throws Exception {
+		if(question == null) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao updateQuestion메서드" + RE);
+			return 0;
+		}
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
@@ -133,6 +152,10 @@ public class QuestionDao {
 	}
 	// 상품문의 삭제
 	public int deleteQuestion(int qNo) throws Exception {
+		if(qNo == 0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao deleteQuestion메서드" + RE);
+			return 0;
+		}
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
