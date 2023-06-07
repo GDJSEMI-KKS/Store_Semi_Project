@@ -11,13 +11,14 @@ public class IdListCustomerDao {
 	final String BLUE ="\u001B[34m";
 	final String BG_YELLOW ="\u001B[43m";
 	
-	
-	/* 1. 회원(고객, 관리자) 전체 조회 (ckCstm == null && ckCstmRank == null && ckActive == null)
-	 * 2. 고객 / 관리자 선택 조회 (ckCstmRank == null && ckActive == null) 
-	 * 3. 활성화 조회 (ckCstm == null && ckCstmRank == null)
-	 * 4. 고객, 등급 선택 조회 (ckActive == null)
-	 * 5. 고객or관리자, 활성화 조회 (ckCstmRank == null)
-	 * 6. 고객, 등급, 활성화 여부 선택 조회
+	/* 1. 회원(고객, 관리자) 전체 조회 (ckIdLevel == null && ckCstmRank == null && ckActive == null)
+	 * 2. 고객 / 관리자 검색 조회 (ckCstmRank == null && ckActive == null) 
+	 * 3. 등급 검색 조회 (ckIdLevel == null && ckActive == null)
+	 * 4. 활성화 여부 검색 조회 (ckIdLevel == null && ckCstmRank == null)
+	 * 5. 등급, 활성화 검색 조회 (ckIdLevel == null)
+	 * 6. 고객or관리자 등급 검색 조회 (ckActive == null)
+	 * 7. 고객or관리자, 활성화 검색 조회 (ckCstmRank == null)
+	 * 8. 고객, 등급, 활성화 여부 검색 조회
 	 
 	 * 조회컬럼 : id, 활성화 여부, 고객등급
 	 * 정렬 : 1. 회원 id_level DESC(내림차순) 2. id ASC(오름차순)
@@ -52,7 +53,7 @@ public class IdListCustomerDao {
 				+ "FROM "
 				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
 				+ "FROM id_list i LEFT outer JOIN customer c "
-				+ "ON i.id = c.id ) cc "
+				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN(? ";
 				
 				for(int i=1; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ? 셋팅
@@ -69,12 +70,34 @@ public class IdListCustomerDao {
 				stmt.setInt(ckIdLevel.length+2, rowPerPage);
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 2.stmt"+RESET);
 				
-		} else if(ckIdLevel == null && ckCstmRank == null) { // 3. 활성화 조회
+		} else if(ckIdLevel == null && ckActive == null) { // 3. 등급 선택 조회
 			sql = "SELECT id, active, cstmRank "
 				+ "FROM "
 				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
 				+ "FROM id_list i LEFT outer JOIN customer c "
-				+ "ON i.id = c.id ) cc "
+				+ "ON i.id = c.id ) ic "
+				+ "WHERE cstmRank IN (? ";
+			
+				for(int i=1; i<ckCstmRank.length; i+=1){ // ckCstmRank 배열의 길이 만큼 ? 셋팅
+					sql += ",?";
+				}
+				sql+= ") ORDER BY idLevel DESC, id ASC LIMIT ?, ?";
+				
+				stmt = conn.prepareStatement(sql);
+				for(int i=0; i<ckCstmRank.length; i+=1) { // ckCstmRank 배열의 길이 만큼 ?의 값 저장
+					stmt.setString(i+1, ckCstmRank[i]);
+					System.out.println(BG_YELLOW+BLUE+ckCstmRank[i] +"<--IdListCustomerDao ckCstmRank[i]"+RESET);
+				}
+				stmt.setInt(ckCstmRank.length+1, beginRow);
+				stmt.setInt(ckCstmRank.length+2, rowPerPage);
+				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 3.stmt"+RESET);
+				
+		} else if(ckIdLevel == null && ckCstmRank == null) { // 4. 활성화 조회
+			sql = "SELECT id, active, cstmRank "
+				+ "FROM "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "FROM id_list i LEFT outer JOIN customer c "
+				+ "ON i.id = c.id ) ic "
 				+ "WHERE active IN (? ";
 				
 				for(int i=1; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ? 셋팅
@@ -89,14 +112,45 @@ public class IdListCustomerDao {
 				}
 				stmt.setInt(ckActive.length+1, beginRow);
 				stmt.setInt(ckActive.length+2, rowPerPage);
-				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 3.stmt"+RESET);
+				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 4.stmt"+RESET);
 				
-		} else if(ckActive == null) { // 4. 고객, 등급 선택 조회
+		} else if(ckIdLevel == null) { // 5. 등급, 활성화 검색 조회
 			sql = "SELECT id, active, cstmRank "
 				+ "FROM "
 				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
 				+ "FROM id_list i LEFT outer JOIN customer c "
-				+ "ON i.id = c.id ) cc "
+				+ "ON i.id = c.id ) ic "
+				+ "WHERE cstmRank IN (? ";
+			
+				for(int i=1; i<ckCstmRank.length; i+=1){ // ckCstmRank 배열의 길이 만큼 ? 셋팅
+					sql += ",?";
+				}
+				sql+=") AND active IN (? ";
+				
+				for(int i=1; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ? 셋팅
+					sql += ",?";
+				}
+				sql+= ") ORDER BY idLevel DESC, id ASC LIMIT ?, ?";
+				
+				stmt = conn.prepareStatement(sql);
+				for(int i=0; i<ckCstmRank.length; i+=1) { // ckCstmRank 배열의 길이 만큼 ?의 값 저장
+					stmt.setString(i+1, ckCstmRank[i]);
+					System.out.println(BG_YELLOW+BLUE+ckCstmRank[i] +"<--IdListCustomerDao ckCstmRank[i]"+RESET);
+				}
+				for(int i=0; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ?의 값 저장
+					stmt.setString(ckCstmRank.length+i+1, ckActive[i]);
+					System.out.println(BG_YELLOW+BLUE+ckActive[i] +"<--IdListCustomerDao ckActive[i]"+RESET);
+				}
+				stmt.setInt(ckCstmRank.length+ckActive.length+1, beginRow);
+				stmt.setInt(ckCstmRank.length+ckActive.length+2, rowPerPage);
+				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 5.stmt"+RESET);
+			
+		} else if(ckActive == null) { // 6. 고객or관리자, 등급 선택 조회
+			sql = "SELECT id, active, cstmRank "
+				+ "FROM "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "FROM id_list i LEFT outer JOIN customer c "
+				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
 				
 				for(int i=1; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ? 셋팅
@@ -120,14 +174,14 @@ public class IdListCustomerDao {
 				}
 				stmt.setInt(ckIdLevel.length+ckCstmRank.length+1, beginRow);
 				stmt.setInt(ckIdLevel.length+ckCstmRank.length+2, rowPerPage);
-				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 4.stmt"+RESET);
+				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 6.stmt"+RESET);
 					
-		} else if(ckCstmRank == null) { // 5. 고객or관리자, 활성화 조회
+		} else if(ckCstmRank == null) { // 7. 고객or관리자, 활성화 조회
 			sql = "SELECT id, active, cstmRank "
 				+ "FROM "
 				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
 				+ "FROM id_list i LEFT outer JOIN customer c "
-				+ "ON i.id = c.id ) cc "
+				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
 				
 				for(int i=1; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ? 셋팅
@@ -151,14 +205,14 @@ public class IdListCustomerDao {
 				}
 				stmt.setInt(ckIdLevel.length+ckActive.length+1, beginRow);
 				stmt.setInt(ckIdLevel.length+ckActive.length+2, rowPerPage);
-				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 5.stmt"+RESET);
+				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 7.stmt"+RESET);
 				
-		} else { // 6. 고객, 등급, 활성화 여부 선택 조회
+		} else { // 8. 고객, 등급, 활성화 여부 선택 조회
 			sql = "SELECT id, active, cstmRank "
 					+ "FROM "
 					+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
 					+ "FROM id_list i LEFT outer JOIN customer c "
-					+ "ON i.id = c.id ) cc "
+					+ "ON i.id = c.id ) ic "
 					+ "WHERE idLevel IN (? ";
 					
 					for(int i=1; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ? 셋팅
@@ -191,7 +245,7 @@ public class IdListCustomerDao {
 					}
 					stmt.setInt(ckIdLevel.length+ckCstmRank.length+ckActive.length+1, beginRow);
 					stmt.setInt(ckIdLevel.length+ckCstmRank.length+ckActive.length+2, rowPerPage);
-					System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 6.stmt"+RESET);
+					System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 8.stmt"+RESET);
 		}
 		
 		ResultSet rs = stmt.executeQuery();
