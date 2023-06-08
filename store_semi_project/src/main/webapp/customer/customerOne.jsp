@@ -8,55 +8,60 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 주문한 id와 로그인 id가 다를경우 장바구니로 리다이렉션
-	if(session.getAttribute("loginId") == null && !session.getAttribute("loginId").equals(request.getParameter("id"))){
+	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
+	/* if(session.getAttribute("loginId") == null){
 		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "orderAction 리다이렉션" + RESET);
+		System.out.println(KMJ + "customerOne 로그인되어있지 않아 리다이렉션" + RESET);
 		return;
 	}
+	String loginId = session.getAttribute(KMJ + "loginId" + " <--customerOne loginId" + RESET);*/
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
-	//요청값이 넘어오는지 확인하기: productNo, id, orderCnt, orderPrice, payment, usePoint
-	System.out.println(KMJ + request.getParameter("orderNo") + "orderConfirm param orderNo" + RESET);
+	//요청값이 넘어오는지 확인하기: cart_no
+	System.out.println(request.getParameter("id") + " <--customerOne id" + RESET);
 	
-	//요청값 유효성 검사: orderNo가 null인 경우 메인페이지로 리다이렉션
-	if(request.getParameter("orderNo") == null){
-		response.sendRedirect(request.getContextPath()+"/메인.jsp");
-		System.out.println(KMJ + "orderConfirm 요청값 null 리다이렉션" + RESET);
+	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
+	/* if(request.getParameter("id") == null || !loginId.equals(request.getParameter("id"))){
+		response.sendRedirect(KMJ + request.getContextPath()+"/메인.jsp" + RESET);
 		return;
 	}
-	int orderNo = Integer.parseInt(request.getParameter("orderNo"));
+	String id = request.getParameter("id");
+	System.out.println(KMJ + id + " <--customerOne id" + RESET); */
 	
-	//orders 정보 불러오기
-	OrdersDao oDao = new OrdersDao();
-	Orders order = oDao.selectOrderOne(orderNo);
+	String id = "user1";
+	
+	//고객정보 출력을 위한 dao생성
+	CustomerDao cDao = new CustomerDao();
+	Customer customer = cDao.selectCustomer(id);
+
 %>
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Order Confirmation Page</title>
+    <title>Customer One</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
     <!-- Bootstrap CSS-->
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/bootstrap/css/bootstrap.min.css">
     <!-- Font Awesome CSS-->
-    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/font-awesome/css/font-awesome.min.css">
     <!-- Google fonts - Roboto -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700">
     <!-- owl carousel-->
-    <link rel="stylesheet" href="vendor/owl.carousel/assets/owl.carousel.css">
-    <link rel="stylesheet" href="vendor/owl.carousel/assets/owl.theme.default.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/owl.carousel/assets/owl.carousel.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/owl.carousel/assets/owl.theme.default.css">
     <!-- theme stylesheet-->
-    <link rel="stylesheet" href="css/style.default.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/style.default.css" id="theme-stylesheet">
     <!-- Custom stylesheet - for your changes-->
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/custom.css">
     <!-- Favicon-->
-    <link rel="shortcut icon" href="favicon.png">
+    <link rel="shortcut icon" href="<%=request.getContextPath()%>/resources_customer/favicon.png">
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
@@ -299,97 +304,108 @@
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li aria-current="page" class="breadcrumb-item active">Checkout - Order review</li>
+                  <li aria-current="page" class="breadcrumb-item active">My account</li>
                 </ol>
               </nav>
             </div>
-            <div id="checkout" class="col-lg-9">
-              <div class="box">
-                <form method="get" action="checkout4.html">
-                  <h1>주문확인</h1>
-                  <div class="nav flex-column flex-sm-row nav-pills"><a href="checkout1.html" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-map-marker">                  </i>Address</a><a href="checkout2.html" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-truck">                       </i>Delivery Method</a><a href="checkout3.html" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-money">                      </i>Payment Method</a><a href="#" class="nav-link flex-sm-fill text-sm-center active"> <i class="fa fa-eye">                     </i>Order Review</a></div>
-                  <div class="content">
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th colspan="2">Product</th>
-                            <th>Quantity</th>
-                            <th>Unit price</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><a href="#"><img src="img/detailsquare.jpg" alt="White Blouse Armani"></a></td>
-                            <td><a href="#">White Blouse Armani</a></td>
-                            <td>2</td>
-                            <td>$123.00</td>
-                            <td>$0.00</td>
-                            <td>$246.00</td>
-                          </tr>
-                          <tr>
-                            <td><a href="#"><img src="img/basketsquare.jpg" alt="Black Blouse Armani"></a></td>
-                            <td><a href="#">Black Blouse Armani</a></td>
-                            <td>1</td>
-                            <td>$200.00</td>
-                            <td>$0.00</td>
-                            <td>$200.00</td>
-                          </tr>
-                        </tbody>
-                        <tfoot>
-                          <tr>
-                            <th colspan="5">Total</th>
-                            <th>$446.00</th>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>
-                    <!-- /.table-responsive-->
-                  </div>
-                  <!-- /.content-->
-                  <div class="box-footer d-flex justify-content-between"><a href="checkout3.html" class="btn btn-outline-secondary"><i class="fa fa-chevron-left"></i>Back to payment method</a>
-                    <button type="submit" class="btn btn-primary">Place an order<i class="fa fa-chevron-right"></i></button>
-                  </div>
-                </form>
-              </div>
-              <!-- /.box-->
-            </div>
-            <!-- /.col-lg-9-->
             <div class="col-lg-3">
-              <div id="order-summary" class="card">
+              <!--
+              *** CUSTOMER MENU ***
+              _________________________________________________________
+              -->
+              <div class="card sidebar-menu">
                 <div class="card-header">
-                  <h3 class="mt-4 mb-4">Order summary</h3>
+                  <h3 class="h4 card-title">Customer section</h3>
                 </div>
                 <div class="card-body">
-                  <p class="text-muted">Shipping and additional costs are calculated based on the values you have entered.</p>
-                  <div class="table-responsive">
-                    <table class="table">
-                      <tbody>
-                        <tr>
-                          <td>Order subtotal</td>
-                          <th>$446.00</th>
-                        </tr>
-                        <tr>
-                          <td>Shipping and handling</td>
-                          <th>$10.00</th>
-                        </tr>
-                        <tr>
-                          <td>Tax</td>
-                          <th>$0.00</th>
-                        </tr>
-                        <tr class="total">
-                          <td>Total</td>
-                          <th>$456.00</th>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <ul class="nav nav-pills flex-column"><a href="customer-orders.html" class="nav-link active"><i class="fa fa-list"></i> My orders</a><a href="customer-wishlist.html" class="nav-link"><i class="fa fa-heart"></i> My wishlist</a><a href="customer-account.html" class="nav-link"><i class="fa fa-user"></i> My account</a><a href="index.html" class="nav-link"><i class="fa fa-sign-out"></i> Logout</a></ul>
                 </div>
               </div>
+              <!-- /.col-lg-3-->
+              <!-- *** CUSTOMER MENU END ***-->
             </div>
-            <!-- /.col-lg-3-->
+            <div class="col-lg-9">
+              <div class="box">
+                <h1>내 계정</h1>
+                <p class="lead">Change your personal details or your password here.</p>
+                <p class="text-muted">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                <h3 class="mt-5">Personal details</h3>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="firstname">이름</label>
+                        <input id="firstname" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="lastname">주소</label>
+                        <input id="lastname" type="text" class="form-control">
+                        <a>주소추가하기</a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.row-->
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="company">이메일</label>
+                        <input id="company" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="street">생년월일</label>
+                        <input id="street" type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.row-->
+                  <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                      <div class="form-group">
+                        <label for="city">연락처</label>
+                        <input id="city" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="form-group">
+                        <label for="zip">성별</label>
+                        <input id="zip" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="form-group">
+                        <label for="state">회원등급</label>
+                        <select id="state" class="form-control"></select>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="form-group">
+                        <label for="country">포인트</label>
+                        <select id="country" class="form-control"></select>
+                        <a>포인트 이력 확인하기</a>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="phone">Telephone</label>
+                        <input id="phone" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                      <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save changes</button>
+                    </div>
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

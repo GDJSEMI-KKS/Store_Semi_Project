@@ -8,59 +8,34 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
+	//로그인 세션 유효성 검사: 로그인이 되어있지 않으면 로그인페이지로 리다이렉션
+	/* if(session.getAttribute("loginId") == null){
+		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
+		System.out.println(KMJ + "orderSheet 로그인되어있지 않아 리다이렉션" + RESET);
+		return;
+	}
+	String loginId = session.getAttribute(KMJ + "loginId" + " <--orderSheet loginId" + RESET);*/
+	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
-	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("beginRow") + " <--adminReview param beginRow" + RESET);
-	System.out.println(KMJ + request.getParameter("rowPerPage") + " <--adminReview param rowPerPage" + RESET);
-	System.out.println(KMJ + request.getParameter("answer") + " <--adminReview param answer" + RESET);
+	//요청값이 넘어오는지 확인하기: cart_no
+	System.out.println(request.getParameter("cartNo") + " <--orderSheet param cart_no" + RESET);
 	
-	//요청값 유효성 검사: currentPage, rowPerPage
-	int currentPage = 1;
-	int rowPerPage = 10;
-	String answer = "all"; 
-	//beginRow와 rowPerPage, answer가 null이 아닌 경우에 변수에 저장
-	if(request.getParameter("currentPage") != null && request.getParameter("rowPerPage") != null
-		|| request.getParameter("answer") != null){
-		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
-		currentPage = Integer.parseInt(request.getParameter("currentPage"));
-		answer = request.getParameter("answer");
+	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
+	/* if(request.getParameter("cartNo") == null){
+		response.sendRedirect(KMJ + request.getContextPath()+"/메인.jsp" + RESET);
+		return;
 	}
+	int cartNo = Integer.parseInt(request.getParameter("cartNo"));
+	System.out.println(KMJ + cartNo + " <--orderSheet cartNo" + RESET); */
 		
-	//변수 디버깅
-	System.out.println(KMJ + currentPage + " <--adminReview currentPage" + RESET);
-	System.out.println(KMJ + rowPerPage + " <--adminReview rowPerPage" + RESET);
-	System.out.println(KMJ + answer + " <--adminReview answer" + RESET);
-
-	int beginRow = (currentPage - 1)*rowPerPage;
+	//주문서 출력을 위한 dao타입객체생성
+	CartDao cDao = new CartDao();
+	//cartNo에 따라 데이터 받기
 	
-	//review리스트 출력을 위한 dao타입객체생성
-	ReviewDao rDao = new ReviewDao();
-	//리스트 받기
-	ArrayList<HashMap<String,Object>> list = rDao.SelectReviewListByPage(beginRow, rowPerPage, answer);
-	System.out.println(KMJ + list.size() + " <--adminReview list.size()" + RESET);
 
-	//페이지네이션에 필요한 변수 선언: reviewCnt, lastPage, pagePerPage, startPage, endPage
-	int reviewCnt = rDao.SelectReviewCnt(beginRow, rowPerPage, answer);
-	int lastPage = reviewCnt / rowPerPage;
-	//ordersCnt를 rowPerPage로 나눈 나머지가 있으면 lastPage + 1
-	if(reviewCnt % rowPerPage != 0){
-		lastPage = lastPage + 1;
-	}
-	int pagePerPage = 10;
-	int startPage = ((currentPage - 1)/pagePerPage)*pagePerPage + 1;
-	int endPage = startPage + pagePerPage - 1;
-	//endPage가 lastPage보다 크면 endPage = lastPage
-	if(endPage > lastPage){
-		endPage = lastPage; 
-	}
-	
-	//변수 디버깅
-	System.out.println(KMJ + reviewCnt + " <--adminReview ordersCnt" + RESET);
-	System.out.println(KMJ + lastPage + " <--adminReview lastPage" + RESET);
-	System.out.println(KMJ + startPage + " <--adminReview startPage" + RESET);
-	System.out.println(KMJ + lastPage + " <--adminReview endPage" + RESET);
+
 %>
 <!DOCTYPE html>
 <html>
@@ -89,6 +64,59 @@
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <!-- 포인트 사용 자바스크립트 -->
+    <script>
+    <!-- 구글참고 -->
+    function chkPoint(orderPrice, point, min, unit) {
+		//orderPrice : 최초 결제 금액 / point : 사용가능,남은 포인트 / min : 사용 가능 최소 포인트 / unit : 사용단위
+		let usePoint = 0; //사용할 포인트 (input 입력값)
+	
+		if (document.getElementById("checkUse").checked){ //전체포인트 사용하기를 클릭한 경우
+			if (point < min){ //최소 사용 단위보다 작을 때
+				usePoint = 0; 
+			}else {
+				usePoint = point - (point%unit); //사용할 포인트 = 전체 포인트 중 최소단위 이하 포인트를 뺀 포인트
+			}
+
+			if(point > orderPrice ){ //결제금액보다 포인트가 더 클 때
+				usePoint = orderPrice; //사용할 포인트는 결제금액과 동일하게 설정
+			}
+			
+		}
+		document.getElementById("usePoint").value = usePoint; //input의 value를 usePoint로 설정
+
+		changePoint(orderPrice, point, min, unit);
+	}
+	
+	function changePoint(orderPrice, point, min, unit){
+		//input값을 가져옴 > 남은 포인트 변경 변경 > 최종결제금액 변경
+		let usePoint = parseInt(document.getElementById("usePoint").value); //사용할 포인트 (input usePoint의 값을 가져와서 int로 형변환)
+		if (usePoint > point){ //입력값이 사용가능 포인트보다 클때
+			usePoint = point;
+			document.getElementById("usePoint").value = usePoint; //input 값 재설정
+		}
+
+		if(usePoint > orderPrice ){ //결제금액보다 포인트가 더 클 때
+			usePoint > orderPrice; //사용할 포인트는 결제금액과 동일하게 설정
+			document.getElementById("usePoint").value = usePoint; //input 값 재설정
+		}
+
+		if (usePoint < min){  //최소 사용 단위보다 작을 때
+			usePoint = 0; 
+			document.getElementById("usePoint").value = usePoint; //input 값 재설정
+		}else {
+			usePoint = point - (point%unit); //사용할 포인트 = 사용할 포인트 중 최소단위 이하 포인트를 뺀 포인트
+		}
+
+		let leftPoint = document.getElementsByName("leftPoint"); //사용가능 포인트, 남은 포인트 값 설정
+		for (let i = 0; i < leftPoint.length; i++) {
+
+			leftPoint[i].innerHTML = point - usePoint; //= 전체 포인트 중에 사용할 포인트빼고 남은 포인트
+
+		}
+		document.getElementById("total").innerHTML = orderPrice - usePoint; //최종 결제금액 = 결제금액 - 사용할 포인트
+	}
+    </script>
   </head>
   <body>
     <!-- navbar-->
@@ -320,6 +348,7 @@
       </div>
     </header>
     <!-- -------------------------------------주문1 시작--------------------------------------------------- -->
+ 	<form method="post" action="<%=request.getContextPath()%>/orders/ordersAction.jsp">
  	<div id="all">
       <div id="content">
         <div class="container">
@@ -335,83 +364,60 @@
             </div>
             <div id="checkout" class="col-lg-9">
               <div class="box">
-                <form method="get" action="checkout2.html">
-                  <h1>주문/결제</h1>
+                
+                  <h1>Checkout - Address</h1>
                   <div class="nav flex-column flex-md-row nav-pills text-center"><a href="checkout1.html" class="nav-link flex-sm-fill text-sm-center active"> <i class="fa fa-map-marker">                  </i>Address</a><a href="#" class="nav-link flex-sm-fill text-sm-center disabled"> <i class="fa fa-truck">                       </i>Delivery Method</a><a href="#" class="nav-link flex-sm-fill text-sm-center disabled"> <i class="fa fa-money">                      </i>Payment Method</a><a href="#" class="nav-link flex-sm-fill text-sm-center disabled"> <i class="fa fa-eye">                     </i>Order Review</a></div>
                   <div class="content py-3">
-                    <h2>배송지정보</h2>
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group">
-                          <label for="firstname">Firstname</label>
+                          <label for="firstname">이름</label>
                           <input id="firstname" type="text" class="form-control">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
-                          <label for="lastname">Lastname</label>
+                          <label for="lastname">연락처</label>
                           <input id="lastname" type="text" class="form-control">
                         </div>
                       </div>
                     </div>
                     <!-- /.row-->
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                         <div class="form-group">
-                          <label for="company">Company</label>
+                          <label for="company">주소</label>
                           <input id="company" type="text" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="street">Street</label>
-                          <input id="street" type="text" class="form-control">
                         </div>
                       </div>
                     </div>
                     <!-- /.row-->
                     <div class="row">
-                      <div class="col-md-6 col-lg-3">
+                      <div class="col-md-6 col-lg-6">
                         <div class="form-group">
-                          <label for="city">Company</label>
-                          <input id="city" type="text" class="form-control">
+                          <label for="leftPoint">보유포인트</label>
+                          <input id="leftPoint" type="number" value="" class="form-control">
+                          <span>포인트는 최소 부터 단위로 사용가능합니다.</span>
                         </div>
                       </div>
-                      <div class="col-md-6 col-lg-3">
+                      <div class="col-md-6 col-lg-6">
                         <div class="form-group">
-                          <label for="zip">ZIP</label>
-                          <input id="zip" type="text" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-6 col-lg-3">
-                        <div class="form-group">
-                          <label for="state">State</label>
-                          <select id="state" class="form-control"></select>
-                        </div>
-                      </div>
-                      <div class="col-md-6 col-lg-3">
-                        <div class="form-group">
-                          <label for="country">Country</label>
-                          <select id="country" class="form-control"></select>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="phone">Telephone</label>
-                          <input id="phone" type="text" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="email">Email</label>
-                          <input id="email" type="text" class="form-control">
+                         	<input id="checkUse" type="checkbox" onclick="checkPoint(65000, 7210, 5000, 100)">포인트사용
                         </div>
                       </div>
                     </div>
                     <!-- /.row-->
-                    <br>
-                    <h2>결제정보</h2>
-                     <div class="row">
+                    <div class="row">
+                      <div class="col-md-6 col-lg-6">
+                        <div class="form-group">
+                          <label for="city">사용포인트</label>
+                          <input type="number" class="form-control" name="usePoint" id="usePoint" min="100" max="1000" onchange="changePoint()">
+                          <span name="leftPoint" id="leftPoint"></span> 
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.row-->
+                    <div class="row">
                       <div class="col-md-6">
                         <div class="box payment-method">
                           <h4>Paypal</h4>
@@ -441,12 +447,11 @@
                       </div>
                     </div>
                     <!-- /.row-->
-                    
                   </div>
                   <div class="box-footer d-flex justify-content-between"><a href="basket.html" class="btn btn-outline-secondary"><i class="fa fa-chevron-left"></i>Back to Basket</a>
                     <button type="submit" class="btn btn-primary">Continue to Delivery Method<i class="fa fa-chevron-right"></i></button>
                   </div>
-                </form>
+                
               </div>
               <!-- /.box-->
             </div>
@@ -454,28 +459,24 @@
             <div class="col-lg-3">
               <div id="order-summary" class="card">
                 <div class="card-header">
-                  <h3 class="mt-4 mb-4">Order summary</h3>
+                  <h3 class="mt-4 mb-4">주문내용</h3>
                 </div>
                 <div class="card-body">
-                  <p class="text-muted">Shipping and additional costs are calculated based on the values you have entered.</p>
+                  <p class="text-muted">주문금액을 꼭 확인해주세요</p>
                   <div class="table-responsive">
                     <table class="table">
                       <tbody>
                         <tr>
-                          <td>Order subtotal</td>
+                          <td>주문상품</td>
                           <th>$446.00</th>
                         </tr>
                         <tr>
-                          <td>Shipping and handling</td>
+                          <td>주문수량</td>
                           <th>$10.00</th>
                         </tr>
-                        <tr>
-                          <td>Tax</td>
-                          <th>$0.00</th>
-                        </tr>
-                        <tr class="total">
-                          <td>Total</td>
-                          <th>$456.00</th>
+                        <tr class="total" id="total">
+                          <td>주문금액</td>
+                          <th></th>
                         </tr>
                       </tbody>
                     </table>
@@ -488,6 +489,7 @@
         </div>
       </div>
     </div>
+    </form>
      <!-- -------------------------------------주문1 끝--------------------------------------------------- -->
     <!--
     *** FOOTER ***
