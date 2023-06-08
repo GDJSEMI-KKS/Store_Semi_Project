@@ -25,7 +25,7 @@ public class CustomerDao {
 			Customer c = new Customer();
 			c.setId(rs.getString("id"));
 			c.setCstmName(rs.getString("cstmName"));
-			c.setCstmAddress(rs.getString("cstmName"));
+			c.setCstmAddress(rs.getString("cstmAddress"));
 			c.setCstmEmail(rs.getString("cstmEmail"));
 			c.setCstmBirth(rs.getString("cstmBirth"));
 			c.setCstmPhone(rs.getString("cstmPhone"));
@@ -75,7 +75,7 @@ public class CustomerDao {
 		if(rs.next()) {
 			customer.setId(rs.getString("id"));
 			customer.setCstmName(rs.getString("cstmName"));
-			customer.setCstmAddress(rs.getString("cstmName"));
+			customer.setCstmAddress(rs.getString("cstmAddress"));
 			customer.setCstmEmail(rs.getString("cstmEmail"));
 			customer.setCstmBirth(rs.getString("cstmBirth"));
 			customer.setCstmPhone(rs.getString("cstmPhone"));
