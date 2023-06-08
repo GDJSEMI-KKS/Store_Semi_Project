@@ -13,9 +13,12 @@ public class CartDao {
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
 	
-	// cartList 
-	public ArrayList<HashMap<String, Object>> selectCartListByPage(Cart cart) throws Exception {
-		
+	// cartList 고객 id 받아 장바구니 리스트 출력
+	public ArrayList<HashMap<String, Object>> selectCartListByPage(String id) throws Exception {
+		if(id == null) {
+			System.out.println(SJ +"잘못된 매개변수	<-- cart selectCartListByPage메서드" + RE);
+			return null;
+		}
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -48,7 +51,7 @@ public class CartDao {
 				+ "		WHERE c.id = ?\r\n"
 				+ "		ORDER BY c.cart_no ASC";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, cart.getId());
+		stmt.setString(1, id);
 		ResultSet rs = stmt.executeQuery();
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 		while(rs.next()) {
@@ -88,4 +91,137 @@ public class CartDao {
 		}
 		return list;
 	}
+	// 장바구니에 추가 
+	public static int insertCart(Cart cart) throws Exception {
+		
+		// sql 실행시 영향받은 행의 수 
+		int row = 0;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		String sql = "INSERT INTO cart(product_no, id, cart_cnt, createdate, updatedate) VALUES(?,?,?, NOW(),NOW())";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, cart.getProductNo());
+		stmt.setString(2, cart.getId());
+		stmt.setInt(3, cart.getCartCnt());
+		row = stmt.executeUpdate();
+		return row;
+	}
+	// 장바구니 하나 삭제
+	public int deletecart(int cartNo) throws Exception {
+		if(cartNo == 0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- cart deletecart메서드" + RE);
+			return 0;
+		}
+		int row = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "DELETE\r\n"
+				+ "FROM cart\r\n"
+				+ "WHERE cart_no=?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1,cartNo);
+		row = stmt.executeUpdate();
+		return row;
+	}
+
+	// 선택된 상품 카운트 -- 체크된 상품 주문 내역으로 보기기 위함
+	public int selCntcart(String id) throws Exception {
+		int row = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT c.cart_check\r\n"
+				+ "FROM cart c \r\n"
+				+ "LEFT OUTER JOIN product p ON c.product_no = p.product_no \r\n"
+				+ "LEFT OUTER JOIN customer cstm ON c.id = cstm.id \r\n"
+				+ "WHERE cstm.id = ? AND c.cart_check='Y'";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1,id);
+		row = stmt.executeUpdate();
+		return row;
+	}
+	// product 재고량 확인하여 row로 반환 장바구니 수량 max 맞추기 위한 메서드
+	public int productCartStock(int productNo) throws Exception {
+		int row = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT product_stock\r\n"
+				+ "FROM product\r\n"
+				+ "WHERE product_no=?";
+		//product_stock
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1,productNo);
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			row = rs.getInt("product_stock");
+		}
+		return row;
+	}
+	// cart에서 product 수량 변경
+	public int updateCartCnt(Cart cart) throws Exception {
+		int row = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "UPDATE cart SET cart_cnt = ? WHERE cart_no = ?";
+		//product_stock
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, cart.getCartCnt());
+		stmt.setInt(2, cart.getCartNo());
+		row = stmt.executeUpdate();
+		return row;
+	}
+	// 동일 id내 동일 상품을 찾는 메서드 
+	public int checkCart(Cart cart) throws Exception {
+		int row = 0;
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT COUNT(*)\r\n"
+				+ "FROM cart\r\n"
+				+ "GROUP BY product_no, id\r\n"
+				+ "HAVING COUNT(*) > 1;";
+		//product_stock
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			row = rs.getInt("COUNT(*)");
+		}
+		if(row > 1) {
+			System.out.println(SJ +"장바구니 내 동일 상품	<-- cart checkCart메서드" + RE);
+			return 0;
+		}
+		return row;
+	}
+	// 주문 완료 후 장바구니내 항목 삭제
+	public int removeCartStock(int orderNo) throws Exception {
+		int row = 0;
+		DBUtil DBUtil = new DBUtil();
+		Connection conn = DBUtil.getConnection();
+		
+		String sql = "";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, orderNo);
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+		while(rs.next()){
+			HashMap<String,Object> m = new HashMap<String,Object>();
+			m.put("productNo",rs.getInt("oh.product_no"));
+			m.put("orderCnt",rs.getInt("productcnt"));
+			list.add(m);
+		}
+		
+		for(HashMap<String,Object> m : list) {
+			String sql2 = "UPDATE product SET product_stock = ? WHERE product_no = ?";
+			PreparedStatement stmt2 = conn.prepareStatement(sql2);
+			stmt2.setInt(1, (int)m.get("orderCnt"));
+			stmt2.setInt(2, (int)m.get("productNo"));
+			row = stmt2.executeUpdate();
+		}
+		return row;
+	}
+	
 }

@@ -16,7 +16,7 @@ import vo.*;
 public class ProductDao {
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
-	
+	// 이름별 검색
 	public ArrayList<Product> searchProduct(int beginRow, int rowPerPage, String search) throws Exception{
 		if(rowPerPage ==0) {
 			System.out.println(SJ +"잘못된 매개변수 beginRow	<-- ProductDao searchProduct메서드" + RE);
@@ -71,19 +71,18 @@ public class ProductDao {
 		return list;
 	}
 	// 관리자 상품 이미지 삽입
-	public int insertProductImg(ProductImg productImg) throws Exception {
+	public int insertProductImg(HttpServletRequest request,ProductImg productImg) throws Exception {
 		if(productImg == null) {
 			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao insertProductImg메서드" + RE);
 			return 0;
 		}
-		ProductImg request = new ProductImg();
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		String dir = request.getServletContext().getRealPath("/product/productImg");
 		System.out.println(dir);
 		int max = 10 * 1024 * 1024; 
 		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
@@ -103,26 +102,25 @@ public class ProductDao {
 				+ "VALUES(?, ?, ?, ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, productImg.getProductNo());
-		stmt.setString(2, productImg.getProductOriFilename());
-		stmt.setString(3, productImg.getProductSaveFileName());
-		stmt.setString(4, productImg.getProductFiletype());
+		stmt.setString(2, productOriFilename);
+		stmt.setString(3, productSaveFileName);
+		stmt.setString(4, productFiletype);
 		row = stmt.executeUpdate(); // board_file 입력
 		return row;
 	}
 	// 관리자 상품 이미지 수정
-	public int updateProductImg(ProductImg productImg) throws Exception {
+	public int updateProductImg(HttpServletRequest request, ProductImg productImg) throws Exception {
 		if(productImg == null) {
 			System.out.println(SJ + "잘못된 매개변수	<-- ProductDao updateProductImg메서드"+RE);
 			return 0;
 		}
-		ProductImg request = new ProductImg();
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		String dir = request.getServletContext().getRealPath("/upload");
 		System.out.println(dir);
 		int max = 10 * 1024 * 1024; 
 		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
@@ -175,9 +173,9 @@ public class ProductDao {
 				*/
 				String boardFileSql = "UPDATE product_img SET product_ori_filename=?, product_save_filename=? WHERE product_no=?";
 				PreparedStatement boardFileStmt = conn.prepareStatement(boardFileSql);
-				boardFileStmt.setString(1, productImg.getProductOriFilename());
-				boardFileStmt.setString(2, productImg.getProductSaveFileName());
-				boardFileStmt.setInt(3, productImg.getProductNo());
+				boardFileStmt.setString(1, productOriFilename);
+				boardFileStmt.setString(2, productSaveFileName);
+				boardFileStmt.setInt(3, productNo);
 				row = boardFileStmt.executeUpdate();
 			}
 		}
@@ -185,19 +183,18 @@ public class ProductDao {
 		return row;
 	}
 	// 관리자 상품 이미지 삭제
-	public int deleteProductImg(ProductImg productImg) throws Exception {
+	public int deleteProductImg(HttpServletRequest request, ProductImg productImg) throws Exception {
 		if(productImg == null) {
 			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao deleteProductImg메서드"+RE);
 			return 0;
 		}
-		ProductImg request = new ProductImg();
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String dir = ((HttpServletRequest) request).getServletContext().getRealPath("/upload");
+		String dir =  request.getServletContext().getRealPath("/upload");
 		System.out.println(SJ +dir+RE);
 		int max = 10 * 1024 * 1024; 
 		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());

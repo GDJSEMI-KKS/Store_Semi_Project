@@ -5,8 +5,17 @@ public class Cart {
 	private int productNo;
 	private String id;
 	private int cartCnt;
+	private String cartCheck;
 	private String createdate;
 	private String updatedate;
+	
+	
+	public String getCartCheck() {
+		return cartCheck;
+	}
+	public void setCartCheck(String cartCheck) {
+		this.cartCheck = cartCheck;
+	}
 	public int getCartNo() {
 		return cartNo;
 	}
