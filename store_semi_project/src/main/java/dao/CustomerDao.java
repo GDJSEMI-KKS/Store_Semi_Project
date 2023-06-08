@@ -107,8 +107,8 @@ public class CustomerDao {
 		stmt.setString(6, customer.getCstmPhone());
 		stmt.setString(7, customer.getCstmGender());
 		stmt.setString(8, customer.getCstmRank());
-		stmt.setString(9, customer.getCstmPhone());
-		stmt.setInt(10, customer.getCstmPoint());
+		stmt.setInt(9, customer.getCstmPoint());
+		stmt.setString(10, customer.getCstmLastLogin());
 		stmt.setInt(11, customer.getCstmSumPrice());
 		int row = stmt.executeUpdate();
 		return row;
@@ -125,8 +125,9 @@ public class CustomerDao {
 		stmt.setString(2, customer.getCstmAddress());
 		stmt.setString(3, customer.getCstmEmail());
 		stmt.setString(4, customer.getCstmBirth());
-		stmt.setString(5, customer.getCstmGender());
-		stmt.setString(6, customer.getId());
+		stmt.setString(5, customer.getCstmPhone());
+		stmt.setString(6, customer.getCstmGender());
+		stmt.setString(7, customer.getId());
 		int row = stmt.executeUpdate();
 		return row;
 	}
@@ -140,7 +141,7 @@ public class CustomerDao {
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		PointHistoryDao pHistory = new PointHistoryDao();
 		stmt.setInt(1, pHistory.SelectIdPointSum(id));
-		stmt.setString(3, id);
+		stmt.setString(2, id);
 		int row = stmt.executeUpdate();
 		return row;
 	}
