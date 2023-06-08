@@ -201,7 +201,7 @@ public class OrdersDao {
 		return order;
 	}
 	
-	//삽입: 주문버튼 클릭시 주문번호 생성
+	//삽입: 주문버튼 클릭시 주문번호 생성 후 주문번호 리턴
 	public int insertOrder(Orders order) throws Exception {
 		//매개변수 유효성 검사
 		if(order == null) {
@@ -212,9 +212,9 @@ public class OrdersDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "INSERT INTO orders (product_no, id, payment_status, deliver_status, order_cnt, order_price, createdate, updatedate) "
+		String sql = "INSERT INTO orders (product_no, id, payment_status, delivery_status, order_cnt, order_price, createdate, updatedate) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
-		PreparedStatement stmt = conn.prepareStatement(sql);
+		PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, order.getProductNo());
 		stmt.setString(2, order.getId());
 		stmt.setString(3, order.getPaymentStatus());
@@ -222,8 +222,13 @@ public class OrdersDao {
 		stmt.setInt(5, order.getOrderCnt());
 		stmt.setInt(6, order.getOrderPrice());
 		System.out.println(KMJ + stmt + " <--OrdersDao insertOrder stmt" + RESET);
-		int row = stmt.executeUpdate();
-		return row;
+		stmt.executeUpdate();
+		ResultSet keyRs = stmt.getGeneratedKeys();
+		int keyValue = 0;
+		if(keyRs.next()) {
+			keyValue = keyRs.getInt(1);
+		}
+		return keyValue;
 	}
 	
 	//수정: 배송상태, 결제상태 수정

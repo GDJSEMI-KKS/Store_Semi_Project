@@ -96,8 +96,8 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "INSERT INTO customer (id, cstm_name, cstm_address, cstm_email, cstm_birth, cstm_phone, cstm_gender, cstm_rank, cstm_point, cstm_last_login, cstm_sum_price, createdate, updatedate) "
-				+ "VALUES (?, ?, ?, ?, STR_TO_DATE(?, %Y%M%D), ?, ?, ?, ?, ?, NOW(), ?, NOW(), NOW())";
+		String sql = "INSERT INTO customer (id, cstm_name, cstm_address, cstm_email, cstm_birth, cstm_phone, cstm_gender, cstm_point, cstm_last_login, cstm_sum_price, createdate, updatedate) "
+				+ "VALUES (?, ?, ?, ?, STR_TO_DATE(?, '%Y%M%D'), ?, ?, ?, NOW(), ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customer.getId());
 		stmt.setString(2, customer.getCstmName());
@@ -106,10 +106,8 @@ public class CustomerDao {
 		stmt.setString(5, customer.getCstmBirth());
 		stmt.setString(6, customer.getCstmPhone());
 		stmt.setString(7, customer.getCstmGender());
-		stmt.setString(8, customer.getCstmRank());
-		stmt.setInt(9, customer.getCstmPoint());
-		stmt.setString(10, customer.getCstmLastLogin());
-		stmt.setInt(11, customer.getCstmSumPrice());
+		stmt.setInt(8, customer.getCstmPoint());
+		stmt.setInt(9, customer.getCstmSumPrice());
 		int row = stmt.executeUpdate();
 		return row;
 	}

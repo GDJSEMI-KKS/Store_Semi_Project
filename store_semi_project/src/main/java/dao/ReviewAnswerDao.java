@@ -58,13 +58,14 @@ public class ReviewAnswerDao {
 	}
 	
 	//수정: 리뷰수정
-	public int updateReviewAnswer(ReviewAnswer review) throws Exception {
+	public int updateReviewAnswer(ReviewAnswer rAnswer) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
-		String sql = "UPDATE review_answer SET review_title = ?, review_a_content = ?, review_check_cnt =?, updatedate = NOW() WHERE order_no = ?";
+		String sql = "UPDATE review_answer SET review_a_content = ?, updatedate = NOW() WHERE review_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-
+		stmt.setString(1, rAnswer.getReviewAContent());
+		stmt.setInt(2, rAnswer.getReviewNo());
 		int row = stmt.executeUpdate();
 		return row;
 	}
