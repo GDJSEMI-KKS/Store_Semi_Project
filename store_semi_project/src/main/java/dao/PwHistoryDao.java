@@ -23,7 +23,7 @@ public class PwHistoryDao {
 		}
 						
 	//삽입: 비밀번호 이력추가
-	public int insertEmployee(PwHistory pwHistory) throws Exception {
+	public int insertPwHistory(PwHistory pwHistory) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
