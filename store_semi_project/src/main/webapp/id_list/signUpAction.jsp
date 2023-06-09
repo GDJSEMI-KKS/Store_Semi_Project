@@ -93,12 +93,25 @@
 	customer.setCstmPoint(cstmPoint);
 	customer.setCstmSumPrice(cstmSumPrice);
 	
+	/* customerRow : customerDao.insertCustomer(customer) 리턴값 저장 변수
+	 * idListRow : idListDao.insertIdList(idList) 리턴값 저장 변수
+	 * pwHistoryRow : pwHistoryDao.insertPwHistory(pwHistory) 리턴값 저장 변수
+	 * addressRow : addressDao.insertAddress(address) 리턴값 저장 변수
+	 
+	 * customerRow 값에 따른 redirection
+	 * customerRow == 0, signUp.html redirection. return.
+			 
+	 * customerRow == 1,
+	 * login.html redirection. 
+	 * vo.IdList, vo.PwHistory, vo.Address에 각 Dao Method 호출하여 값 저장. 
+	*/
+	
 	// CustomerDao insertCustomer(customer) Method
 	CustomerDao customerDao = new CustomerDao();
 	int customerRow = customerDao.insertCustomer(customer);
 	if(customerRow == 0){
 		System.out.println(BG_YELLOW+BLUE+customerRow +"<-- signUpAction.jsp insertCustomer 실패 customerRow"+RESET);
-		response.sendRedirect(request.getContextPath()+"/list_id/signUp.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/signUp.html");
 		return;	
 		
 	} else if(customerRow == 1){
