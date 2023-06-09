@@ -97,7 +97,7 @@ public class CustomerDao {
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
 		String sql = "INSERT INTO customer (id, cstm_name, cstm_address, cstm_email, cstm_birth, cstm_phone, cstm_gender, cstm_point, cstm_last_login, cstm_sum_price, createdate, updatedate) "
-				+ "VALUES (?, ?, ?, ?, STR_TO_DATE(?, '%Y%M%D'), ?, ?, ?, NOW(), ?, NOW(), NOW())";
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customer.getId());
 		stmt.setString(2, customer.getCstmName());
@@ -117,7 +117,7 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
-		String sql = "UPDATE customer SET cstm_name = ?, cstm_address = ?, cstm_email = ?, cstm_birth = STR_TO_DATE(?, %Y%M%D), cstm_phone = ?, cstm_gender = ?, updatedate = NOW() WHERE id = ?";
+		String sql = "UPDATE customer SET cstm_name = ?, cstm_address = ?, cstm_email = ?, cstm_birth = ?, cstm_phone = ?, cstm_gender = ?, updatedate = NOW() WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customer.getCstmName());
 		stmt.setString(2, customer.getCstmAddress());
