@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="dao.*"%>
 <%@ page import="vo.*"%>
-<%
+<% 
 	//RESET ANST CODE 콘솔창 글자색, 배경색 지정
 	final String RESET = "\u001B[0m";
 	final String BLUE ="\u001B[34m";
@@ -45,11 +45,7 @@
 		response.sendRedirect(request.getContextPath()+"/id_list/signUp.html");
 		return;	
 	}
-	
-	// id 중복검사
-	
-	// password값 일치 확인
-	
+
 	// 요청값 저장
 	String id = request.getParameter("id");
 	String pw = request.getParameter("pw");
@@ -80,58 +76,83 @@
 	System.out.println(BG_YELLOW+BLUE+addressDefault +"<--signUpAction.jsp addressDefault"+RESET);
 	System.out.println(BG_YELLOW+BLUE+addressName +"<--signUpAction.jsp addressName"+RESET);
 	
-	// vo.Customer 값 저장
-	Customer customer = new Customer();
-	customer.setId(id);
-	customer.setCstmName(cstmName);
-	customer.setCstmGender(cstmGender);
-	customer.setCstmBirth(cstmBirth);
-	customer.setCstmPhone(cstmPhone);
-	customer.setCstmEmail(cstmEmail);
-	customer.setCstmAddress(cstmAddress);
-	customer.setCstmAgree(cstmAgree);
-	customer.setCstmPoint(cstmPoint);
-	customer.setCstmSumPrice(cstmSumPrice);
+	/* id 중복검사
+	 * 중복되는 id가 있으면 signUp.html redirection. return.
+	*/
+	// IdListDao selectIdListOne(id) Method
+	IdListDao idListDao = new IdListDao();
+	IdList duplicateId = idListDao.selectIdListOne(id);
 	
-	/* customerRow : customerDao.insertCustomer(customer) 리턴값 저장 변수
-	 * idListRow : idListDao.insertIdList(idList) 리턴값 저장 변수
+	if(duplicateId != null){
+		if(duplicateId.getId().equals(id)){
+			response.sendRedirect(request.getContextPath() + "/id_list/signUp.html");
+			System.out.println("중복되는 ID");
+			return;
+		}
+	}
+	
+	/* password값 일치 확인
+	 * pw, pwCheck 값이 일치 하지 않으면 signUp.html redirection. return.
+	*/
+	if(!request.getParameter("pw").equals(request.getParameter("pwCheck"))){
+		response.sendRedirect(request.getContextPath() + "/id_list/signUp.html");
+		System.out.println("Password 불일치");
+		return;
+	}
+	
+	// vo.IdList 값 저장
+	IdList idList = new IdList();
+	idList.setId(id);
+	idList.setLastPw(pw);
+			
+	/* idListRow : idListDao.insertIdList(idList) 리턴값 저장 변수
+	 * customerRow : customerDao.insertCustomer(customer) 리턴값 저장 변수
 	 * pwHistoryRow : pwHistoryDao.insertPwHistory(pwHistory) 리턴값 저장 변수
 	 * addressRow : addressDao.insertAddress(address) 리턴값 저장 변수
 	 
-	 * customerRow 값에 따른 redirection
-	 * customerRow == 0, signUp.html redirection. return.
+	 * idListRow 값에 따른 redirection
+	 * idListRow == 0, signUp.html redirection. return.
 			 
-	 * customerRow == 1,
+	 * idListRow == 1,
 	 * login.html redirection. 
-	 * vo.IdList, vo.PwHistory, vo.Address에 각 Dao Method 호출하여 값 저장. 
+	 * vo.Customer, vo.PwHistory, vo.Address에 각 Dao Method 호출하여 값 저장. 
 	*/
 	
-	// CustomerDao insertCustomer(customer) Method
-	CustomerDao customerDao = new CustomerDao();
-	int customerRow = customerDao.insertCustomer(customer);
-	if(customerRow == 0){
-		System.out.println(BG_YELLOW+BLUE+customerRow +"<-- signUpAction.jsp insertCustomer 실패 customerRow"+RESET);
+	// IdListDao insertIdList(idList) Method
+	int idListRow = idListDao.insertIdList(idList);
+	
+	if(idListRow == 0){
+		System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 실패 idListRow"+RESET);
 		response.sendRedirect(request.getContextPath()+"/id_list/signUp.html");
 		return;	
 		
-	} else if(customerRow == 1){
-		System.out.println(BG_YELLOW+BLUE+customerRow +"<-- signUpAction.jsp insertCustomer 성공 customerRow"+RESET);
+	} else if(idListRow == 1){
+		System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 성공 idListRow"+RESET);
 		response.sendRedirect(request.getContextPath()+"/id_list/login.html");
 		
-		// vo.IdList 값 저장
-		IdList idList = new IdList();
-		idList.setId(id);
-		idList.setLastPw(pw);
+		// vo.Customer 값 저장
+		Customer customer = new Customer();
+		customer.setId(id);
+		customer.setCstmName(cstmName);
+		customer.setCstmGender(cstmGender);
+		customer.setCstmBirth(cstmBirth);
+		customer.setCstmPhone(cstmPhone);
+		customer.setCstmEmail(cstmEmail);
+		customer.setCstmAddress(cstmAddress);
+		customer.setCstmAgree(cstmAgree);
+		customer.setCstmPoint(cstmPoint);
+		customer.setCstmSumPrice(cstmSumPrice);
 		
-		// IdListDao insertIdList(idList) Method
-		IdListDao idListDao = new IdListDao();
-		int idListRow = idListDao.insertIdList(idList);
-		if(idListRow == 0){
-			System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 실패 idListRow"+RESET);
+		// CustomerDao insertCustomer(customer) Method
+		CustomerDao customerDao = new CustomerDao();
+		int customerRow = customerDao.insertCustomer(customer);
+		
+		if(customerRow == 0){
+			System.out.println(BG_YELLOW+BLUE+customerRow +"<-- signUpAction.jsp insertCustomer 실패 customerRow"+RESET);
 		} else if(idListRow == 1){
-			System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 성공 idListRow"+RESET);
+			System.out.println(BG_YELLOW+BLUE+customerRow +"<-- signUpAction.jsp insertCustomer 성공 customerRow"+RESET);
 		} else{
-			System.out.println(BG_YELLOW+BLUE+idListRow +"<-- error idListRow"+RESET);
+			System.out.println(BG_YELLOW+BLUE+customerRow +"<-- error customerRow"+RESET);
 		}
 		
 		// vo.PwHistory 값 저장
@@ -169,7 +190,7 @@
 		}
 		
 	} else{
-		System.out.println(BG_YELLOW+BLUE+customerRow +"<-- error customerRow"+RESET);
+		System.out.println(BG_YELLOW+BLUE+idListRow +"<-- error idListRow"+RESET);
 	}
 
 %>
