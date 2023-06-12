@@ -481,7 +481,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
 				+ "		 FROM product p\r\n"
 				+ "	 	 LEFT OUTER JOIN product_img pim\r\n"
@@ -539,7 +539,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "			pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
 				+ "		 FROM product p\r\n"
 				+ "		 LEFT OUTER JOIN product_img pim\r\n"
@@ -599,7 +599,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
 				+ "		 FROM product p\r\n"
 				+ "		 LEFT OUTER JOIN product_img pim\r\n"
@@ -657,7 +657,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
 				+ "		 FROM product p\r\n"
 				+ "		 LEFT OUTER JOIN product_img pim\r\n"
@@ -715,7 +715,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
 				+ "		 FROM product p\r\n"
 				+ "		 LEFT OUTER JOIN product_img pim\r\n"
@@ -775,7 +775,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "			pim.product_no, pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
@@ -830,7 +830,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "			pim.product_no, pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
@@ -887,7 +887,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "select RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "select RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "			pim.product_no, pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
@@ -944,7 +944,7 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, p.createdate, p.updatedate,\r\n"
+		String sql = "SELECT  RANK() over(order BY productSumCnt "+" " + orderby + " " + ") ranking, p.product_sum_cnt productSumCnt, p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_stock productStock, p.product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
 				+ "			pim.product_no, pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
