@@ -11,10 +11,10 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "SELECT id, cstm_name cstmName, cstm_address cstmAddress, cstm_address cstmAddress, cstm_email cstmEmail, cstm_birth cstmBirth, cstm_phone cstmPhone "
-						+ "cstm_gender cstmGender, cstm_rank cstmRank, cstm_point cstmPoint, cstm_last_login cstmLastLogin, cstm_sum_price cstmSumPrice, cstm_agree cstmAgree "
-						+ "createdate updatedate "
-						+ "FROM address LIMIT ?, ?";
+		String sql = "SELECT id, cstm_name cstmName, cstm_address cstmAddress, cstm_email cstmEmail, cstm_birth cstmBirth, cstm_phone cstmPhone, "
+						+ "cstm_gender cstmGender, cstm_rank cstmRank, cstm_point cstmPoint, cstm_last_login cstmLastLogin, cstm_sum_price cstmSumPrice, cstm_agree cstmAgree, "
+						+ "createdate, updatedate "
+						+ "FROM customer LIMIT ?, ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, beginRow);
 		stmt.setInt(2, rowPerPage);
@@ -34,7 +34,7 @@ public class CustomerDao {
 			c.setCstmPoint(rs.getInt("cstmPoint"));
 			c.setCstmLastLogin(rs.getString("cstmLastLogin"));
 			c.setCstmSumPrice(rs.getInt("cstmSumPrice"));
-			c.setCstmAddress(rs.getString("cstmAgree"));
+			c.setCstmAgree(rs.getString("cstmAgree"));
 			c.setCreatedate(rs.getString("createdate"));
 			c.setUpdatedate(rs.getString("updatedate"));
 			list.add(c);
@@ -63,10 +63,10 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "SELECT id, cstm_name cstmName, cstm_address cstmAddress, cstm_address cstmAddress, cstm_email cstmEmail, cstm_birth cstmBirth, cstm_phone cstmPhone "
-						+ "cstm_gender cstmGender, cstm_rank cstmRank, cstm_point cstmPoint, cstm_last_login cstmLastLogin, cstm_sum_price cstmSumPrice, cstm_agree cstmAgree "
-						+ "createdate updatedate "
-						+ "FROM address WHERE id = ?";
+		String sql = "SELECT id, cstm_name cstmName, cstm_address cstmAddress, cstm_email cstmEmail, cstm_birth cstmBirth, cstm_phone cstmPhone, "
+						+ "cstm_gender cstmGender, cstm_rank cstmRank, cstm_point cstmPoint, cstm_last_login cstmLastLogin, cstm_sum_price cstmSumPrice, cstm_agree cstmAgree, "
+						+ "createdate, updatedate "
+						+ "FROM customer WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, id);
 		ResultSet rs = stmt.executeQuery();
@@ -84,7 +84,7 @@ public class CustomerDao {
 			customer.setCstmPoint(rs.getInt("cstmPoint"));
 			customer.setCstmLastLogin(rs.getString("cstmLastLogin"));
 			customer.setCstmSumPrice(rs.getInt("cstmSumPrice"));
-			customer.setCstmAddress(rs.getString("cstmAgree"));
+			customer.setCstmAgree(rs.getString("cstmAgree"));
 			customer.setCreatedate(rs.getString("createdate"));
 			customer.setUpdatedate(rs.getString("updatedate"));
 		}
@@ -173,7 +173,7 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
-		String sql = "DELETE FROM address WHERE id = ?";
+		String sql = "DELETE FROM customer WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, id);
 		int row = stmt.executeUpdate();
