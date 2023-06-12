@@ -101,7 +101,8 @@ public class AdminQuestionDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, q_check_cnt qCheckCnt, createdate, updatedate \r\n"
+		String sql = "SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, "
+				+ "q_check_cnt qCheckCnt, createdate, updatedate "
 				+ "FROM question WHERE q_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, questionNo);
@@ -116,11 +117,45 @@ public class AdminQuestionDao {
 			question.setId(rs.getString("id"));
 			question.setqCategory(rs.getString("qCategory"));
 			question.setqTitle(rs.getString("qTitle"));
+			question.setqContent(rs.getString("qContent"));
 			question.setqCheckCnt(rs.getInt("qCheckCnt"));
 			question.setCreatedate(rs.getString("createdate"));
 			question.setUpdatedate(rs.getString("updatedate"));
 		}
 		return question;
+	}
+	
+	// 상세조회(board_question)
+	public BoardQuestion selectBoardQuestionOne(int questionNo) throws Exception {
+		// 유효성 검사
+		if(questionNo == 0) {
+			System.out.println("입력 error");
+			return null;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
+				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
+				+ "FROM board_question WHERE board_q_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, questionNo);
+		ResultSet rs = stmt.executeQuery();
+		
+		BoardQuestion boardQuestion = null;
+		
+		if(rs.next()) {
+			boardQuestion = new BoardQuestion();
+			boardQuestion.setBoardQNo(rs.getInt("boardQNo"));
+			boardQuestion.setBoardQCategory(rs.getString("boardQCategory"));
+			boardQuestion.setBoardQTitle(rs.getString("boardQTitle"));
+			boardQuestion.setBoardQContent(rs.getString("boardQContent"));
+			boardQuestion.setBoardQCheckCnt(rs.getInt("boardQCheckCnt"));
+			boardQuestion.setCreatedate(rs.getString("createdate"));
+			boardQuestion.setUpdatedate(rs.getString("updatedate"));
+		}
+		return boardQuestion;
 	}
 	
 	// 삽입(answer)
@@ -135,12 +170,11 @@ public class AdminQuestionDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "INSERT INTO answer(a_no, q_no, id, a_content, createdate, updatedate) VALUES(?, ?, ?, ?, NOW(), NOW())";
+		String sql = "INSERT INTO answer(q_no, id, a_content, createdate, updatedate) VALUES(?, ?, ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, answer.getaNo());
-		stmt.setInt(2, answer.getqNo());
-		stmt.setString(3, answer.getId());
-		stmt.setString(4, answer.getaContent());
+		stmt.setInt(1, answer.getqNo());
+		stmt.setString(2, answer.getId());
+		stmt.setString(3, answer.getaContent());
 		int row = stmt.executeUpdate();
 		
 		return row;
