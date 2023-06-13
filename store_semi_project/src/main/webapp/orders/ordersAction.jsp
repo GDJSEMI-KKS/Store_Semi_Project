@@ -8,31 +8,35 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 주문한 id와 로그인 id가 다를경우 장바구니로 리다이렉션
-	if(session.getAttribute("loginId") == null && !session.getAttribute("loginId").equals(request.getParameter("id"))){
-		response.sendRedirect(request.getContextPath()+"/로그인페이지.jsp");
-		System.out.println(KMJ + "orderAction 리다이렉션" + RESET);
+	/* //로그인 유효성 검사
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		System.out.println(KMJ + "ordersAction 로그인 필요" + RESET);
 		return;
 	}
+	Object o = session.getAttribute("loginId" + " <--ordersAction loginId");
+	String loginId = "";
+	if(o instanceof String){
+		loginId = (String)o;
+	} */
+	String loginId = "user1"; //test용: 삭제예정
+	System.out.println(KMJ + loginId + " <--ordersAction loginId");
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
-	
-	//요청값이 넘어오는지 확인하기: productNo, id, orderCnt, orderPrice, payment, usePoint
-	System.out.println(request.getParameter("productNo") + " <--orderAction param productNo" + RESET);
-	System.out.println(request.getParameter("id") + " <--orderAction param id" + RESET);
-	System.out.println(request.getParameter("orderCnt") + " <--orderAction param orderCnt" + RESET);
-	System.out.println(request.getParameter("orderPrice") + " <--orderAction param orderPrice" + RESET);
-	System.out.println(request.getParameter("payment") + " <--orderAction param payment" + RESET);
-	System.out.println(request.getParameter("usePoint") + " <--orderAction param usePoint" + RESET);
-	
-	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션 (요청값은 payment제외하고 readonly로 넘어오고 payment는 radio타입으로 넘어오므로 공백 고려안함)
-	if(request.getParameter("productNo") == null || request.getParameter("id") == null
-		|| request.getParameter("orderCnt") == null || request.getParameter("orderPrice") == null
-		|| request.getParameter("payment") == null || request.getParameter("usePoint") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/메인.jsp" + RESET);
+
+	//요청값 유효성 검사
+	if(request.getParameter("cartNo") == null
+		|| request.getParameter("productNo") == null 
+		|| request.getParameter("id") == null
+		|| request.getParameter("orderCnt") == null 
+		|| request.getParameter("orderPrice") == null
+		|| request.getParameter("payment") == null 
+		|| request.getParameter("usePoint") == null){
+		response.sendRedirect(KMJ + request.getContextPath()+"/home.jsp" + RESET);
 		return;
 	}
+	int cartNo = Integer.parseInt(request.getParameter("cartNo"));
 	int productNo = Integer.parseInt(request.getParameter("productNo"));
 	String id = request.getParameter("id");
 	int orderCnt = Integer.parseInt(request.getParameter("orderCnt"));
@@ -105,6 +109,7 @@
 	} else {
 		System.out.println(KMJ + sumPointRow + " <--ordersAction sumPointRow 입력성공" + RESET);
 	}
+	
 	//주문금액 합계 업데이트
 	int sumPriceRow = cDao.updateSumPrice(id);
 	if(sumPriceRow != 1){
@@ -113,6 +118,15 @@
 		System.out.println(KMJ + sumPriceRow + " <--ordersAction sumPriceRow 입력성공" + RESET);
 	}
 	
-	response.sendRedirect(request.getContextPath()+"/주문완료페이지.jsp?orderNo="+orderNo);
+	//주문완료 후 장바구니에서 삭제
+	CartDao cartDao = new CartDao();
+	int dltCtRow = cartDao.deletecart(cartNo);
+	if(dltCtRow != 1){
+		System.out.println(KMJ + dltCtRow + " <--ordersAction dltCtRow 입력실패" + RESET);
+	} else {
+		System.out.println(KMJ + dltCtRow + " <--ordersAction dltCtRow 입력성공" + RESET);
+	}
+	
+	response.sendRedirect(request.getContextPath()+"/orderConfirm.jsp?orderNo="+orderNo);
 
 %>
