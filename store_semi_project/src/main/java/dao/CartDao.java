@@ -92,7 +92,7 @@ public class CartDao {
 		return list;
 	}
 	// 장바구니에 추가 
-	public static int insertCart(Cart cart) throws Exception {
+	public int insertCart(Cart cart) throws Exception {
 		
 		// sql 실행시 영향받은 행의 수 
 		int row = 0;

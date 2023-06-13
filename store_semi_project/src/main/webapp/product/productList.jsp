@@ -52,11 +52,15 @@
 	//System.out.println(SJ+ dEndMonth + RE );
 	//System.out.println(SJ+ dEndDay + RE );
 	
+	// 할인율 코드 수정 필요
 	double dRate = 1.0;
 	if((dStartYear >= todayYear && dStartMonth >= todayMonth&& dStartDay >= todayDate)
 		|| dEndYear >= todayYear && dEndMonth >= todayMonth&& dEndDay >= todayDate) {
 		dRate = (1.0-d.getDiscountRate());
+	} else if (dEndYear <= dStartYear && dEndMonth <= dStartMonth && dEndDay <= dStartDay) {
+		dRate = 1.0;
 	}
+	
 	
 %>
 <!DOCTYPE html>
