@@ -158,6 +158,70 @@ public class AdminQuestionDao {
 		return boardQuestion;
 	}
 	
+	// 조회(answer)
+	public ArrayList<Answer> selectAnswerList(int questionNo) throws Exception{
+		
+		// 유효성 검사
+		if(questionNo == 0) {
+			System.out.println("입력 error");
+			return null;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT a_no aNo, q_no qNo, a_content aContent, createdate, updatedate "
+				   + "FROM answer WHERE q_no = ?";
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, questionNo);
+		ResultSet rs = stmt.executeQuery();
+		
+		ArrayList<Answer> list = new ArrayList<>();
+		while(rs.next()) {
+			Answer answer = new Answer();
+			answer.setaNo(rs.getInt("aNo"));
+			answer.setqNo(rs.getInt("qNo"));
+			answer.setaContent(rs.getString("aContent"));
+			answer.setCreatedate(rs.getString("createdate"));
+			answer.setUpdatedate(rs.getString("updatedate"));
+			list.add(answer);
+		}
+		return list;
+	}
+	
+	// 조회(boardAnswer)
+	public ArrayList<BoardAnswer> selectBoardAnswerList(int boardQuestionNo) throws Exception{
+		
+		// 유효성 검사
+		if(boardQuestionNo == 0) {
+			System.out.println("입력 error");
+			return null;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT board_a_no boardANo, board_q_no boardQNo, board_a_content boardAContent, createdate, updatedate "
+				   + "FROM board_answer WHERE board_q_no = ?";
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, boardQuestionNo);
+		ResultSet rs = stmt.executeQuery();
+		
+		ArrayList<BoardAnswer> list = new ArrayList<>();
+		while(rs.next()) {
+			BoardAnswer boardAnswer = new BoardAnswer();
+			boardAnswer.setBoardANo(rs.getInt("boardANo"));
+			boardAnswer.setBoardQNo(rs.getInt("boardQNo"));
+			boardAnswer.setBoardAContent(rs.getString("boardAContent"));
+			boardAnswer.setCreatedate(rs.getString("createdate"));
+			boardAnswer.setUpdatedate(rs.getString("updatedate"));
+			list.add(boardAnswer);
+		}
+		return list;
+	}
+	
 	// 삽입(answer)
 	public int insertAnswer(Answer answer) throws Exception {
 		
