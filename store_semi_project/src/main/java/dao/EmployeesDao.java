@@ -12,7 +12,7 @@ public class EmployeesDao {
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
 		String sql = "SELECT id, emp_name empName, emp_level empLevel, createdate, updatedate "
-						+ "FROM address LIMIT ?, ?";
+						+ "FROM employees LIMIT ?, ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, beginRow);
 		stmt.setInt(2, rowPerPage);
@@ -75,7 +75,7 @@ public class EmployeesDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "INSERT INTO customer (id, emp_name, emp_level, createdate, updatedate) "
+		String sql = "INSERT INTO employees (id, emp_name, emp_level, createdate, updatedate) "
 				+ "VALUES (?, ?, ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, employee.getId());
