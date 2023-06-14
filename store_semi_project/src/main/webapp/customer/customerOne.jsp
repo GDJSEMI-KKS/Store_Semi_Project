@@ -15,6 +15,15 @@
 		return;
 	}
 	String loginId = session.getAttribute(KMJ + "loginId" + " <--customerOne loginId" + RESET);*/
+
+	/* //관리자가 아닌 경우 홈으로 리다이렉션
+	IdListDao iDao = new IdListDao();
+	IdList loginLevel = iDao.selectIdListOne(loginId);
+	int idLevel = loginLevel.getIdLevel();
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;
+	} */
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
