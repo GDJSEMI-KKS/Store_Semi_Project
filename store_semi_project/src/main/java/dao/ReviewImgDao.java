@@ -27,13 +27,13 @@ public class ReviewImgDao {
 		}
 		return rImg;
 	}
-	
+		
 	//삽입: 리뷰이미지 등록
 	public int insertReviewImg(ReviewImg rImg) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement 
-		String sql = "INSERT INTO review (order_no, review_ori_filename, review_save_filename, review_filetype, createdate, updatedate) "
+		String sql = "INSERT INTO review_img (order_no, review_ori_filename, review_save_filename, review_filetype, createdate, updatedate) "
 				+ "VALUES (?, ?, ?, ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, rImg.getOrderNo());
@@ -44,7 +44,7 @@ public class ReviewImgDao {
 		return row;
 	}
 	
-	//수정: 배송상태, 결제상태 수정
+	//수정: 리뷰이미지 수정
 	public int updateReviewImg(ReviewImg rImg) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();

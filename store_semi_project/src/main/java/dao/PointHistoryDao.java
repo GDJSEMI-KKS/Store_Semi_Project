@@ -25,7 +25,7 @@ public class PointHistoryDao {
 		while(rs.next()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
 			m.put("orderNo", rs.getInt("orderNo"));
-			m.put("point", rs.getString("point"));
+			m.put("point", rs.getInt("point"));
 			m.put("createdate", rs.getString("createdate"));
 			list.add(m);
 		}

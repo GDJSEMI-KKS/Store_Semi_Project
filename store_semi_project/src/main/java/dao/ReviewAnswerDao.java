@@ -1,12 +1,13 @@
 package dao;
 
 import java.sql.*;
+import java.util.*;
 import vo.*;
 import util.*;
 
 public class ReviewAnswerDao {
 	//조회: 리뷰번호별 답변
-	public ReviewAnswer SelectReviewAnswerOne(int reviewNo) throws Exception {
+	public ArrayList<ReviewAnswer> SelectReviewAnswerList(int reviewNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
@@ -14,17 +15,19 @@ public class ReviewAnswerDao {
 				+ "FROM review_answer "
 				+ "WHERE review_no = ?;";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
 		stmt.setInt(1, reviewNo);
-		ReviewAnswer rAnswer = null;
-		if(rs.next()) {
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<ReviewAnswer> list = new ArrayList<ReviewAnswer>();
+		while(rs.next()) {
+			ReviewAnswer rAnswer = null;
 			rAnswer = new ReviewAnswer();
 			rAnswer.setReviewNo(reviewNo);
-			rAnswer.setReviewAContent(sql);
-			rAnswer.setCreatedate(sql);
-			rAnswer.setUpdatedate(sql);
+			rAnswer.setReviewAContent(rs.getString("reviewAContent"));
+			rAnswer.setCreatedate(rs.getString("createdate"));
+			rAnswer.setUpdatedate(rs.getString("updatedate"));
+			list.add(rAnswer);
 		}
-		return rAnswer;
+		return list;
 	}
 	
 	//조회: 리뷰번호별 답변 수 (1이상이면 답변 완료로 처리)

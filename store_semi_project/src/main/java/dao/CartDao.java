@@ -91,32 +91,6 @@ public class CartDao {
 		}
 		return list;
 	}
-	// 장바구니 상세내용 출력
-	public HashMap<String, Object> selectCartOne(int cartNo) throws Exception {
-		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
-		String sql = "SELECT c.product_no productNo, p.product_name productName, p.product_price productPrice, id, cart_cnt cartCnt, cart_check cartCheck, c.createdate createdate, c.updatedate updatedate\r\n"
-				+ "FROM cart c INNER JOIN product p\r\n"
-				+ "ON c.product_no = p.product_no\r\n"
-				+ "WHERE c.cart_no = ?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, cartNo);
-		ResultSet rs = stmt.executeQuery();
-		HashMap<String, Object> map = null;
-		if(rs.next()) {
-			map = new HashMap<String, Object>();
-			map.put("productNo", rs.getInt("productNo"));
-			map.put("productName", rs.getString("productName"));
-			map.put("productPrice", rs.getInt("productPrice"));
-			map.put("id", rs.getString("id"));
-			map.put("cartCnt", rs.getInt("cartCnt"));
-			map.put("cartCheck", rs.getString("cartCheck"));
-			map.put("createdate", rs.getString("createdate"));
-			map.put("updatedate", rs.getString("updatedate"));
-		}
-		return map;
-	}
-	
 	// 장바구니에 추가 
 	public int insertCart(Cart cart) throws Exception {
 		
@@ -223,15 +197,30 @@ public class CartDao {
 		return row;
 	}
 	// 주문 완료 후 장바구니내 항목 삭제
-	public int removeCart(int cartNo) throws Exception {
+	public int removeCartStock(int orderNo) throws Exception {
 		int row = 0;
 		DBUtil DBUtil = new DBUtil();
 		Connection conn = DBUtil.getConnection();
 		
-		String sql = "DELETE FROM cart WHERE cart_no = ?";
+		String sql = "";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, cartNo);
-		row = stmt.executeUpdate();
+		stmt.setInt(1, orderNo);
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+		while(rs.next()){
+			HashMap<String,Object> m = new HashMap<String,Object>();
+			m.put("productNo",rs.getInt("oh.product_no"));
+			m.put("orderCnt",rs.getInt("productcnt"));
+			list.add(m);
+		}
+		
+		for(HashMap<String,Object> m : list) {
+			String sql2 = "UPDATE product SET product_stock = ? WHERE product_no = ?";
+			PreparedStatement stmt2 = conn.prepareStatement(sql2);
+			stmt2.setInt(1, (int)m.get("orderCnt"));
+			stmt2.setInt(2, (int)m.get("productNo"));
+			row = stmt2.executeUpdate();
+		}
 		return row;
 	}
 	
