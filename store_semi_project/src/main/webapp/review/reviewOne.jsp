@@ -26,18 +26,21 @@
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값 유효성 검사
-	/* if(request.getParameter("reviewNo") == null){
+	if(request.getParameter("reviewNo") == null){
 		response.sendRedirect(request.getContextPath()+"/orderList.jsp?id="+loginId);
 		return;
 	}
-	int reviewNo = Integer.parseInt(request.getParameter("reviewNo")); */
-	int reviewNo = 5;
+	int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
 	//리뷰번호별 리뷰 출력
 	ReviewDao rDao = new ReviewDao();
 	HashMap<String, Object> review = rDao.selectReviewByReviewNo(reviewNo);
 	
+	//리뷰번호별 답변 출력
+	ReviewAnswerDao aDao = new ReviewAnswerDao();
+	ArrayList<ReviewAnswer> aList = aDao.SelectReviewAnswerList(reviewNo);
+	
 	//리뷰이미지 저장위치
-	String dir = request.getServletContext().getRealPath("\reviewImg");
+	String dir = request.getServletContext().getRealPath("/review/reviewImg");
 %>
 <!DOCTYPE html>
 <html>
@@ -61,7 +64,7 @@
 		</tr>
 		<tr>
 			<th>사진</th>
-			<td><img src="dir/<%=(String)review.get("reviewSaveFilename")%>"></td>
+			<td><img src="<%=request.getContextPath()%>/review/reviewImg/<%=(String)review.get("reviewSaveFilename")%>"></td>
 		</tr>
 	</table>
 	<a href="<%=request.getContextPath()%>/review/modifyReview.jsp?reviewNo=<%=reviewNo%>">수정하기</a>
@@ -72,6 +75,19 @@
 	<%
 		}
 	%>
+	
+	<table><!-- 관리자답변 -->
+		<%
+			for(ReviewAnswer a : aList){	
+		%>
+				<tr>
+					<td><%=a.getReviewAContent()%></td>
+					<td><%=a.getCreatedate()%></td>
+				</tr>
+		<%
+			}
+		%>
+	</table>
 	
 </body>
 </html>

@@ -20,7 +20,7 @@
 		loginId = (String)o;
 	} */
 	String loginId = "user1"; //test용: 삭제예정
-	System.out.println(KMJ + loginId + " <--ordersAction loginId");
+	System.out.println(KMJ + loginId + " <--ordersAction loginId" + RESET);
 	
 	//요청값 유효성 검사
 	/* if(request.getParameter("orderNo") == null){

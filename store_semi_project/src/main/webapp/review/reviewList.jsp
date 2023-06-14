@@ -18,7 +18,17 @@
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
-	} */
+	} 
+	
+	//관리자가 아닌 경우 홈으로 리다이렉션
+	IdListDao iDao = new IdListDao();
+	IdList loginLevel = iDao.selectIdListOne(loginId);
+	int idLevel = loginLevel.getIdLevel();
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;
+	}
+	*/
 	String loginId = "user1"; //test용: 삭제예정
 	System.out.println(KMJ + loginId + " <--ordersAction loginId");
 	
@@ -34,8 +44,6 @@
 	ReviewDao rDao = new ReviewDao();
 	ArrayList<HashMap<String, Object>> list = rDao.selectReviewListByProduct(productNo, rBeginRow, rRowPerPage);
 	System.out.println(KMJ + list.size() + " <--reviewList list.size()" + RESET);
-	
-	//작성자
 %>
 <!DOCTYPE html>
 <html>
@@ -55,15 +63,14 @@
 			for(HashMap<String, Object> m : list){
 		%>
 				<tr>
-					<td><a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=(Integer)m.get("reivewNo")%>"><%=m.get("reviewTitle")%></a></td>
+					<td><a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=(Integer)m.get("reviewNo")%>"><%=m.get("reviewTitle")%></a></td>
 					<td><%=m.get("createdate").toString().substring(0, 11)%></td>
-					<td><img src="" alt="이미지준비중"></td>
+					<td><img src="<%=request.getContextPath()%>/review/reviewImg/<%=m.get("saveFilename")%>" alt="이미지준비중"></td>
 					<td><%=m.get("id")%></td>
 				</tr>
 		<%
 			}
 		%>
 	</table>
-	
 </body>
 </html>
