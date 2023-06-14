@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="dao.AdminQuestionDao"%>
 <%@ page import="java.net.*"%>
+<%@ page import="dao.*"%>
 <%@ page import="vo.*"%>
 <%
 	// RESET ANST CODE 콘솔창 글자색, 배경색 지정
@@ -15,6 +15,26 @@
 	* session 값이 null이면 redirection. return.
 	*/
 	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	*/
+	
+	// IdListDao selectIdListOne(loginId) method
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
 	}
@@ -88,7 +108,7 @@
 			System.out.println(BG_YELLOW+BLUE+answerRow+"<-- adminAnswerAction.jsp error answerRow"+RESET);
 		}
 		
-	} else{
+	} else {
 		
 		// vo.BoardAnswer 값 저장
 		BoardAnswer boardAnswer = new BoardAnswer();

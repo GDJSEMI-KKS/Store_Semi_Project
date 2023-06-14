@@ -244,7 +244,7 @@ public class AdminQuestionDao {
 		return row;
 	}
 	
-	// 삽입(board_answer)
+	// 삽입(board_answer) [송예지] AdminQuestionDao insertBoardAnswer method 수정
 	public int insertBoardAnswer(BoardAnswer boardAnswer) throws Exception {
 		
 		// 유효성 검사
@@ -258,7 +258,7 @@ public class AdminQuestionDao {
 		
 		String sql= "INSERT INTO board_answer(board_q_no, id, board_a_content, createdate, updatedate) VALUES(?, ?, ?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, boardAnswer.getBoardANo());
+		stmt.setInt(1, boardAnswer.getBoardQNo());
 		stmt.setString(2, boardAnswer.getId());
 		stmt.setString(3, boardAnswer.getBoardAContent());
 		int row = stmt.executeUpdate();
@@ -349,4 +349,67 @@ public class AdminQuestionDao {
 		
 		return row;
 	}
+	
+	/* 출력되는 전체 행의 수(adminQnAList)
+	 * 1. 전체 행의 수(categoryName == null)
+	 * 2. categoryName별 출력된 행의 수
+	*/
+	public int selectAdminQnAListCnt(String categoryName) throws Exception {
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = null;
+		PreparedStatement stmt = null;
+		
+		if(categoryName == null) {
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
+				+ "FROM "
+				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
+				+ "FROM question q LEFT OUTER JOIN answer a "
+				+ "ON q.q_no = a.q_no "
+				+ "GROUP BY qNo "
+				+ "UNION ALL "
+				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
+				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY  bq.board_q_no) qbq "
+				+ "ORDER BY rnum DESC )totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 1.stmt"+RESET);
+			
+		} else {
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
+				+ "FROM "
+				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
+				+ "FROM question q LEFT OUTER JOIN answer a "
+				+ "ON q.q_no = a.q_no "
+				+ "GROUP BY qNo "
+				+ "UNION ALL "
+				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
+				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY  bq.board_q_no) qbq "
+				+ "WHERE qCategory = ? "
+				+ "ORDER BY rnum DESC )totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, categoryName);
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 2.stmt"+RESET);
+		}
+		ResultSet rs = stmt.executeQuery();
+		
+		int totalRow = 0;
+		if(rs.next()) {
+			totalRow = rs.getInt(1);
+		}
+		
+		return totalRow;
+	}
+	
 }

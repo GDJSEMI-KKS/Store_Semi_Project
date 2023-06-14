@@ -1,3 +1,4 @@
+<%@page import="javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar"%>
 <%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="dao.*"%>
@@ -12,7 +13,7 @@
 	request.setCharacterEncoding("utf-8");
 	
 	/* session 유효성 검사
-	* session 값이 null이면 redirection. 리턴
+	* session 값이 null이면 redirection. return
 	*/
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
@@ -23,6 +24,20 @@
 	String loginId = null;
 	if(session.getAttribute("loginId") != null){
 		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	*/
+	
+	// IdListDao selectIdListOne(loginId) method
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
 	}
 	
 	/* 요청값 유효성 검사
@@ -40,8 +55,8 @@
 	int qNo = Integer.parseInt(request.getParameter("qNo"));
 	String qCategory = request.getParameter("qCategory");
 	// 디버깅코드
-	System.out.println(BG_YELLOW+BLUE+qNo+qNo+"<-- adminQnADetail.jsp qNo"+RESET);
-	System.out.println(BG_YELLOW+BLUE+qNo+qCategory+"<-- adminQnADetail.jsp qCategory"+RESET);
+	System.out.println(BG_YELLOW+BLUE+qNo+"<-- adminQnADetail.jsp qNo"+RESET);
+	System.out.println(BG_YELLOW+BLUE+qCategory+"<-- adminQnADetail.jsp qCategory"+RESET);
 	
 	AdminQuestionDao adminQuestionDao = new AdminQuestionDao();
 	
@@ -54,6 +69,7 @@
 	if(qCategory.equals("상품")){
 		question = adminQuestionDao.selectQuestionOne(qNo);
 		answerList = adminQuestionDao.selectAnswerList(qNo);
+		
 	} else{
 		boardQuestion = adminQuestionDao.selectBoardQuestionOne(qNo);
 		boardAnswerList = adminQuestionDao.selectBoardAnswerList(qNo);
@@ -65,6 +81,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 </head>
 <body>
 	<!-- 카테고리의 따라 상세페이지 내용 분기 -->
@@ -142,8 +159,7 @@
 						</tr>
 				<%		
 					}
-				%>
-				
+				%>		
 			</table>
 		</div>
 		
@@ -206,13 +222,14 @@
 			<h4>답변</h4>
 			<table>
 				<%
-					for(BoardAnswer boardAnswer : boardAnswerList){
+					for(BoardAnswer boardAnswer : boardAnswerList){			
 				%>
 						<tr>
 							<th><%=boardAnswer.getBoardANo()%></th>
 							<td>
-								<p><%=boardAnswer.getBoardAContent()%></p>
+								<textarea rows="2" cols="80" name="qContent"><%=boardAnswer.getBoardAContent()%></textarea>
 							</td>
+							
 						</tr>
 				<%		
 					}
@@ -221,8 +238,11 @@
 		</div>
 	<%		
 		}
-	%>
-	
-		
+	%>		
 </body>
+<!-- js -->
+<script>
+
+</script>
+
 </html>

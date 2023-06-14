@@ -1,26 +1,127 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="java.util.*"%>
-<%@page import="dao.*"%>
+<%@ page import="java.util.*"%>
+<%@ page import="dao.*"%>
+<%@ page import="vo.IdList"%>
 <%
+	// request 인코딩
 	request.setCharacterEncoding("utf-8");
 	
-	int beginRow = 0;
-	int rowPerPage = 10;
+	/* session 유효성 검사
+	* session 값이 null이면 redirection. return.
+	*/
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
 	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	*/
+	
+	// IdListDao selectIdListOne(loginId) method
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// categoryName : 카테고리명 받을 변수
 	String categoryName = "";
 	if(request.getParameter("categoryName") != null){
 		categoryName = request.getParameter("categoryName");
 		System.out.println(categoryName +"<--categoryName");
 	}
 	
+	// categoryList : <select> <option>에 사용할 카테고리 리스트
 	ArrayList<String> categoryList = new ArrayList<>();
 	categoryList.add("상품");
 	categoryList.add("교환환불");
 	categoryList.add("결제");
 	categoryList.add("기타");
 	
-	AdminQuestionDao dao = new AdminQuestionDao();
-	ArrayList<HashMap<String,Object>> qnaList = dao.adminQuestionListByPage(beginRow, rowPerPage, categoryName);
+	/* adminQnAList 페이징
+	* currentPage : 현재 페이지
+	* rowPerPage : 페이지당 출력할 행의 수
+	* beginRow : 시작 행번호
+	* totalRow : 전체 행의 수
+	* lastPage : 마지막 페이지를 담을 변수. totalRow(전체 행의 수) / rowPerPage(한 페이지에 출력되는 수)
+	* totalRow % rowPerPage의 나머지가 0이 아닌경우 lastPage +1을 해야한다.
+	*/
+	
+	int currentPage = 1;
+	
+	// currentPage 유효성 검사
+	if(request.getParameter("currentPage") != null){
+		currentPage = Integer.parseInt(request.getParameter("currentPage"));
+	}
+	System.out.println(currentPage + "<--adminQnAList.jsp currentPage");
+	
+	// AdminQuestionDao
+	AdminQuestionDao adminQuestionDao = new AdminQuestionDao();
+	
+	int rowPerPage = 10;
+	int beginRow = (currentPage-1)*rowPerPage;
+	int totalRow = adminQuestionDao.selectAdminQnAListCnt(categoryName);
+	int lastPage = totalRow / rowPerPage;
+	
+	if(totalRow % rowPerPage != 0){
+		lastPage +=1;
+	}
+	
+	/* 페이지 블럭
+	* currentBlock : 현재 페이지 블럭
+	* pageLength : 현제 페이지 블럭의 들어갈 페이지 수
+	* totalPage : 총 페이지 개수
+	* totalPage가 0이면 페이지가 없으므로 totalPage = 1페이지로
+	* startPage : 블럭의 시작 페이지 (currentBlock -1) * pageLength +1
+	* endPage : 블럭의 마지막 페이지 startPage + pageLength -1
+	* 맨 마지막 블럭에서는 끝지점에 도달하기 전에 페이지가 끝나기 때문에 아래와 같이 처리 
+	* if(endPage > totalPage){endPage = totalPage;}
+	*/
+	
+	int currentBlock = 0;
+	int pageLength = 5;
+	if(currentPage % pageLength == 0){
+		currentBlock = currentPage / pageLength;
+	}else{
+		currentBlock = (currentPage / pageLength) +1;	
+	}
+	System.out.println(currentBlock+"<--adminQnAList.jsp currentBlock");
+	
+	int totalPage = 0;
+	if(totalRow % rowPerPage == 0){
+		totalPage = totalRow / rowPerPage;
+			
+		if(totalPage == 0){
+				totalPage = 1;
+		}
+	} else{
+		totalPage = (totalRow / rowPerPage) +1;
+	} 
+	System.out.println(totalPage+"<--adminQnAList.jsp totalPage");
+	
+	int startPage = (currentBlock -1) * pageLength +1;
+	System.out.println(startPage+"<--adminQnAList.jsp startPage");
+	
+	int endPage = startPage + pageLength -1;
+	if(endPage > totalPage){
+		endPage = totalPage;
+	}
+	System.out.println(endPage+"<--adminQnAList.jsp endPage");
+	
+	/* 1페이지당 qnaList
+	 * AdminQuestionDao adminQuestionListByPage(beginRow, rowPerPage, categoryName) method 
+	*/
+	ArrayList<HashMap<String,Object>> qnaList = adminQuestionDao.adminQuestionListByPage(beginRow, rowPerPage, categoryName);
 %>
 <!doctype html>
 <html class="no-js" lang="">
