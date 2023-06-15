@@ -12,9 +12,13 @@
 	if(request.getParameter("currentPage") != null) {
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
+
+	int discountNo = 1;
+	int productNo = 1;
 	// sql 메서드들이 있는 클래스의 객체 생성
 	ProductDao pDao = new ProductDao();
 	DiscountDao dDao = new DiscountDao();
+	
 	// 전체 행의 수
 	int totalRow = pDao.selectProductCnt();
 	// 페이지 당 행의 수
@@ -27,39 +31,52 @@
 	if(totalRow % rowPerPage != 0) {
 		lastPage = lastPage + 1;
 	}
-	int discountNo = 1;
-	Discount d = dDao.selectDiscount(discountNo);
+	
 	
 	// 현재 페이지에 표시 할 리스트
 	ArrayList<HashMap<String, Object>> list = pDao.selectProductNoByPage(true, beginRow, rowPerPage);
-	
-	// 할인 적용을 위한 날짜 계산
-	
+	ArrayList<HashMap<String, Object>> dList = dDao.selectDiscount(beginRow, rowPerPage);
+	ArrayList<HashMap<String, Object>> dayList = pDao.selectProduct(productNo);
+	// 할인 적용을 위한 오늘 날짜 계산
 	Calendar today = Calendar.getInstance();
 	int todayYear = today.get(Calendar.YEAR);
 	int todayMonth = today.get(Calendar.MONTH);
 	int todayDate = today.get(Calendar.DATE);
-	System.out.print(todayYear );
-	System.out.print(todayMonth);
-	System.out.println(todayDate + SJ+ "<-- productList.jsp 오늘날짜 확인" + RE );
-	int dStartYear = Integer.parseInt(d.getDiscountStart().substring(0, 4));
-	int dStartMonth = Integer.parseInt(d.getDiscountStart().substring(5, 7));
-	int dStartDay = Integer.parseInt(d.getDiscountStart().substring(8, 10));
-	int dEndYear = Integer.parseInt(d.getDiscountEnd().substring(0, 4));
-	int dEndMonth = Integer.parseInt(d.getDiscountEnd().substring(5, 7));
-	int dEndDay = Integer.parseInt(d.getDiscountEnd().substring(8, 10));
-	//System.out.println(SJ+ dEndYear + RE );
-	//System.out.println(SJ+ dEndMonth + RE );
-	//System.out.println(SJ+ dEndDay + RE );
-	
-	// 할인율 코드 수정 필요
+	// 할인 날짜 적용을 위한 변수 선언
+	// 할인율 적용을 위한 변수 선언
 	double dRate = 1.0;
-	if((dStartYear >= todayYear && dStartMonth >= todayMonth&& dStartDay >= todayDate)
-		|| dEndYear >= todayYear && dEndMonth >= todayMonth&& dEndDay >= todayDate) {
-		dRate = (1.0-d.getDiscountRate());
-	} else if (dEndYear <= dStartYear && dEndMonth <= dStartMonth && dEndDay <= dStartDay) {
-		dRate = 1.0;
+
+	// 할인율, 날짜 적용을 위한 ArrayList 값 가져오기
+	// 수정 필요 분기 필요 
+	
+	int dStartYear = 0;
+	int dStartMonth = 0;
+	int dStartDay =0;
+	int dEndYear = 0;
+	int	dEndMonth = 0;
+	int	dEndDay = 0;
+	String productSaveFilename = null;
+	for(HashMap<String, Object> p : dList) {
+		if(p.get("discount_no") != null) {
+		dStartYear = Integer.parseInt((p.get("discountStart").toString()).substring(0, 4));
+		dStartMonth = Integer.parseInt((p.get("discountStart").toString()).substring(5, 7));
+		dStartDay = Integer.parseInt((p.get("discountStart").toString()).substring(8, 10));
+		dEndYear = Integer.parseInt((p.get("discountEnd").toString()).substring(0, 4));
+		dEndMonth = Integer.parseInt((p.get("discountEnd").toString()).substring(5, 7));
+		dEndDay = Integer.parseInt((p.get("discountEnd").toString()).substring(8, 10));
+		}
 	}
+	
+	System.out.println(SJ+productSaveFilename + RE );
+	System.out.print(SJ+todayYear );
+	System.out.print(todayMonth+1);
+	System.out.println(todayDate + "<-- productList.jsp 오늘날짜 확인" + RE );
+	
+	System.out.println(SJ+ dEndYear + RE );
+	System.out.println(SJ+ dEndMonth + RE );
+	System.out.println(SJ+ dEndDay + RE );
+	if((dStartYear >= todayYear && dStartMonth >= todayMonth&& dStartDay >= todayDate)
+			|| dEndYear >= todayYear && dEndMonth >= todayMonth&& dEndDay >= todayDate) 
 	
 	
 %>
@@ -70,33 +87,34 @@
 <title>관리자 상품리스트</title>
 </head>
 <body>
-<div class="container">
-	<h1>상품 리스트</h1>
-	<div class="d-grid">
-		<a href="<%=request.getContextPath()%>/product/insertProduct.jsp">
+<div>
+	<h1>관리페이지 : 상품 리스트</h1>
+	<div>
+		<a href="<%=request.getContextPath()%>/product/addProduct.jsp">
 			<button type="button" >추가</button>
 		</a>
 	</div>
 		<table >
 			<tr>
-				<th >no.</th>
+				<th >p no.</th>
 				<th >카테고리</th>
 				<th >이름</th>
 				<th >가격</th>
 				<th >할인율</th>
-				<th >할인가격</th>
+				<th >할인가</th>
 				<th >상태</th>
 				<th >재고</th>
-				<th >정보</th>
 				<th >등록일</th>
 				<th >수정일</th>
 			</tr>
 			<%
-				for(HashMap<String, Object> p : list) {
+				for(HashMap<String, Object> p : dList) {
+					// 할인 기간 확인을 위한 변수와 분기
+					
 			%>
 					<tr>
 						<td>
-							<a href="<%=request.getContextPath()%>/product/productList.jsp?p.productNo=<%=p.get("p.productNo")%>">
+							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dproductNo")%>&discountRate=<%=p.get("discountRate")%>">
 								<%=p.get("p.productNo")%>
 							</a>
 						</td>
@@ -105,40 +123,47 @@
 						<td><%=p.get("productPrice")%></td>
 						<td><!-- 할인율 유무에 따른 분기 -->
 							<%
-								if(Integer.parseInt(p.get("p.productNo").toString()) == d.getProductNo()) {
+								// 할인율
+								
 							%>
-									<%=dRate*100%> %
 							<%
-								} else {
-									dRate = 0.0;
+									if(p.get("p.productNo") == p.get("dProductNo")) {
 							%>
-									<%=dRate%>
+										<%=Double.parseDouble(p.get("discountRate").toString())*100%> %
+							<%			
+									} else {
+										
+							%>
+										<%=Double.parseDouble(p.get("discountRate").toString())%>
 							<%
-								}
+									}
+								 
 							%>
 						</td>
 						<td>
 							<%
-								if(Integer.parseInt(p.get("p.productNo").toString()) == d.getProductNo()) {
+								// 할인가
+									if(p.get("p.productNo") == p.get("dProductNo")) {
 							%>
-									<%=Double.parseDouble(p.get("productPrice").toString())*dRate%>
+										<%=Double.parseDouble(p.get("productPrice").toString())*(1-Double.parseDouble(p.get("discountRate").toString()))%>
 							<%
-								} else {
-									
+									} else {
+										
 							%>
-									<%=p.get("productPrice")%>
+										<%=p.get("productPrice")%>
 							<%
-								}
+									}
+								
+								
 							%>
 						</td>
 						<td><%=p.get("productStatus")%></td>
 						<td><%=p.get("productStock")%></td>
-						<td><%=p.get("productInfo")%></td>
 						<td><%=p.get("p.createdate")%></td>
 						<td><%=p.get("p.updatedate")%></td>
 						<td>
 							<div >
-								<a href="<%=request.getContextPath()%>/product/productRemoveAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
+								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
 									<button type="button">삭제</button>
 								</a>
 							</div>

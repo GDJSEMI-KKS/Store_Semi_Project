@@ -23,7 +23,7 @@
 	int row = pDao.deleteProduct(productNo);
 	
 	if(row == 1){
-		System.out.println(SJ + "과목 삭제 성공" + RE);
+		System.out.println(SJ + "상품 삭제 성공" + RE);
 	}
 	// subjectList.jsp으로
 	response.sendRedirect(request.getContextPath() + "/product/productList.jsp");

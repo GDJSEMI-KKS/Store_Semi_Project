@@ -1,14 +1,9 @@
 package dao;
 
-import java.io.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.oreilly.servlet.MultipartRequest;
-import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import util.DBUtil;
 import vo.*;
@@ -70,120 +65,129 @@ public class ProductDao {
 		}
 		return list;
 	}
-	// 관리자 상품 이미지 삽입
-	public int insertProductImg(HttpServletRequest request,ProductImg productImg) throws Exception {
-		if(productImg == null) {
-			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao insertProductImg메서드" + RE);
-			return 0;
+	// 관리자 상품 삽입
+	public int insertProduct(Product product, ProductImg productImg) throws Exception {
+		if(product == null) {
+		System.out.println(SJ +"잘못된 매개변수	<-- ProductDao insertProduct메서드"+RE);
+		return 0;
 		}
-		// sql 실행시 영향받은 행의 수 
+		DBUtil dbutil = new DBUtil();
+		Connection conn = dbutil.getConnection();
 		int row = 0;
-		// db 접속
-		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
 		
-		String dir = request.getServletContext().getRealPath("/product/productImg");
-		System.out.println(dir);
-		int max = 10 * 1024 * 1024; 
-		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
-		String productFiletype = mRequest.getContentType("boardFile");
-		String productOriFilename = mRequest.getOriginalFileName("boardFile");
-		String productSaveFileName = mRequest.getFilesystemName("boardFile");
-		int productNo = productImg.getProductNo();
-		System.out.println(SJ + productFiletype + " <-- insert productFiletype" + RE);
-		System.out.println(SJ + productOriFilename + " <-- insert productOriFilename"+ RE);
-		System.out.println(SJ + productSaveFileName + " <-- insert productSaveFileName"+ RE);
-		System.out.println(SJ + productNo + " <-- insert productNo"+RE);
-		/*
-		 INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) \r\n"
-				+ "VALUES(?, ?, ?, ?, NOW(), NOW())
+		/* product 추가 쿼리
+		 	INSERT INTO product(category_name, product_name, product_price, product_status, product_stock, product_info, createdate, updatedate) VALUES(?, ?, ?, ?, ?, ?, now(),now())
+		
 		 */
-		String sql = "INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) \r\n"
-				+ "VALUES(?, ?, ?, ?, NOW(), NOW())";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, productImg.getProductNo());
-		stmt.setString(2, productOriFilename);
-		stmt.setString(3, productSaveFileName);
-		stmt.setString(4, productFiletype);
-		row = stmt.executeUpdate(); // board_file 입력
+		String productSql="INSERT INTO product(category_name, product_name, product_price, product_status, product_stock, product_info, product_sum_cnt, createdate, updatedate) VALUES(?, ?, ?, ?, ?, ?, ?, now(),now())";
+		PreparedStatement productStmt = conn.prepareStatement(productSql, PreparedStatement.RETURN_GENERATED_KEYS);
+		productStmt.setString(1, product.getCategoryName());
+		productStmt.setString(2, product.getProductName());
+		productStmt.setInt(3, product.getProductPrice());
+		productStmt.setString(4, product.getProductStatus());
+		productStmt.setInt(5, product.getProductStock());
+		productStmt.setString(6, product.getProductInfo());
+		productStmt.setInt(7, 0);
+		productStmt.executeUpdate();
+		// 생성된 키값 자동으로받아옴
+		ResultSet keyRs = productStmt.getGeneratedKeys();
+		int productNo = 0;
+		if(keyRs.next()) {
+			productNo = keyRs.getInt(1);
+		}
+		
+		System.out.println(SJ+ productStmt + "<-- ProductDao productStmt" + RE);
+		
+		/* productImg 추가 쿼리
+		  INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate)
+		  VALUES(?, ?, ?, ?, now(), now())
+		 */
+		String productImgSql="INSERT INTO product_img(product_no, product_ori_filename, product_save_filename, product_filetype, createdate, updatedate) VALUES(?, ?, ?, ?, now(), now())";
+		PreparedStatement productImgStmt = conn.prepareStatement(productImgSql);
+		productImgStmt.setInt(1, productNo);
+		productImgStmt.setString(2, productImg.getProductOriFilename());
+		productImgStmt.setString(3, productImg.getProductSaveFileName());
+		productImgStmt.setString(4, productImg.getProductFiletype());
+		row = productImgStmt.executeUpdate();
+		
+		System.out.println(SJ+ productImgStmt + "<-- ProductDao productImgStmt"+RE);
 		return row;
+		
 	}
-	// 관리자 상품 이미지 수정
-	public int updateProductImg(HttpServletRequest request, ProductImg productImg) throws Exception {
-		if(productImg == null) {
-			System.out.println(SJ + "잘못된 매개변수	<-- ProductDao updateProductImg메서드"+RE);
+	// 관리자 상품 수정
+	public int updateProduct(HashMap<String, Object> map) throws Exception {
+		// 매개변수값 유효성 검사
+		if(map == null || map.get("product") == null) {
+			System.out.println("입력값 확인");
 			return 0;
 		}
-		// sql 실행시 영향받은 행의 수 
+		
+		//매개변수값 저장
+		Product product = (Product)map.get("product");
+			
+		// 결과 값을 저장해줄 int타입 변수 선언
 		int row = 0;
-		// db 접속
+		
+		// Connection 가져오기
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String dir = request.getServletContext().getRealPath("/upload");
-		System.out.println(dir);
-		int max = 10 * 1024 * 1024; 
-		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
+		// product_no에 해당하는 product데이터를 수정하는 쿼리
+		String productSql = "update product set category_name = ?, product_name = ?, product_price = ?, product_status = ?, product_info = ?, product_stock = ?, updatedate = now() where product_no = ?";
+		PreparedStatement productStmt = conn.prepareStatement(productSql);
 		
-		int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
-		// 이전 File 삭제, 새로운 File추가 테이블을 수정 
-		if(mRequest.getOriginalFileName("boardFile") != null) {
-			// 수정할 파일이 있으면
-			// JPED 파일 유효성 검사, 아니면 새로 업로드 한 파일을 삭제
-			if(mRequest.getContentType("boardFile").equals("application/jpeg") == false) {
-				System.out.println(SJ + "JPG파일이 아닙니다"+RE);
-				String saveFilename = mRequest.getFilesystemName("boardFile");
-				File f = new File(dir+"/"+saveFilename);
-				if(f.exists()) {
-					f.delete();
-					System.out.println(SJ+saveFilename+"파일삭제"+RE);
-				}
-			} else { 
-				// PDF파일이면  
-				// 1) 이전 파일(saveFilename) 삭제
-				// 2) db수정(update)
-				String productFiletype = mRequest.getContentType("boardFile");
-				String productOriFilename = mRequest.getOriginalFileName("boardFile");
-				String productSaveFileName = mRequest.getFilesystemName("boardFile");
-				
-				ProductImg file = new ProductImg();
-				file.setProductNo(productNo);
-				file.setProductFiletype(productFiletype);
-				file.setProductOriFilename(productOriFilename);
-				file.setProductSaveFileName(productSaveFileName);
-				
-				// 1) 이전파일 삭제
-				String saveFilenameSql = "SELECT product_save_filename FROM product_img WHERE product_no=?";
-				PreparedStatement saveFilenameStmt = conn.prepareStatement(saveFilenameSql);
-				saveFilenameStmt.setInt(1, file.getProductNo());
-				ResultSet saveFilenameRs = saveFilenameStmt.executeQuery();
-				String preSaveFilename = "";
-				if(saveFilenameRs.next()) {
-					preSaveFilename = saveFilenameRs.getString("save_filename");
-				}
-				File f = new File(dir+"/"+preSaveFilename);
-				if(f.exists()) {
-					f.delete();
-				}
-				// 2) 수정된 파일의 정보로 db를 수정
-				/*
-					UPDATE product_img 
-					SET product_ori_filename=?, product_save_filename=? 
-					WHERE product_no=?
-				*/
-				String boardFileSql = "UPDATE product_img SET product_ori_filename=?, product_save_filename=? WHERE product_no=?";
-				PreparedStatement boardFileStmt = conn.prepareStatement(boardFileSql);
-				boardFileStmt.setString(1, productOriFilename);
-				boardFileStmt.setString(2, productSaveFileName);
-				boardFileStmt.setInt(3, productNo);
-				row = boardFileStmt.executeUpdate();
-			}
+		// ?값 세팅
+		productStmt.setString(1, product.getCategoryName());
+		productStmt.setString(2, product.getProductName());
+		productStmt.setInt(3, product.getProductPrice());
+		productStmt.setString(4, product.getProductStatus());
+		productStmt.setString(5, product.getProductInfo());
+		productStmt.setInt(6, product.getProductStock());
+		productStmt.setInt(7, product.getProductNo());
+		
+		// 쿼리 실행 후 영향받은 행 저장
+		row = productStmt.executeUpdate();
+		
+		// productImg가 안들어왔으면 리턴
+		if(map.get("productImg") == null) {
+			return row;
 		}
+		
+
+		ProductImg productImg = (ProductImg)map.get("productImg");
+		
+		// product_img를 수정하는 쿼리
+		String productImgSql = "update product_img set product_ori_filename = ?, product_save_filename = ?, product_filetype = ?, updatedate = now() where product_no = ?";
+		PreparedStatement productImgStmt = conn.prepareStatement(productImgSql);
+		
+		// ?값 세팅
+		productImgStmt.setString(1, productImg.getProductOriFilename());
+		productImgStmt.setString(2, productImg.getProductSaveFileName());
+		productImgStmt.setString(3, productImg.getProductFiletype());
+		productImgStmt.setInt(4, productImg.getProductNo());
+		
+		row += productImgStmt.executeUpdate();
+		// productImg가 안들어왔으면 리턴
+		if(map.get("discount") == null) {
+			return row;
+		}
+		
+		// 할인율
+		Discount discount = (Discount)map.get("discount");
+		
+		String discountSql ="UPDATE discount SET  discount_start = ?, discount_end = ?, discount_rate = ?, updatedate = NOW() WHERE product_no = ?";
+		PreparedStatement discountStmt = conn.prepareStatement(discountSql);
+		discountStmt.setString(1, discount.getDiscountStart());
+		discountStmt.setString(2, discount.getDiscountEnd());
+		discountStmt.setDouble(3, discount.getDiscountRate());
+		discountStmt.setInt(4, discount.getProductNo());
+		row = discountStmt.executeUpdate();
+		
 		
 		return row;
 	}
 	// 관리자 상품 이미지 삭제
-	public int deleteProductImg(HttpServletRequest request, ProductImg productImg) throws Exception {
+	public int deleteProductImg(ProductImg productImg) throws Exception {
 		if(productImg == null) {
 			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao deleteProductImg메서드"+RE);
 			return 0;
@@ -194,31 +198,10 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String dir =  request.getServletContext().getRealPath("/upload");
-		System.out.println(SJ +dir+RE);
-		int max = 10 * 1024 * 1024; 
-		MultipartRequest mRequest = new MultipartRequest((HttpServletRequest) request, dir, max, "utf-8", new DefaultFileRenamePolicy());
-		int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
-		String productSaveFileName = mRequest.getFilesystemName("boardFile");
-		System.out.println(SJ +productSaveFileName + " <-- delete productSaveFileName"+RE);
-		System.out.println(SJ +productNo + " <-- delete productNo"+RE);
-		if (mRequest.getParameter("productNo") == null){
-			
-			return 0;
-		}
-		String saveFilename = mRequest.getParameter("saveFilename");
-		
-		// 파일 삭제
-		
-		File f = new File(dir + "/" + saveFilename);
-		if (f.exists()){
-			f.delete();
-			System.out.println(saveFilename + "파일삭제");
-		}
 		
 		String delBoardSql = "DELETE FROM product_img WHERE product_no = ?";
 	    PreparedStatement delBoardStmt = conn.prepareStatement(delBoardSql);
-	    delBoardStmt.setInt(1, productNo);
+	    delBoardStmt.setInt(1, productImg.getProductNo());
 		System.out.println(SJ +delBoardStmt + "<--- stmt deleteProductImg"+RE);
 		
 	    int delRow = delBoardStmt.executeUpdate();
@@ -231,68 +214,7 @@ public class ProductDao {
 	    }
 		return row;
 	}
-	// 관리자 상품 상세보기 : 내용 수정
-	public int updateProduct(Product product) throws Exception {
-		if(product == null) {
-			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao updateProduct메서드"+RE);
-			return 0;
-		}
-		
-		// sql 실행시 영향받은 행의 수 
-		int row = 0;
-		// db 접속
-		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
-		// sql 전송 후 결과셋 반환받아 저장
-		/*
-		UPDATE product 
-		SET category_name = ?, product_name = ?, product_price = ?, product_status = ?, product_stock = ?, updatedate = NOW()
-		WHERE product_no = ?
-		 */
-		String sql = "UPDATE product \r\n"
-				+ "SET category_name = ?, product_name = ?, product_price = ?, product_status = ?, product_stock = ?, updatedate = NOW()\r\n"
-				+ "WHERE product_no = ?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, product.getCategoryName());
-		stmt.setString(2, product.getProductName());
-		stmt.setInt(3, product.getProductPrice());
-		stmt.setString(4, product.getProductStatus());
-		stmt.setInt(5, product.getProductStock());
-		stmt.setInt(6, product.getProductNo());
-		row = stmt.executeUpdate();
-		return row;
-	}
-	// 관리자 상품 삽입
-	public int insertProduct(Product product) throws Exception {
-		if(product == null) {
-			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao insertProduct메서드"+RE);
-			return 0;
-		}
-			
-			// sql 실행시 영향받은 행의 수 
-		int row = 0;
-		// db 접속
-		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
-		// sql 전송 후 결과셋 반환받아 저장
-		/*
-		INSERT INTO product (category_name, product_name, product_price, product_status, product_stock, product_info, product_sum_cnt, createdate, updatedate) \r\n"
-				+ "VALUES(?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-		 */
-		// 물음표 7개
-		String sql = "INSERT INTO product (category_name, product_name, product_price, product_status, product_stock, product_info, product_sum_cnt, createdate, updatedate) \r\n"
-				+ "VALUES(?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, product.getCategoryName());
-		stmt.setString(2, product.getProductName());
-		stmt.setInt(3, product.getProductPrice());
-		stmt.setString(4, product.getProductStatus());
-		stmt.setInt(5, product.getProductStock());
-		stmt.setString(5, product.getProductInfo());
-		stmt.setInt(6, product.getProductSumCnt());
-		row = stmt.executeUpdate();
-		return row;
-	}
+	
 	// 관리자 상품 삭제
 	public int deleteProduct(int productNo) throws Exception {
 		if(productNo == 0) {
@@ -338,10 +260,11 @@ public class ProductDao {
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 저장
 		/*
-		SELECT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, 
+		SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, 
 		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, 
 		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,
-		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate
+		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,
+		discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate
 		FROM product p
 		LEFT OUTER JOIN product_img pim
 		ON p.product_no = pim.product_no
@@ -351,12 +274,15 @@ public class ProductDao {
 		ON p.product_no = o.product_no
 		LEFT OUTER JOIN review_img rim
 		ON r.order_no = rim.order_no
+		LEFT OUTER JOIN discount d 
+		ON p.product_no = d.product_no
 		WHERE p.product_no = ?
 		 */
-		String sql = "SELECT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, \r\n"
+		String sql = "SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, \r\n"
 				+ "		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, \r\n"
 				+ "		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,\r\n"
-				+ "		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate\r\n"
+				+ "		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,\r\n"
+				+ "		discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
 				+ "		ON p.product_no = pim.product_no\r\n"
@@ -366,6 +292,8 @@ public class ProductDao {
 				+ "		ON p.product_no = o.product_no\r\n"
 				+ "		LEFT OUTER JOIN review_img rim\r\n"
 				+ "		ON r.order_no = rim.order_no\r\n"
+				+ "		LEFT OUTER JOIN discount d \r\n"
+				+ "		ON p.product_no = d.product_no\r\n"
 				+ "		WHERE p.product_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, productNo);
@@ -397,12 +325,17 @@ public class ProductDao {
 			m.put("r.createdate",rs.getString("r.createdate"));
 			m.put("r.updatedate",rs.getString("r.updatedate"));
 			
-			m.put("rim.orderno",rs.getInt("rim.orderno"));
 			m.put("reviewOriFilename",rs.getString("reviewOriFilename"));
 			m.put("reviewSaveFilename",rs.getString("reviewSaveFilename"));
 			m.put("reviewFiletype",rs.getString("reviewFiletype"));
 			m.put("rim.createdate",rs.getString("rim.createdate"));
 			m.put("rim.updatedate",rs.getString("rim.updatedate"));
+			
+			m.put("discountNo",rs.getInt("discountNo"));
+			m.put("dProductNo",rs.getInt("dProductNo"));
+			m.put("discountStart",rs.getString("discountStart"));
+			m.put("discountEnd",rs.getString("discountEnd"));
+			m.put("discountRate",rs.getDouble("discountRate"));
 			list.add(m);
 		}
 		return list;
@@ -461,6 +394,12 @@ public class ProductDao {
 			m.put("productFiletype",rs.getString("productFiletype"));
 			m.put("pim.createdate",rs.getString("pim.createdate"));
 			m.put("pim.updatedate",rs.getString("pim.updatedate"));
+			
+			m.put("discountNo",rs.getInt("discountNo"));
+			m.put("dProductNo",rs.getInt("dProductNo"));
+			m.put("discountStart",rs.getString("discountStart"));
+			m.put("discountEnd",rs.getString("discountEnd"));
+			m.put("discountRate",rs.getDouble("discountRate"));
 			list.add(m);
 		}
 		return list;
@@ -481,21 +420,27 @@ public class ProductDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, product_sum_cnt productSumCnt, p.createdate, p.updatedate,\r\n"
-				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
-				+ "		 FROM product p\r\n"
-				+ "	 	 LEFT OUTER JOIN product_img pim\r\n"
-				+ "		 ON p.product_no = pim.product_no\r\n"
-				+ "		 ORDER BY productNo"+" " + orderby + " " + "\r\n"
-				+ "		 LIMIT ?, ? ";
+		String sql = "SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,\r\n"
+				+ "				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,\r\n"
+				+ "				discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate\r\n"
+				+ "		FROM product p\r\n"
+				+ "	 	LEFT OUTER JOIN product_img pim\r\n"
+				+ "		ON p.product_no = pim.product_no\r\n"
+				+ "		LEFT OUTER JOIN discount d \r\n"
+				+ "	    ON p.product_no = d.product_no\r\n"
+				+ "		ORDER BY productNo "+" " + orderby + " " + "\r\n"
+				+ "		LIMIT ?, ? ";
 		/*
-		 SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,
-				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate
-		 FROM product p
-	 	 LEFT OUTER JOIN product_img pim
-		 ON p.product_no = pim.product_no
-		 ORDER BY productNo "+" " + orderby + " " + "
-		 LIMIT ?, ? 
+		SELECT p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_stock productStock, product_status productStatus, p.createdate, p.updatedate,
+				pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,
+				discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate
+		FROM product p
+	 	LEFT OUTER JOIN product_img pim
+		ON p.product_no = pim.product_no
+		LEFT OUTER JOIN discount d 
+	    ON p.product_no = d.product_no
+		ORDER BY productNo "+" " + orderby + " " + "
+		LIMIT ?, ? 
 		 */
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, beginRow);
@@ -510,7 +455,6 @@ public class ProductDao {
 			m.put("productPrice",rs.getInt("productPrice"));
 			m.put("productStock",rs.getInt("productStock"));
 			m.put("productStatus",rs.getString("productStatus"));
-			m.put("productSumCnt",rs.getInt("productSumCnt"));
 			m.put("p.createdate",rs.getString("p.createdate"));
 			m.put("p.updatedate",rs.getString("p.updatedate"));
 			
@@ -519,6 +463,12 @@ public class ProductDao {
 			m.put("productFiletype",rs.getString("productFiletype"));
 			m.put("pim.createdate",rs.getString("pim.createdate"));
 			m.put("pim.updatedate",rs.getString("pim.updatedate"));
+			
+			m.put("discountNo",rs.getInt("discountNo"));
+			m.put("dProductNo",rs.getInt("dProductNo"));
+			m.put("discountStart",rs.getString("discountStart"));
+			m.put("discountEnd",rs.getString("discountEnd"));
+			m.put("discountRate",rs.getDouble("discountRate"));
 			list.add(m);
 		}
 		return list;

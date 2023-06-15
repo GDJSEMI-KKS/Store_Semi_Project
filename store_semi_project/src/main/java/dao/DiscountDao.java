@@ -1,8 +1,11 @@
 package dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import util.DBUtil;
 import vo.Discount;
@@ -10,40 +13,109 @@ import vo.Discount;
 public class DiscountDao {
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
-	// 할인율 조회
-	public Discount selectDiscount(int discountNo) throws Exception {
-		if(discountNo == 0) {
+	
+	// 할인율 리스트 
+	public  ArrayList<HashMap<String, Object>> selectDiscount(int beginRow, int rowPerPage) throws Exception {
+		if(rowPerPage == 0) {
 			System.out.println(SJ +"잘못된 매개변수	<-- DiscountDao selectDiscount메서드" + RE);
 			return null;
 		}
-	Discount discount = null;
 	// db 접속
 	DBUtil dbUtil = new DBUtil();
 	Connection conn = dbUtil.getConnection();
 	// sql 전송 후 결과셋 반환받아 저장
 	/*
-	SELECT discount_no discountNo, product_no productNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate, createdate, updatedate
-	FROM discount
-	WHERE discount_no = ?
+	SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,
+	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate
+	FROM product p
+	LEFT OUTER JOIN discount d 
+	ON p.product_no = d.product_no
+	ORDER BY p.product_no asc
+	LIMIT ?, ?
+	
 	 */
-	String sql = "SELECT discount_no discountNo, product_no productNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate, createdate, updatedate\r\n"
-			+ "	FROM discount\r\n"
-			+ "	WHERE discount_no = ?";
+	String sql = "SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,\r\n"
+			+ "	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate\r\n"
+			+ "	FROM product p\r\n"
+			+ "	LEFT OUTER JOIN discount d \r\n"
+			+ "	ON p.product_no = d.product_no\r\n"
+			+ "	ORDER BY p.product_no asc\r\n"
+			+ "	LIMIT ?, ?";
 	PreparedStatement stmt = conn.prepareStatement(sql);
-	stmt.setInt(1, discountNo);
+	stmt.setInt(1, beginRow);
+	stmt.setInt(2, rowPerPage);
 	ResultSet rs = stmt.executeQuery();
-	if(rs.next()) {
-		discount = new Discount();
-		discount.setDiscountNo(rs.getInt("discountNo"));
-		discount.setProductNo(rs.getInt("productNo"));
-		discount.setDiscountStart(rs.getString("discountStart"));
-		discount.setDiscountEnd(rs.getString("discountEnd"));
-		discount.setDiscountRate(rs.getDouble("discountRate"));
-		discount.setCreatedate(rs.getString("createdate"));
-		discount.setUpdatedate(rs.getString("updatedate"));
+	ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+	while(rs.next()) {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("p.productNo",rs.getInt("p.productNo"));
+		m.put("categoryName",rs.getString("categoryName"));
+		m.put("productName",rs.getString("productName"));
+		m.put("productPrice",rs.getInt("productPrice"));
+		m.put("productStock",rs.getInt("productStock"));
+		m.put("productStatus",rs.getString("productStatus"));
+		m.put("productSumCnt",rs.getInt("productSumCnt"));
+		m.put("p.createdate",rs.getString("p.createdate"));
+		m.put("p.updatedate",rs.getString("p.updatedate"));
+		
+		m.put("discountNo",rs.getInt("discountNo"));
+		m.put("dProductNo",rs.getInt("dProductNo"));
+		m.put("discountStart",rs.getString("discountStart"));
+		m.put("discountEnd",rs.getString("discountEnd"));
+		m.put("discountRate",rs.getDouble("discountRate"));
+		list.add(m);
 	}
-	return discount;
+	return list;
 	}
+	// 할인 적용된 product 조회
+	public  ArrayList<HashMap<String, Object>> selectDiscountProduct(int productNo) throws Exception {
+		if(productNo == 0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- DiscountDao selectDiscountProduct메서드" + RE);
+			return null;
+		}
+	// db 접속
+	DBUtil dbUtil = new DBUtil();
+	Connection conn = dbUtil.getConnection();
+	// sql 전송 후 결과셋 반환받아 저장
+	/*
+	SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,
+	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate
+	FROM discount d
+	LEFT OUTER JOIN product p
+	ON d.product_no = p.product_no
+	WHERE DATEDIFF(discount_end, discount_start) >0
+	 */
+	String sql = "SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,\r\n"
+			+ "	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate\r\n"
+			+ "FROM discount d\r\n"
+			+ "LEFT OUTER JOIN product p\r\n"
+			+ "ON d.product_no = p.product_no\r\n"
+			+ "WHERE DATEDIFF(discount_end, discount_start) >0";
+	PreparedStatement stmt = conn.prepareStatement(sql);
+	ResultSet rs = stmt.executeQuery();
+	ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+	while(rs.next()) {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("p.productNo",rs.getInt("p.productNo"));
+		m.put("categoryName",rs.getString("categoryName"));
+		m.put("productName",rs.getString("productName"));
+		m.put("productPrice",rs.getInt("productPrice"));
+		m.put("productStock",rs.getInt("productStock"));
+		m.put("productStatus",rs.getString("productStatus"));
+		m.put("productSumCnt",rs.getInt("productSumCnt"));
+		m.put("p.createdate",rs.getString("p.createdate"));
+		m.put("p.updatedate",rs.getString("p.updatedate"));
+		
+		m.put("discountNo",rs.getInt("discountNo"));
+		m.put("dProductNo",rs.getInt("dProductNo"));
+		m.put("discountStart",rs.getString("discountStart"));
+		m.put("discountEnd",rs.getString("discountEnd"));
+		m.put("discountRate",rs.getDouble("discountRate"));
+		list.add(m);
+	}
+	return list;
+	}
+
 	// 할인율 삽입
 	public int insertDiscount(Discount discount) throws Exception {
 		if(discount == null) {
