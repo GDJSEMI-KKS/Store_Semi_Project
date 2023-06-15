@@ -3,6 +3,7 @@ package dao;
 import util.DBUtil;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import vo.*;
 
@@ -24,7 +25,7 @@ public class BoardQuestionDao {
 	 * String columnName : columnName.equals()
 	*/
 	
-	public ArrayList<BoardQuestion> selectBoardQuestionByPage
+	public ArrayList<HashMap<String, Object>> selectBoardQuestionByPage
 	(int beginRow, int rowPerPage, String searchWord, String columnName) throws Exception{
 		
 		DBUtil dbUtil = new DBUtil();
@@ -35,21 +36,30 @@ public class BoardQuestionDao {
 		
 		if(searchWord.equals("")) { // 1. 전체 조회
 			
-			sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
-				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
-				+ "FROM board_question "
-				+ "ORDER BY createdate DESC";
+			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "ORDER BY createdate DESC LIMIT 0, 10";
 			
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1,beginRow);
 			stmt.setInt(2,rowPerPage);
 			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 1.stmt"+RESET);
+			
 		} else if(searchWord.equals("") == false && columnName.equals("titleContent")){ // 2. 제목+내용, searchWord
 			
-			sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
-				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
-				+ "FROM board_question "
-				+ "WHERE board_q_title LIKE ? or board_q_content LIKE ? "
+			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQTitle LIKE ? or boardQContent LIKE ? "
 				+ "ORDER BY createdate DESC LIMIT ?, ?";
 			
 			stmt = conn.prepareStatement(sql);
@@ -61,10 +71,14 @@ public class BoardQuestionDao {
 			
 		} else if(searchWord.equals("") == false && columnName.equals("title")) { // 3. 제목, searchWord
 			
-			sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
-				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
-				+ "FROM board_question "
-				+ "WHERE board_q_title LIKE ?"
+			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQTitle LIKE ? "
 				+ "ORDER BY createdate DESC LIMIT ?, ?";
 			
 			stmt = conn.prepareStatement(sql);
@@ -75,10 +89,14 @@ public class BoardQuestionDao {
 			
 		} else if(searchWord.equals("") == false && columnName.equals("content")) { // 4. 내용, searchWord
 			
-			sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
-				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
-				+ "FROM board_question "
-				+ "WHERE board_q_content LIKE ? "
+			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQContent LIKE ? "
 				+ "ORDER BY createdate DESC LIMIT ?, ?";
 			
 			stmt = conn.prepareStatement(sql);
@@ -89,9 +107,13 @@ public class BoardQuestionDao {
 			
 		} else if(searchWord.equals("") == false && columnName.equals("id")) { // 5. 작성자, searchWord
 			
-			sql = "SELECT board_q_no boardQNo, id, board_q_category boardQCategory, board_q_title boardQTitle, "
-				+ "board_q_content boardQContent, board_q_check_cnt boardQCheckCnt, createdate, updatedate "
-				+ "FROM board_question "
+			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
 				+ "WHERE id LIKE ? "
 				+ "ORDER BY createdate DESC LIMIT ?, ?";
 			
@@ -104,20 +126,20 @@ public class BoardQuestionDao {
 		
 		ResultSet rs = stmt.executeQuery();
 		
-		ArrayList<BoardQuestion> list = new ArrayList<>();
+		ArrayList<HashMap<String,Object>> list = new ArrayList<>();
 		while(rs.next()) {
-			BoardQuestion bq = new BoardQuestion();
-			bq.setBoardQNo(rs.getInt("boardQNo"));
-			bq.setId(rs.getString("id"));
-			bq.setBoardQCategory(rs.getString("boardQCategory"));
-			bq.setBoardQTitle(rs.getString("boardQTitle"));
-			bq.setBoardQContent(rs.getString("boardQContent"));
-			bq.setBoardQCheckCnt(rs.getInt("boardQCheckCnt"));
-			bq.setCreatedate(rs.getString("createdate"));
-			bq.setUpdatedate(rs.getString("updatedate"));
-			list.add(bq);
+			HashMap<String, Object> m = new HashMap<>();
+			m.put("boardQNo", rs.getInt("boardQNo"));
+			m.put("id", rs.getString("id"));
+			m.put("boardQCategory", rs.getString("boardQCategory"));
+			m.put("boardQTitle", rs.getString("boardQTitle"));
+			m.put("boardQContent", rs.getString("boardQContent"));
+			m.put("boardQCheckCnt", rs.getInt("boardQCheckCnt"));
+			m.put("createdate", rs.getString("createdate"));
+			m.put("updatedate", rs.getString("updatedate"));
+			m.put("boardANoCnt", rs.getInt("boardANoCnt"));
+			list.add(m);
 		}
-		
 		return list;
 	}
 	
@@ -221,4 +243,119 @@ public class BoardQuestionDao {
 		
 	}
 	
+	/* 출력되는 전체 행의 수(boardQuestionList)
+	 * 1. 전체 조회 (searchWord.equals(""))
+	 * 2. 제목+내용, searchWord (searchWord.equals("") == false && columnName.equals("titleContent"))
+	 * 3. 제목, searchWord (searchWord.equals("") == false && columnName.equals("title"))
+	 * 4. 내용, searchWord (searchWord.equals("") == false && columnName.equals("content"))
+	 * 5. 작성자, searchWord (searchWord.equals("") == false && columnName.equals("id"))
+	*/
+	
+	public int selectBoardQuestionListCnt(String searchWord, String columnName) throws Exception {
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = null;
+		PreparedStatement stmt = null;
+		
+		if(searchWord.equals("")) { // 1. 전체 조회
+			
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "ORDER BY createdate DESC)totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 1.stmt"+RESET);
+			
+		} else if(searchWord.equals("") == false && columnName.equals("titleContent")){ // 2. 제목+내용, searchWord
+			
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQTitle LIKE ? OR boardQContent LIKE ?"
+				+ "ORDER BY createdate DESC)totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "%"+searchWord+"%");
+			stmt.setString(2, "%"+searchWord+"%");
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 2.stmt"+RESET);
+			
+		} else if(searchWord.equals("") == false && columnName.equals("title")) { // 3. 제목, searchWord
+			
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQTitle LIKE ? "
+				+ "ORDER BY createdate DESC)totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "%"+searchWord+"%");
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 3.stmt"+RESET);
+			
+		} else if(searchWord.equals("") == false && columnName.equals("content")) { // 4. 내용, searchWord
+			
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE boardQContent LIKE ? "
+				+ "ORDER BY createdate DESC)totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "%"+searchWord+"%");
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 4.stmt"+RESET);
+			
+		} else if(searchWord.equals("") == false && columnName.equals("id")) { // 5. 작성자, searchWord
+			
+			sql = "SELECT COUNT(*) "
+				+ "FROM "
+				+ "(SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt "
+				+ "FROM "
+				+ "(SELECT bq.board_q_no boardQNo, bq.id, bq.board_q_category boardQCategory, bq.board_q_title boardQTitle, bq.board_q_content boardQContent, "
+				+ "bq.board_q_check_cnt boardQCheckCnt, bq.createdate createdate, bq.updatedate updatedate, count(ba.board_a_no) boardANoCnt "
+				+ "FROM board_question bq left OUTER JOIN board_answer ba "
+				+ "ON bq.board_q_no = ba.board_q_no "
+				+ "GROUP BY boardQNo) qna "
+				+ "WHERE id LIKE ? "
+				+ "ORDER BY createdate DESC)totalRow";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "%"+searchWord+"%");
+			System.out.println(BG_YELLOW+BLUE+stmt +"<--BoardQuestionDao 5.stmt"+RESET);	
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		int totalRow = 0;
+		if(rs.next()) {
+			totalRow = rs.getInt(1);
+		}
+		
+		return totalRow;
+	}
 }
