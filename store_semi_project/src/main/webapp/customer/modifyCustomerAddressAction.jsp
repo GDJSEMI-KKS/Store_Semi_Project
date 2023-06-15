@@ -8,10 +8,10 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
+	//로그인 세션 유효성 검사: 로그아웃 상태면 로그인창으로 리다이렉션
 	/* if(session.getAttribute("loginId") == null){
 		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "removeCustomerAddressAction 로그인되어있지 않아 리다이렉션" + RESET);
+		System.out.println(KMJ + "removeCustomerAddressAction 로그인필요" + RESET);
 		return;
 	}
 	String loginId = session.getAttribute(KMJ + "loginId" + " <--modifyCustomerAddressAction loginId" + RESET);*/
@@ -26,7 +26,7 @@
 	System.out.println(KMJ + request.getParameter("add") + " <--modifyCustomerAddressAction param add" + RESET);
 	System.out.println(KMJ + request.getParameter("addDefault") + " <--modifyCustomerAddressAction param addDefault" + RESET);
 	
-	String loginId = "user1";
+	String loginId = "user1"; //테스트용 삭제예정
 	
 	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
 	if(request.getParameter("id") == null || request.getParameter("addNo") == null

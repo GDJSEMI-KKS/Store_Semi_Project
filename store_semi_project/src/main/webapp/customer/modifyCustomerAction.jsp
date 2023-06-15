@@ -8,10 +8,10 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
+	//로그인 세션 유효성 검사: 로그아웃 상태면 로그인창으로 리다이렉션
 	/* if(session.getAttribute("loginId") == null){
 		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "modifyCustomerAction 로그인되어있지 않아 리다이렉션" + RESET);
+		System.out.println(KMJ + "modifyCustomerAction 로그인필요" + RESET);
 		return;
 	}
 	String loginId = session.getAttribute(KMJ + "loginId" + " <--modifyCustomerAction loginId" + RESET);*/
@@ -73,4 +73,7 @@
 		System.out.println(KMJ + row + " <--modifyCustomerAction row 수정실패" + RESET);
 		response.sendRedirect(request.getContextPath()+"/customer/customerOne.jsp?id="+id);
 	}
+	
+	//수정action 완료 후 주소목록으로 리다이렉션
+	response.sendRedirect(request.getContextPath()+"/customer/addCustomerAddress.jsp?id="+id);
 %>
