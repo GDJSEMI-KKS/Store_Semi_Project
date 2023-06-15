@@ -1,8 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="dao.IdListCustomerDao"%>
+<%@page import="dao.*"%>
+<%@page import="vo.*"%>
 <%@page import="java.util.*"%>
 <%
-	// session값 유효성 검사
+	//RESET ANST CODE 콘솔창 글자색, 배경색 지정
+	final String RESET = "\u001B[0m";
+	final String BLUE ="\u001B[34m";
+	final String BG_YELLOW ="\u001B[43m";
+
+	/* session 유효성 검사
+	* session 값이 null이면 redirection. return.
+	*/
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	*/
+	
+	// IdListDao selectIdListOne(loginId) method
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
 	
 	// IdListCustonmeDao selectIdCstmListByPage Method 입력값 분기
 	// checkbox value 값 받을 배열 생성
@@ -10,12 +42,10 @@
 	int [] intCkIdLevel = null; // String [] ckIdLevel의 값을 int로 받을 배열 
 	String [] ckCstmRank = null; // 고객 등급
 	String [] ckActive = null; // Id 활성화 여부
-	
+		
 	// checkbox value 값에 따른 분기
 	// ckIdLevel
-	if(request.getParameter("ckIdLevel") == null){
-		ckIdLevel = null;
-	} else if(request.getParameter("ckIdLevel") != null){
+	if(request.getParameter("ckIdLevel") != null){
 		ckIdLevel = request.getParameterValues("ckIdLevel");
 		intCkIdLevel = new int[ckIdLevel.length];
 		
@@ -25,18 +55,37 @@
 	}
 	
 	// ckCstmRank
-	if(request.getParameter("ckCstmRank") == null){
-		ckCstmRank = null;
-	} else if(request.getParameter("ckCstmRank") != null){
+	if(request.getParameter("ckCstmRank") != null){
 		ckCstmRank = request.getParameterValues("ckCstmRank");
 	}
 	
 	// ckActive
-	if(request.getParameter("ckActive") == null){
-		ckActive = null;
-	} else if(request.getParameterValues("ckActive") != null){
+	if(request.getParameterValues("ckActive") != null){
 		ckActive = request.getParameterValues("ckActive");
 	}
+	
+	// 페이지 이동시 checkbox 값이 문자열로 넘어오지 않아 문자열로 변경
+	String ckIdLevelStr = "";
+	String ckCstmRankStr = "";
+	String ckActiveStr = "";
+	
+	if(ckIdLevel != null){
+		for(String s : ckIdLevel){
+			ckIdLevelStr += "&ckIdLevel="+s;
+		}
+	} else if(ckCstmRank != null){
+		for(String s : ckCstmRank){
+			ckCstmRankStr += "&ckCstmrank="+s;
+		}
+	} else if(ckActive != null){
+		for(String s : ckActive){
+			ckActiveStr += "&ckActive="+s;
+		}
+	}
+	// 디버깅코드
+	System.out.println(BG_YELLOW+BLUE+ckIdLevelStr+"<-- ckIdLevelStr"+RESET);
+	System.out.println(BG_YELLOW+BLUE+ckCstmRankStr+"<-- ckCstmRankStr"+RESET);
+	System.out.println(BG_YELLOW+BLUE+ckActiveStr+"<-- ckActiveStr"+RESET);
 	
 	/* adminCustomerList 페이징
 	* currentPage : 현재 페이지
@@ -53,7 +102,6 @@
 	if(request.getParameter("currentPage") != null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
-	System.out.println(currentPage + "<--adminCustomerList.jsp currentPage");
 	
 	// IdListCustomerDao dao
 	IdListCustomerDao idListCustomerDao = new IdListCustomerDao();
@@ -62,43 +110,42 @@
 	int beginRow = (currentPage-1)*rowPerPage;
 	int totalRow = idListCustomerDao.selectIdCstmListCnt(intCkIdLevel, ckCstmRank, ckActive);
 	int lastPage = totalRow / rowPerPage;
-	System.out.println(lastPage + "<--adminCustomerList.jsp lastPage");
 	if(totalRow % rowPerPage != 0){
 		lastPage +=1;
 	}
+	System.out.println(BG_YELLOW+BLUE+currentPage + "<--adminCustomerList.jsp currentPage"+RESET);
+	System.out.println(BG_YELLOW+BLUE+beginRow + "<--adminCustomerList.jsp beginRow"+RESET);
+	System.out.println(BG_YELLOW+BLUE+totalRow + "<--adminCustomerList.jsp totalRow"+RESET);
+	System.out.println(BG_YELLOW+BLUE+lastPage + "<--adminCustomerList.jsp lastPage"+RESET);
 	
 	/* 페이지 블럭
-	* currentBlock : 현재 페이지 블럭
+	* currentBlock : 현재 페이지 블럭(currentPage / pageLength)
+	* currentPage % pageLength != 0, currentBlock +1
 	* pageLength : 현제 페이지 블럭의 들어갈 페이지 수
 	* startPage : 블럭의 시작 페이지 (currentBlock -1) * pageLength +1
 	* endPage : 블럭의 마지막 페이지 startPage + pageLength -1
 	* 맨 마지막 블럭에서는 끝지점에 도달하기 전에 페이지가 끝나기 때문에 아래와 같이 처리 
-	* if(endPage > totalPage){endPage = totalPage;}
+	* if(endPage > lastPage){endPage = lastPage;}
 	*/
 	
-	int currentBlock = 0;
 	int pageLength = 5;
-	if(currentPage % pageLength == 0){
-		currentBlock = currentPage / pageLength;
-	}else{
-		currentBlock = (currentPage / pageLength) +1;	
+	int currentBlock = currentPage / pageLength;
+	if(currentPage % pageLength != 0){
+		currentBlock += 1;	
 	}
-	System.out.println(currentBlock+"<--adminCustomerList.jsp currentBlock");
-	
 	int startPage = (currentBlock -1) * pageLength +1;
-	System.out.println(startPage+"<--adminCustomerList.jsp startPage");
-	
 	int endPage = startPage + pageLength -1;
 	if(endPage > lastPage){
 		endPage = lastPage;
 	}
-	System.out.println(endPage+"<--adminCustomerList.jsp endPage");
+	System.out.println(BG_YELLOW+BLUE+currentBlock+"<--adminCustomerList.jsp currentBlock"+RESET);
+	System.out.println(BG_YELLOW+BLUE+startPage+"<--adminCustomerList.jsp startPage"+RESET);
+	System.out.println(BG_YELLOW+BLUE+endPage+"<--adminCustomerList.jsp endPage"+RESET);
 	
 	/* 1페이지당 adminCustomerList
 	 * AdminQuestionDao adminQuestionListByPage(beginRow, rowPerPage, categoryName) method 
 	*/
 	ArrayList<HashMap<String,Object>> adminCustomerList = idListCustomerDao.selectIdCstmListByPage(beginRow, rowPerPage, intCkIdLevel, ckCstmRank, ckActive);
-	
 	
 %>
 
@@ -107,6 +154,7 @@
 <head>
 <meta charset="UTF-8">
 <title>adminCustomerList</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 </head>
 <body>
 	<!-- 리스트 조회 폼 -->
@@ -168,7 +216,8 @@
 			<%
 				if(startPage > 1){
 			%>
-					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%>'">
+					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>
+					/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
 						<span>이전</span>
 					</li>
 			<%		
@@ -182,7 +231,7 @@
 			<%
 						} else{
 			%>
-					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%>'">
+					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
 						<span><%=i%></span>
 					</li>
 			<%			
@@ -190,7 +239,7 @@
 				}
 					if(endPage != lastPage){
 			%>
-						<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%>'">
+						<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
 							<span>다음</span>
 						</li>	
 			<%			
@@ -199,4 +248,5 @@
 		</ul>
 	</div>	
 </body>
+
 </html>

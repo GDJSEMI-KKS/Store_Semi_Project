@@ -83,6 +83,7 @@ public class AdminQuestionDao {
 			m.put("qCategory", rs.getString("qCategory"));
 			m.put("qTitle", rs.getString("qTitle"));
 			m.put("qCreatedate", rs.getString("qCreatedate"));
+			m.put("aNoCnt", rs.getInt("aNoCnt"));
 			list.add(m);
 		}
 		
@@ -244,7 +245,7 @@ public class AdminQuestionDao {
 		return row;
 	}
 	
-	// 삽입(board_answer) [송예지] AdminQuestionDao insertBoardAnswer method 수정
+	// 삽입(board_answer)
 	public int insertBoardAnswer(BoardAnswer boardAnswer) throws Exception {
 		
 		// 유효성 검사
@@ -342,7 +343,7 @@ public class AdminQuestionDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "DELETE FROM board_answer WHERE a_no = ?";
+		String sql = "DELETE FROM board_answer WHERE board_a_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, boardAnswerNo);
 		int row = stmt.executeUpdate();
@@ -362,7 +363,7 @@ public class AdminQuestionDao {
 		String sql = null;
 		PreparedStatement stmt = null;
 		
-		if(categoryName == null) {
+		if(categoryName.equals("")) {
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
 				+ "(SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "

@@ -1,6 +1,5 @@
-<%@page import="javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar"%>
-<%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="java.util.*"%>
 <%@ page import="dao.*"%>
 <%@ page import="vo.*"%>
 <%
@@ -152,9 +151,15 @@
 					for(Answer answer : answerList){
 				%>
 						<tr>
-							<th><%=answer.getaNo()%></th>
 							<td>
 								<p><%=answer.getaContent()%></p>
+							</td>
+							<td>
+								<!-- 수정, 삭제 버튼 -->
+								<div>
+									<button type="button">수정</button>
+									<button type="button" onclick="location.href='<%=request.getContextPath()%>/admin_question/adminAnswerRemoveAction.jsp?qNo=<%=qNo%>&aNo=<%=answer.getaNo()%>&qCategory=<%=qCategory%>'">삭제</button>
+								</div>
 							</td>
 						</tr>
 				<%		
@@ -225,11 +230,16 @@
 					for(BoardAnswer boardAnswer : boardAnswerList){			
 				%>
 						<tr>
-							<th><%=boardAnswer.getBoardANo()%></th>
 							<td>
 								<textarea rows="2" cols="80" name="qContent"><%=boardAnswer.getBoardAContent()%></textarea>
 							</td>
-							
+							<td>
+								<!-- 수정, 삭제 버튼 -->
+								<div>
+									<button type="button">수정</button>
+									<button type="button" onclick="location.href='<%=request.getContextPath()%>/admin_question/adminAnswerRemoveAction.jsp?qNo=<%=qNo%>&aNo=<%=boardAnswer.getBoardANo()%>&qCategory=<%=qCategory%>'">삭제</button>
+								</div>
+							</td>
 						</tr>
 				<%		
 					}
