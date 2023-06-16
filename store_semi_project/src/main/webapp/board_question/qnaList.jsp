@@ -8,6 +8,9 @@
 	final String BLUE ="\u001B[34m";
 	final String BG_YELLOW ="\u001B[43m";
 
+	// request 인코딩
+	request.setCharacterEncoding("utf-8");
+	
 	/* session 유효성 검사
 	* session 값이 null이면 redirection. return.
 	*/
@@ -103,36 +106,49 @@
 <body>
 	<!-- 요청 폼 -->
 	<div class="center">
-		<form action="<%=request.getContextPath()%>/board_question/boardQuestionList.jsp" method="post">
+		<form action="<%=request.getContextPath()%>/board_question/qnaList.jsp" method="post">
 			<select name="columnName"><!-- select 선택한 값이 유지되도록 분기 -->
 				<%
-					if(columnName.equals("") || columnName.equals("titleContent")){
+					if(columnName.equals("")){
 				%>
+					<option value="" selected="selected">전체</option>
+					<option value="titleContent">제목+내용</option>
+					<option value="title">제목</option>
+					<option value="content">내용</option>
+					<option value="cstmName">작성자</option>
+				<%		
+					}
+					else if(columnName.equals("titleContent")){
+				%>
+					<option value="">전체</option>
 					<option value="titleContent" selected="selected">제목+내용</option>
 					<option value="title">제목</option>
 					<option value="content">내용</option>
-					<option value="id">작성자</option>
+					<option value="cstmName">작성자</option>
 				<%		
 					} else if(columnName.equals("title")){
 				%>
+					<option value="">전체</option>
 					<option value="titleContent">제목+내용</option>
 					<option value="title" selected="selected">제목</option>
 					<option value="content">내용</option>
-					<option value="id">작성자</option>
+					<option value="cstmName">작성자</option>
 				<%		
 					} else if(columnName.equals("content")){
 				%>
+					<option value="">전체</option>
 					<option value="titleContent">제목+내용</option>
 					<option value="title">제목</option>
 					<option value="content" selected="selected">내용</option>
-					<option value="id">작성자</option>
+					<option value="cstmName">작성자</option>
 				<%		
 					} else{
 				%>
+					<option value="">전체</option>
 					<option value="titleContent">제목+내용</option>
 					<option value="title">제목</option>
 					<option value="content">내용</option>
-					<option value="id" selected="selected">작성자</option>
+					<option value="cstmName" selected="selected">작성자</option>
 				<%		
 					}
 				%>
@@ -161,7 +177,7 @@
 						<td><%=(String) bq.get("boardQCategory")%></td>
 						<td><%=(Integer) bq.get("boardQNo")%></td>
 						<td><%=(String) bq.get("boardQTitle")%></td>
-						<td><%=(String) bq.get("id")%></td>
+						<td><%=(String) bq.get("cstmName")%></td>
 						<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
 						<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
 					<%
@@ -184,7 +200,7 @@
 							<td><%=(String) bq.get("boardQCategory")%></td>
 							<td><%=(Integer) bq.get("boardQNo")%></td>
 							<td><%=(String) bq.get("boardQTitle")%></td>
-							<td><%=(String) bq.get("id")%></td>
+							<td><%=(String) bq.get("cstmName")%></td>
 							<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
 							<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
 					<%
@@ -209,6 +225,43 @@
 			%>
 		</table>
 	</div>
+	<!-- 페이지 네비게이션 -->
+		<div>
+			<ul>
+				<%
+					if(startPage > 1){
+				%>
+						<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage-pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+							<span>이전</span>
+						</li>
+				<%		
+					}
+						for(int i = startPage; i <= endPage; i++){
+							if(i == currentPage){
+				%>
+								<li>
+									<span><%=i%></span>
+								</li>
+				<%
+							} else{
+				%>
+						<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=i%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+							<span><%=i%></span>
+						</li>
+				<%			
+						}
+					}
+						if(endPage != lastPage){
+				%>
+							<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage+pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+								<span>다음</span>
+							</li>	
+				<%			
+						}
+				%>
+			</ul>
+		</div>	    
+	
 	<div>
 		<button type="button" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaAdd.jsp'">문의등록</button>
 	</div>
