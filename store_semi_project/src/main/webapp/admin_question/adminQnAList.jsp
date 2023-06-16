@@ -130,7 +130,7 @@
 				<%
 					if(categoryName.equals("")){
 				%>
-						<option value="" selected="selected">카테고리</option>
+						<option value="" selected="selected">전체</option>
 				<%	
 							for(String category : categoryList){	
 				%>
@@ -139,7 +139,7 @@
 							}
 					} else {
 				%>
-						<option value="">카테고리</option>
+						<option value="">전체</option>
 				<%	
 							for(String category : categoryList){
 								

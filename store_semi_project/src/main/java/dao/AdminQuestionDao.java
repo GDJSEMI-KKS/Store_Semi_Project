@@ -149,6 +149,7 @@ public class AdminQuestionDao {
 		if(rs.next()) {
 			boardQuestion = new BoardQuestion();
 			boardQuestion.setBoardQNo(rs.getInt("boardQNo"));
+			boardQuestion.setId(rs.getString("id"));
 			boardQuestion.setBoardQCategory(rs.getString("boardQCategory"));
 			boardQuestion.setBoardQTitle(rs.getString("boardQTitle"));
 			boardQuestion.setBoardQContent(rs.getString("boardQContent"));

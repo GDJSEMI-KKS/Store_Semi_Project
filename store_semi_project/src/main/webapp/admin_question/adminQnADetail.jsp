@@ -103,6 +103,10 @@
 					<td><%=question.getProductNo()%></td>
 				</tr>
 				<tr>
+					<th>아이디</th>
+					<td><%=question.getId()%></td>
+				</tr>
+				<tr>
 					<th>문의제목</th>
 					<td><%=question.getqTitle()%></td>
 				</tr>
@@ -181,6 +185,10 @@
 				<tr>
 					<th>문의번호</th>
 					<td><%=boardQuestion.getBoardQNo()%></td>
+				</tr>
+				<tr>
+					<th>아이디</th>
+					<td><%=boardQuestion.getId()%></td>
 				</tr>
 				<tr>
 					<th>문의제목</th>
