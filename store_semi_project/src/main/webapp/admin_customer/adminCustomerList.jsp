@@ -8,6 +8,9 @@
 	final String BLUE ="\u001B[34m";
 	final String BG_YELLOW ="\u001B[43m";
 
+	// request 인코딩
+	request.setCharacterEncoding("utf-8");
+	
 	/* session 유효성 검사
 	* session 값이 null이면 redirection. return.
 	*/
@@ -24,9 +27,9 @@
 	
 	/* idLevel 유효성 검사
 	 * idLevel == 0이면 redirection. return
+	 * IdListDao selectIdListOne(loginId) method 호출
 	*/
 	
-	// IdListDao selectIdListOne(loginId) method
 	IdListDao idListDao = new IdListDao();
 	IdList idList = idListDao.selectIdListOne(loginId);
 	int idLevel = idList.getIdLevel();
@@ -34,6 +37,25 @@
 	if(idLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
+	}
+	
+	/* request.getParameter("id")값이 null이 아닐경우 값 저장, 
+	 * IdListCustomerDao selectId(id) method 호출
+	 * String id : request.getParameter("id") 값 저장 변수
+	 * HashMap<String, Object> selectId : idListCustomerDao.selectId(id) 값 저장 변수
+	*/
+	IdListCustomerDao idListCustomerDao = new IdListCustomerDao();
+	String id = "";
+	HashMap<String, Object> selectId = null;
+	if(request.getParameter("id") != null){
+		id = request.getParameter("id");
+		System.out.println(id+"<--adminCustomerList.jsp id");
+		selectId = idListCustomerDao.selectId(id);
+		if(selectId != null){
+			System.out.println(selectId+"<--adminCustomerList.jsp selectId");
+		} else{
+			System.out.println(selectId+"<--adminCustomerList.jsp 검색 Id 없음");
+		}
 	}
 	
 	// IdListCustonmeDao selectIdCstmListByPage Method 입력값 분기
@@ -102,9 +124,6 @@
 	if(request.getParameter("currentPage") != null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
-	
-	// IdListCustomerDao dao
-	IdListCustomerDao idListCustomerDao = new IdListCustomerDao();
 	
 	int rowPerPage = 10;
 	int beginRow = (currentPage-1)*rowPerPage;
@@ -181,72 +200,117 @@
 					<input type ="checkbox" name="ckActive" value="N"> 비활성화
 				</div>
 			</div>
-			
 			<div>
 				<button type="submit">조회</button>
 			</div>
 		</form>
 	</div>
 	
-	<!-- 조회 리스트 출력 -->
+	<!-- Id 검색 폼 -->
 	<div>
-		<table>
-			<tr>
-				<th>ID</th>
-				<th>회원등급</th>
-				<th>활성화</th>
-			</tr>
-			<%
-				for(HashMap<String, Object> m : adminCustomerList){
-			%>
-				<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) m.get("id")%>'">
-					<td><%=(String) m.get("id")%></td>
-					<td><%=(String) m.get("cstmRank")%></td>
-					<td><%=(String) m.get("active")%></td>
-				</tr>
-			<%		
-				}
-			%>
-		</table>
+		<form action="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" method="post">
+			<input type ="text" name="id">
+			<button type="submit">ID검색</button> 
+		</form>
 	</div>
 	
-	<!-- 페이지 네비게이션 -->
-	<div class="pageNav">
-		<ul class="list-group list-group-horizontal">
-			<%
-				if(startPage > 1){
-			%>
-					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>
-					/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-						<span>이전</span>
-					</li>
-			<%		
-				}
-					for(int i = startPage; i <= endPage; i++){
-						if(i == currentPage){
-			%>
-							<li class="list-group-item currentPageNav">
+	<!-- 조회 리스트, Id검색 분기하여 출력 -->
+	<%
+		if(selectId == null){ // 조회 리스트 출력
+	%>
+			<div>
+				<table>
+					<tr>
+						<th>ID</th>
+						<th>성명</th>
+						<th>회원등급</th>
+						<th>활성화</th>
+					</tr>
+					<%
+						for(HashMap<String, Object> m : adminCustomerList){
+					%>
+						<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) m.get("id")%>'">
+							<td><%=(String) m.get("id")%></td>
+							<td><%=(String) m.get("cstmName")%></td>
+							<td><%=(String) m.get("cstmRank")%></td>
+							<td><%=(String) m.get("active")%></td>
+						</tr>
+					<%		
+						}
+					%>
+				</table>
+			</div>
+	<%		
+		} else{ // 검색 Id 출력
+	%>
+			<div>
+				<table>
+					<tr>
+						<th>ID</th>
+						<th>성명</th>
+						<th>회원등급</th>
+						<th>활성화</th>
+					</tr>
+					<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) selectId.get("id")%>'">
+						<td><%=(String) selectId.get("id")%></td>
+						<td><%=(String) selectId.get("cstmName")%></td>
+						<td><%=(String) selectId.get("cstmRank")%></td>
+						<td><%=(String) selectId.get("active")%></td>
+					</tr>
+				</table>
+			</div>
+	<%		
+		}
+	%>
+	
+	
+	<!-- 페이지 네비게이션 
+	 * selectId가 null이 아닌경우만 페이지 네비게이션 출력
+	-->
+	<%
+		if(selectId == null){ 
+	%>
+			<div class="pageNav">
+				<ul class="list-group list-group-horizontal">
+					<%
+						if(startPage > 1){
+					%>
+							<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>
+							/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
+								<span>이전</span>
+							</li>
+					<%		
+						}
+							for(int i = startPage; i <= endPage; i++){
+								if(i == currentPage){
+					%>
+									<li class="list-group-item currentPageNav">
+										<span><%=i%></span>
+									</li>
+					<%
+								} else{
+					%>
+							<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
 								<span><%=i%></span>
 							</li>
-			<%
-						} else{
-			%>
-					<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-						<span><%=i%></span>
-					</li>
-			<%			
-					}
-				}
-					if(endPage != lastPage){
-			%>
-						<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-							<span>다음</span>
-						</li>	
-			<%			
-					}
-			%>
-		</ul>
-	</div>	
+					<%			
+							}
+						}
+							if(endPage != lastPage){
+					%>
+								<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
+									<span>다음</span>
+								</li>	
+					<%			
+							}
+					%>
+				</ul>
+			</div>	
+	<%		
+		}
+	%>
+	
+	
 </body>
 
 </html>

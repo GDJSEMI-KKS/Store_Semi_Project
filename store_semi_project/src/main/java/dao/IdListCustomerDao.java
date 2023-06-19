@@ -38,7 +38,7 @@ public class IdListCustomerDao {
 		PreparedStatement stmt = null;
 		
 		if(ckIdLevel == null && ckCstmRank == null && ckActive == null) { // 1. 회원(고객, 관리자) 전체 조회
-			sql = "SELECT i.id id, i.active active, nvl(c.cstm_rank, '') cstmRank "
+			sql = "SELECT i.id id, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id "
 				+ "ORDER BY i.id_level DESC, i.id ASC LIMIT ?, ?";
@@ -49,9 +49,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 1.stmt"+RESET);
 			
 		} else if(ckCstmRank == null && ckActive == null) { // 2. 고객 / 관리자 선택 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN(? ";
@@ -71,9 +71,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 2.stmt"+RESET);
 				
 		} else if(ckIdLevel == null && ckActive == null) { // 3. 등급 선택 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE cstmRank IN (? ";
@@ -93,9 +93,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 3.stmt"+RESET);
 				
 		} else if(ckIdLevel == null && ckCstmRank == null) { // 4. 활성화 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE active IN (? ";
@@ -115,9 +115,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 4.stmt"+RESET);
 				
 		} else if(ckIdLevel == null) { // 5. 등급, 활성화 검색 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE cstmRank IN (? ";
@@ -146,9 +146,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 5.stmt"+RESET);
 			
 		} else if(ckActive == null) { // 6. 고객or관리자, 등급 선택 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
@@ -177,9 +177,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 6.stmt"+RESET);
 					
 		} else if(ckCstmRank == null) { // 7. 고객or관리자, 활성화 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
@@ -208,9 +208,9 @@ public class IdListCustomerDao {
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 7.stmt"+RESET);
 				
 		} else { // 8. 고객, 등급, 활성화 여부 선택 조회
-			sql = "SELECT id, active, cstmRank "
+			sql = "SELECT id, active, cstmRank, cstmName "
 					+ "FROM "
-					+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+					+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 					+ "FROM id_list i LEFT outer JOIN customer c "
 					+ "ON i.id = c.id ) ic "
 					+ "WHERE idLevel IN (? ";
@@ -256,6 +256,7 @@ public class IdListCustomerDao {
 			m.put("id", rs.getString("id"));
 			m.put("active", rs.getString("active"));
 			m.put("cstmRank", rs.getString("cstmRank"));
+			m.put("cstmName", rs.getString("cstmName"));
 			list.add(m);
 		}
 		
@@ -285,9 +286,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id) ic "
 				+ "ORDER BY idLevel DESC, id ASC) totalRow";
@@ -298,9 +299,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id) ic "
 				+ "WHERE idLevel IN(? ";
@@ -321,9 +322,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE cstmRank IN (? ";
@@ -344,9 +345,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE active IN (? ";
@@ -367,9 +368,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE cstmRank IN (? ";
@@ -400,9 +401,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 					+ "FROM "
-					+ "(SELECT id, active, cstmRank "
+					+ "(SELECT id, active, cstmRank, cstmName "
 					+ "FROM "
-					+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+					+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 					+ "FROM id_list i LEFT outer JOIN customer c "
 					+ "ON i.id = c.id ) ic "
 					+ "WHERE idLevel IN (? ";
@@ -431,9 +432,9 @@ public class IdListCustomerDao {
 		} else if(ckCstmRank == null) { // 7. 고객or관리자, 활성화
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
@@ -463,9 +464,9 @@ public class IdListCustomerDao {
 			
 			sql = "SELECT COUNT(*) "
 				+ "FROM "
-				+ "(SELECT id, active, cstmRank "
+				+ "(SELECT id, active, cstmRank, cstmName "
 				+ "FROM "
-				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
 				+ "FROM id_list i LEFT outer JOIN customer c "
 				+ "ON i.id = c.id ) ic "
 				+ "WHERE idLevel IN (? ";
@@ -509,5 +510,42 @@ public class IdListCustomerDao {
 		}
 		
 		return totalRow;
+	}
+	
+	// Id 1개 검색 조회
+	public HashMap<String, Object> selectId(String id) throws Exception{
+		
+		if(id == null) {
+			System.out.println("입력 error");
+			return null;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT id, active, cstmRank, cstmName "
+				+ "FROM "
+				+ "(SELECT i.id id, i.id_level idLevel, i.active active, nvl(c.cstm_rank, '') cstmRank, c.cstm_name cstmName "
+				+ "FROM id_list i LEFT outer JOIN customer c "
+				+ "ON i.id = c.id) ic "
+				+ "WHERE id = ?";
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao selectId stmt"+RESET);
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		HashMap<String,Object> m = null;
+		
+		if(rs.next()) {
+			m = new HashMap<>();
+			m.put("id", rs.getString("id"));
+			m.put("active", rs.getString("active"));
+			m.put("cstmRank", rs.getString("cstmRank"));
+			m.put("cstmName", rs.getString("cstmName"));
+			
+		}
+		return m;
 	}
 }
