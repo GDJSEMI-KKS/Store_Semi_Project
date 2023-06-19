@@ -32,8 +32,11 @@
 	String productName = null;
 	int productPrice = 0;
 	int productStock = 0;
+	double discountRate = 0.0;
 	String productInfo = null;
 	String productSaveFilename = null;
+	String discountStart = null;
+	String discountEnd = null;
 	for(HashMap<String, Object> p : list) {
 		productStatus = p.get("productStatus").toString();
 		categoryName = p.get("categoryName").toString();
@@ -44,9 +47,21 @@
 		productSaveFilename = p.get("productSaveFilename").toString();
 	}
 	// discount 정보 변수에 저장
-	double discountRate = Double.parseDouble(request.getParameter("discountRate").toString());
-	String discountStart = request.getParameter("discountStart").toString();
-	String discountEnd = request.getParameter("discountEnd").toString();
+	if(request.getParameter("discountRate") != null) {
+		discountRate = Double.parseDouble(request.getParameter("discountRate").toString());
+	} else {
+		discountRate = 0.0;
+	}
+	if(request.getParameter("discountStart") != null) {
+		discountStart = request.getParameter("discountStart").toString();
+	} else {
+		discountStart = null;
+	}
+	if(request.getParameter("discountEnd") != null) {
+		discountEnd = request.getParameter("discountEnd").toString();
+	} else {
+		discountEnd = null;
+	}
 	String dir = request.getContextPath() + "/product/productImg/" + productSaveFilename;
 	System.out.println(SJ+ dir + "<-dir" +RE);
 %>

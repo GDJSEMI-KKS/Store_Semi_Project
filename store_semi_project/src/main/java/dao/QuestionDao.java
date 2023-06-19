@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import util.DBUtil;
+import vo.Product;
 import vo.Question;
 
 public class QuestionDao {
@@ -30,12 +31,13 @@ public class QuestionDao {
 
 	// =============상세페이지 내 상품문의==============
 	// 상품문의 리스트
-	public ArrayList<Question> selectQuestionListByPage(int beginRow, int rowPerPage) throws Exception {
+	public ArrayList<Question> selectQuestionListByPage(Product product, int beginRow, int rowPerPage) throws Exception {
 		if(rowPerPage ==0) {
 			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao selectQuestionListByPage메서드" + RE);
 			return null;
 		}
-		
+		int productNo = product.getProductNo();
+		System.out.println(SJ+ productNo + "<-- productNo" + RE );
 		ArrayList<Question> list = new ArrayList<>();
 		Question question = null;
 		// db 접속
@@ -45,20 +47,24 @@ public class QuestionDao {
 		/*
 		SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, q_check_cnt qCheckCnt, createdate, updatedate
 		FROM question
+		WHERE product_no = ?
 		ORDER BY productNo ASC
 		LIMIT ?, ?
 		 */
 		String sql = "SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, q_check_cnt qCheckCnt, createdate, updatedate\r\n"
 				+ "		FROM question\r\n"
+				+ "		WHERE product_no = ?\r\n"
 				+ "		ORDER BY productNo ASC\r\n"
 				+ "		LIMIT ?, ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, beginRow);
-		stmt.setInt(2, rowPerPage);
+		stmt.setInt(1, productNo);
+		stmt.setInt(2, beginRow);
+		stmt.setInt(3, rowPerPage);
 		ResultSet rs = stmt.executeQuery();
 		while(rs.next()) {
 			question = new Question();
 			question.setProductNo(rs.getInt("productNo"));
+			question.setqNo(rs.getInt("qNo"));
 			question.setId(rs.getString("id"));
 			question.setqCategory(rs.getString("qCategory"));
 			question.setqTitle(rs.getString("qTitle"));

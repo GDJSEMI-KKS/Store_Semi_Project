@@ -100,8 +100,6 @@
 				<th >카테고리</th>
 				<th >이름</th>
 				<th >가격</th>
-				<th >할인율</th>
-				<th >할인가</th>
 				<th >상태</th>
 				<th >재고</th>
 				<th >등록일</th>
@@ -114,49 +112,13 @@
 			%>
 					<tr>
 						<td>
-							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dproductNo")%>&discountRate=<%=p.get("discountRate")%>">
+							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>">
 								<%=p.get("p.productNo")%>
 							</a>
 						</td>
 						<td><%=p.get("categoryName")%></td>
 						<td><%=p.get("productName")%></td>
 						<td><%=p.get("productPrice")%></td>
-						<td><!-- 할인율 유무에 따른 분기 -->
-							<%
-								// 할인율
-								
-							%>
-							<%
-									if(p.get("p.productNo") == p.get("dProductNo")) {
-							%>
-										<%=Double.parseDouble(p.get("discountRate").toString())*100%> %
-							<%			
-									} else {
-										
-							%>
-										<%=Double.parseDouble(p.get("discountRate").toString())%>
-							<%
-									}
-								 
-							%>
-						</td>
-						<td>
-							<%
-								// 할인가
-									if(p.get("p.productNo") == p.get("dProductNo")) {
-							%>
-										<%=Double.parseDouble(p.get("productPrice").toString())*(1-Double.parseDouble(p.get("discountRate").toString()))%>
-							<%
-									} else {
-										
-							%>
-										<%=p.get("productPrice")%>
-							<%
-									}
-								
-								
-							%>
-						</td>
 						<td><%=p.get("productStatus")%></td>
 						<td><%=p.get("productStock")%></td>
 						<td><%=p.get("p.createdate")%></td>

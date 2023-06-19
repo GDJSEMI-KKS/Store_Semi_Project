@@ -25,16 +25,15 @@ public class DiscountDao {
 	Connection conn = dbUtil.getConnection();
 	// sql 전송 후 결과셋 반환받아 저장
 	/*
-	SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,
+	SELECT NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, "-") discountStart, NVL(discount_end, "-") discountEnd, NVL(discount_rate, 0.0) discountRate,
 	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate
 	FROM product p
 	LEFT OUTER JOIN discount d 
 	ON p.product_no = d.product_no
 	ORDER BY p.product_no asc
 	LIMIT ?, ?
-	
 	 */
-	String sql = "SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,\r\n"
+	String sql = "SELECT NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, \"-\") discountStart, NVL(discount_end, \"-\") discountEnd, NVL(discount_rate, 0.0) discountRate,\r\n"
 			+ "	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate\r\n"
 			+ "	FROM product p\r\n"
 			+ "	LEFT OUTER JOIN discount d \r\n"
@@ -81,17 +80,18 @@ public class DiscountDao {
 	SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,
 	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate
 	FROM discount d
-	LEFT OUTER JOIN product p
-	ON d.product_no = p.product_no
-	WHERE DATEDIFF(discount_end, discount_start) >0
+	INNER JOIN product p
+	ON p.product_no = d.product_no
+	WHERE p.product_no = ?
 	 */
 	String sql = "SELECT discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate,\r\n"
-			+ "	p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate\r\n"
+			+ "		p.product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, p.createdate, p.updatedate\r\n"
 			+ "FROM discount d\r\n"
-			+ "LEFT OUTER JOIN product p\r\n"
-			+ "ON d.product_no = p.product_no\r\n"
-			+ "WHERE DATEDIFF(discount_end, discount_start) >0";
+			+ "INNER JOIN product p\r\n"
+			+ "ON p.product_no = d.product_no\r\n"
+			+ "WHERE p.product_no = ?";
 	PreparedStatement stmt = conn.prepareStatement(sql);
+	stmt.setInt(1, productNo);
 	ResultSet rs = stmt.executeQuery();
 	ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 	while(rs.next()) {

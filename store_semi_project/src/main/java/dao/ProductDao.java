@@ -264,7 +264,7 @@ public class ProductDao {
 		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, 
 		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,
 		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,
-		discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate
+		NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, "-") discountStart, NVL(discount_end, "-") discountEnd, NVL(discount_rate, 0.0) discountRate
 		FROM product p
 		LEFT OUTER JOIN product_img pim
 		ON p.product_no = pim.product_no
@@ -282,7 +282,7 @@ public class ProductDao {
 				+ "		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, \r\n"
 				+ "		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,\r\n"
 				+ "		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,\r\n"
-				+ "		discount_no discountNo, d.product_no dProductNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate\r\n"
+				+ "		NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, \"-\") discountStart, NVL(discount_end, \"-\") discountEnd, NVL(discount_rate, 0.0) discountRate\r\n"
 				+ "		FROM product p\r\n"
 				+ "		LEFT OUTER JOIN product_img pim\r\n"
 				+ "		ON p.product_no = pim.product_no\r\n"

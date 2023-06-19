@@ -35,10 +35,21 @@
 		||mRequest.getParameter("productInfo") == null
 		||mRequest.getParameter("productPrice") == null
 		||mRequest.getParameter("productStock") == null
+		||mRequest.getParameter("categoryName") == null
+		||mRequest.getParameter("productStatus") == null
+		||mRequest.getParameter("discountRate") == null
+		||mRequest.getParameter("discountStart") == null
+		||mRequest.getParameter("discountEnd") == null
+		||mRequest.getParameter("productImg") == null
 		||mRequest.getParameter("productName").equals("")
 		||mRequest.getParameter("productInfo").equals("")
 		||mRequest.getParameter("productPrice").equals("")
-		||mRequest.getParameter("productStock").equals("")) {
+		||mRequest.getParameter("productStock").equals("")
+		||mRequest.getParameter("categoryName").equals("")
+		||mRequest.getParameter("productStatus").equals("")
+		||mRequest.getParameter("discountStart").equals("")
+		||mRequest.getParameter("discountEnd").equals("")
+		||mRequest.getParameter("productImg").equals("")) {
 		
 		System.out.println(SJ+"매개변수 요청"+RE); 
 		response.sendRedirect(request.getContextPath() + "/product/modifyProduct.jsp?p.productNo=" + productNo);

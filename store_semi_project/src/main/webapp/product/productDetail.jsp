@@ -17,10 +17,16 @@
 	}
 	// 요청값 변수에 저장
 	int productNo = Integer.parseInt(request.getParameter("p.productNo"));
+	
 	String productStatus = request.getParameter("productStatus");
 	// sql 메서드들이 있는 클래스의 객체 생성
 	ProductDao pDao = new ProductDao();
+	DiscountDao dDao = new DiscountDao();
+	QuestionDao qDao = new QuestionDao();
+	Product product = new Product();
 	
+	product.setProductNo(productNo);
+	System.out.println(SJ+ productNo + "<-- productDetail productNo" + RE );
 	// 상세 페이지에 표시할 subject 객체
 	ArrayList<HashMap<String, Object>> list = pDao.selectProduct(productNo);
 	double discountRate = 0.0;
@@ -31,6 +37,69 @@
 	}
 	String dir = request.getContextPath() + "/product/productImg/" + productSaveFilename;
 	System.out.println(SJ+ dir + "<-dir" +RE);
+	ArrayList<HashMap<String, Object>> dList = dDao.selectDiscountProduct(productNo);
+	// 할인 적용을 위한 오늘 날짜 계산
+	Calendar today = Calendar.getInstance();
+	int todayYear = today.get(Calendar.YEAR);
+	int todayMonth = today.get(Calendar.MONTH);
+	int todayDate = today.get(Calendar.DATE);
+	// 할인율, 날짜 적용을 위한 ArrayList 값 가져오기
+	// 수정 필요 분기 필요 
+	
+	int dStartYear = 0;
+	int dStartMonth = 0;
+	int dStartDay =0;
+	int dEndYear = 0;
+	int	dEndMonth = 0;
+	int	dEndDay = 0;
+	
+	for(HashMap<String, Object> d : dList) {
+		if(d.get("dProductNo") != null) {
+			dStartYear = Integer.parseInt((d.get("discountStart").toString()).substring(0, 4));
+			dStartMonth = Integer.parseInt((d.get("discountStart").toString()).substring(5, 7));
+			dStartDay = Integer.parseInt((d.get("discountStart").toString()).substring(8, 10));
+			dEndYear = Integer.parseInt((d.get("discountEnd").toString()).substring(0, 4));
+			dEndMonth = Integer.parseInt((d.get("discountEnd").toString()).substring(5, 7));
+			dEndDay = Integer.parseInt((d.get("discountEnd").toString()).substring(8, 10));
+			discountRate = Double.parseDouble(d.get("discountRate").toString());
+			
+			if((dStartYear >= todayYear && dStartMonth >= todayMonth && dStartDay >= todayDate)
+					|| (dEndYear >= todayYear && dEndMonth >= todayMonth && dEndDay >= todayDate)) {
+				dStartYear = Integer.parseInt((d.get("discountStart").toString()).substring(0, 4));
+				dStartMonth = Integer.parseInt((d.get("discountStart").toString()).substring(5, 7));
+				dStartDay = Integer.parseInt((d.get("discountStart").toString()).substring(8, 10));
+				dEndYear = Integer.parseInt((d.get("discountEnd").toString()).substring(0, 4));
+				dEndMonth = Integer.parseInt((d.get("discountEnd").toString()).substring(5, 7));
+				dEndDay = Integer.parseInt((d.get("discountEnd").toString()).substring(8, 10));
+				discountRate = Double.parseDouble(d.get("discountRate").toString());
+				
+			} else { 
+				dStartYear = 0;
+				dStartMonth = 0;
+				dStartDay = 0;
+				dEndYear = 0;
+				dEndMonth = 0;
+				dEndDay = 0;
+				discountRate = 0.0;
+			}
+		}
+	}
+	
+	System.out.println(SJ+productSaveFilename + RE );
+	System.out.print(SJ+todayYear );
+	System.out.print(todayMonth+1);
+	System.out.println(todayDate + "<-- productDetail.jsp 오늘날짜 확인" + RE );
+	
+	System.out.print(SJ+ dEndYear + RE );
+	System.out.print(SJ+ dEndMonth + RE );
+	System.out.println(SJ+ dEndDay + "<-- productDetail.jsp 할인 종료 날짜 확인" + RE );
+	
+	// 상품문의 페이징 변수
+	int beginRow = 0;
+	int rowPerPage = 10;
+	// 상품문의 출력을 위한 리스트
+	ArrayList<Question> pList = qDao.selectQuestionListByPage(product, beginRow, rowPerPage);
+		
 %>
 <!DOCTYPE html>
 <html>
@@ -74,7 +143,6 @@
 				<th >할인율</th>
 				<td><!-- 할인율 유무에 따른 분기 -->
 					<%	// 할일율
-						discountRate = Double.parseDouble(p.get("discountRate").toString());
 						if(p.get("discountRate") == null) {
 							
 					%>		<%=0.0%>
@@ -83,7 +151,7 @@
 								 
 									
 					%>
-								<%=Double.parseDouble(p.get("discountRate").toString())*100%> %
+								<%=discountRate*100%> %
 					<%			
 							}
 						}
@@ -101,7 +169,7 @@
 					<%	} else {
 							if(p.get("productNo") == p.get("dProductNo")) {
 					%>		
-								<%=Double.parseDouble(p.get("productPrice").toString())*(1-Double.parseDouble(p.get("discountRate").toString()))%>
+								<%=Math.round(Double.parseDouble(p.get("productPrice").toString())*(1-discountRate))%>
 					<%
 							}
 						}
@@ -111,11 +179,11 @@
 			</tr>
 			<tr>
 				<th >할인 시작</th>
-				<td><%=p.get("discountStart")%></td>
+				<td><%=" " + dStartYear +"년 "+ dStartMonth +"월 "+ dStartDay + "일 " %></td>
 			</tr>
 			<tr>
 				<th >할인 종료</th>
-				<td><%=p.get("discountEnd")%></td>
+				<td><%=" " + dEndYear +"년 "+ dEndMonth+"월 "+ dEndDay+ "일 "%></td>
 			</tr>
 			<tr>
 				<th >상태</th>
@@ -137,36 +205,82 @@
 				<th >수정일</th>
 				<td><%=p.get("p.updatedate")%></td>
 			</tr>
-				
+			<tr>
+				<td></td>
+				<td></td>
+				<td>
+					<div>상품 이미지  
+						<img src="<%=dir%>" id="preview" width="300px">
+						<input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+						<input type="hidden" name = "productImg" onchange="previewImage(event)">
+						<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+						<input type = "hidden" name = "discountRate" value="<%=discountRate%>">
+					</div> 
+				</td>
+			</tr>
 	
 			<tr>
 				<td>
 					<div >
 						<button type="submit">수정</button>
-						<input type = "hidden" name = "p.productNo" value = "<%=p.get("p.productNo")%>">
 						<input type = "hidden" name = "dproductNo" value = "<%=p.get("dproductNo")%>">
 						<input type = "hidden" name = "discountRate" value = "<%=p.get("discountRate")%>">
 						<input type = "hidden" name = "discountStart" value = "<%=p.get("discountStart")%>">
 						<input type = "hidden" name = "discountEnd" value = "<%=p.get("discountEnd")%>">
-						<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-							<button type="button">삭제</button>
-						</a>
 					</div>
 				</td>
 			</tr>
-			<%		
+			<%	
 				}
 			%>
-			
+			<tr>
+				<td>
+					<a href="<%=request.getContextPath()%>/product/addProductDiscount.jsp?p.productNo=<%=productNo%>">
+						<button type="button">할인추가</button>
+					</a>
+					<a href="<%=request.getContextPath()%>/question/removeQuestionAction.jsp?p.productNo=<%=productNo%>">
+						<button type="button">삭제</button>
+					</a>
+				</td>
+			</tr>
 		</table>
-		<div>상품 이미지  
-			<img src="<%=dir%>" id="preview" width="300px">
-			<input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
-			<input type="hidden" name = "productImg" onchange="previewImage(event)">
-			<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
-			<input type = "hidden" name = "discountRate" value="<%=discountRate%>">
-		</div> 
 		</form>
 	</div>
+	<form action="<%=request.getContextPath()%>/question/modifyQuestion.jsp?p.productNo=<%=productNo%>" method="post">
+		<table>
+			<tr>
+				<th >p no.</th>
+				<th >q no.</th>
+				<th >id</th>
+				<th >문의 카테고리</th>
+				<th >문의 제목</th>
+				<th >문의 내용</th>
+				<th >등록일</th>
+				<th >수정일</th>
+			</tr>
+			<%
+				for(Question q : pList) {
+					// 할인 기간 확인을 위한 변수와 분기
+					
+			%>
+			<tr>
+				<td><%=productNo%></td>
+				<td>
+					<a href="<%=request.getContextPath()%>/question/questionDetail.jsp?p.productNo=<%=productNo%>">
+						<%=q.getqNo()%>
+					</a>
+				</td>
+				<td><%=q.getId()%></td>
+				<td><%=q.getqCategory()%></td>
+				<td><%=q.getqTitle()%></td>
+				<td><%=q.getqContent()%></td>
+				<td><%=q.getCreatedate()%></td>
+				<td><%=q.getUpdatedate()%></td>
+			</tr>
+			<%	
+				}
+			%>
+		</table>
+	</form>
 </body>
 </html>
