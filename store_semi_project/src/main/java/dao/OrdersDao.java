@@ -202,44 +202,69 @@ public class OrdersDao {
 	}
 	
 	//조회: id별 주문목록
-		public ArrayList<HashMap<String, Object>> selectOrderById(String id, int beginRow, int rowPerPage) throws Exception {
-			DBUtil dbUtil = new DBUtil();
-			Connection conn = dbUtil.getConnection();
-			//PreparedStatement 
-			String sql = "SELECT orderNo, productNo, productName, id, paymentStatus, deliveryStatus, orderCnt, orderPrice, t1.createdate, "
-					+ "t2.product_ori_filename orgFilename, t2.product_save_filename saveFilename, t2.product_filetype filetype "
-					+ "FROM (SELECT o.order_no orderNo, o.product_no productNo, p.product_name productName, o.id id, o.payment_status paymentStatus, "
-					+ "o.delivery_status deliveryStatus, o.order_cnt orderCnt, o.order_price orderPrice, "
-					+ "o.createdate "
-					+ "FROM orders o INNER join product p "
-					+ "ON o.product_no = p.product_no "
-					+ "WHERE o.id = ?) t1 LEFT OUTER JOIN product_img t2 "
-					+ "ON t1.productNo = t2.product_no ORDER BY createdate DESC LIMIT ?, ?";
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setString(1, id);
-			stmt.setInt(2, beginRow);
-			stmt.setInt(3, rowPerPage);
-			System.out.println(KMJ + stmt + " <--OrderDao selectOrderById" + RESET);
-			ResultSet rs = stmt.executeQuery();
-			ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-			while(rs.next()) {
-				HashMap<String, Object> m = new HashMap<String, Object>();
-				m.put("orderNo", rs.getInt("orderNo"));
-				m.put("productNo", rs.getInt("productNo"));
-				m.put("productName", rs.getString("productName"));
-				m.put("id", rs.getString("id"));
-				m.put("paymentStatus", rs.getString("paymentStatus"));
-				m.put("deliveryStatus", rs.getString("deliveryStatus"));
-				m.put("orderCnt", rs.getInt("orderCnt"));
-				m.put("orderPrice", rs.getInt("orderPrice"));
-				m.put("createdate", rs.getString("createdate"));
-				m.put("orgFileName", rs.getString("orgFilename"));
-				m.put("saveFileName", rs.getString("saveFilename"));
-				m.put("filetype", rs.getString("filetype"));
-				list.add(m);
-			}
-			return list;
+	public ArrayList<HashMap<String, Object>> selectOrderById(String id, int beginRow, int rowPerPage) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement 
+		String sql = "SELECT orderNo, productNo, productName, id, paymentStatus, deliveryStatus, orderCnt, orderPrice, t1.createdate, "
+				+ "t2.product_ori_filename orgFilename, t2.product_save_filename saveFilename, t2.product_filetype filetype "
+				+ "FROM (SELECT o.order_no orderNo, o.product_no productNo, p.product_name productName, o.id id, o.payment_status paymentStatus, "
+				+ "o.delivery_status deliveryStatus, o.order_cnt orderCnt, o.order_price orderPrice, "
+				+ "o.createdate "
+				+ "FROM orders o INNER join product p "
+				+ "ON o.product_no = p.product_no "
+				+ "WHERE o.id = ?) t1 LEFT OUTER JOIN product_img t2 "
+				+ "ON t1.productNo = t2.product_no ORDER BY createdate DESC LIMIT ?, ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		stmt.setInt(2, beginRow);
+		stmt.setInt(3, rowPerPage);
+		System.out.println(KMJ + stmt + " <--OrderDao selectOrderById" + RESET);
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+		while(rs.next()) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("orderNo", rs.getInt("orderNo"));
+			m.put("productNo", rs.getInt("productNo"));
+			m.put("productName", rs.getString("productName"));
+			m.put("id", rs.getString("id"));
+			m.put("paymentStatus", rs.getString("paymentStatus"));
+			m.put("deliveryStatus", rs.getString("deliveryStatus"));
+			m.put("orderCnt", rs.getInt("orderCnt"));
+			m.put("orderPrice", rs.getInt("orderPrice"));
+			m.put("createdate", rs.getString("createdate"));
+			m.put("orgFileName", rs.getString("orgFilename"));
+			m.put("saveFileName", rs.getString("saveFilename"));
+			m.put("filetype", rs.getString("filetype"));
+			list.add(m);
 		}
+		return list;
+	}
+	
+	//조회: id별 주문목록의 수
+	public int selectOrderCntById(String id) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement 
+		String sql = "SELECT COUNT(*) "
+				+ "FROM (SELECT o.order_no orderNo, o.product_no productNo, p.product_name productName, o.id id, o.payment_status paymentStatus, "
+				+ "o.delivery_status deliveryStatus, o.order_cnt orderCnt, o.order_price orderPrice, "
+				+ "o.createdate "
+				+ "FROM orders o INNER join product p "
+				+ "ON o.product_no = p.product_no "
+				+ "WHERE o.id = ?) t1 LEFT OUTER JOIN product_img t2 "
+				+ "ON t1.productNo = t2.product_no "
+				+ "ORDER BY t1.createdate DESC";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		System.out.println(KMJ + stmt + " <--OrderDao selectOrderById" + RESET);
+		ResultSet rs = stmt.executeQuery();
+		int row = 0;
+		if(rs.next()) {
+			row = rs.getInt(1);
+		}
+		return row;
+	}
 	
 	//삽입: 주문버튼 클릭시 주문번호 생성 후 주문번호 리턴
 	public int insertOrder(Orders order) throws Exception {
@@ -289,6 +314,30 @@ public class OrdersDao {
 		stmt.setString(2, order.getDeliveryStatus());
 		stmt.setInt(3, order.getOrderNo());		
 		System.out.println(KMJ + stmt + " <--OrdersDao deleteOrder stmt" + RESET);
+		int row = stmt.executeUpdate();
+		return row;
+	}
+	
+	//상품 재고 수정: 주문하기 (주문시 재고 -1)
+	public int updateProductStock (int productNo, int orderCnt) throws Exception {
+		//DB접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement
+		String stockSql = "SELECT product_stock FROM product WHERE product_no = ?";
+		PreparedStatement stockStmt = conn.prepareStatement(stockSql);
+		stockStmt.setInt(1, productNo);
+		ResultSet stockRs = stockStmt.executeQuery();
+		int stock = 0;
+		if(stockRs.next()) {
+			stock = stockRs.getInt(1);
+		}
+		
+		String sql = "UPDATE product SET product_stock = ? WHERE product_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, stock-orderCnt);
+		stmt.setInt(2, productNo);
+		System.out.println(KMJ + stmt + " <--OrdersDao updateProductStock stmt" + RESET);
 		int row = stmt.executeUpdate();
 		return row;
 	}

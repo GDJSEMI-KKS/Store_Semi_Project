@@ -8,6 +8,28 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
+	/* //로그인 유효성 검사 : 로그아웃상태면 로그인창으로 리다이렉션
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/로그인.jsp");
+		System.out.println(KMJ + "adminReview 로그인 필요" + RESET);
+		return;
+	}
+	Object o = session.getAttribute("loginId" + " <-adminReview loginId");
+	String loginId = "";
+	if(o instanceof String){
+		loginId = (String)o;
+	} 
+	
+	//id가 employees테이블에 없는 경우(관리자가 아닌 경우) 홈으로 리다이렉션
+	IdListDao iDao = new IdListDao();
+	IdList loginLevel = iDao.selectIdListOne(loginId);
+	String idLevel = loginLevel.getIdLevel();
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;
+	}
+	*/
+	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
@@ -21,7 +43,8 @@
 	int rowPerPage = 10;
 	String answer = "all"; 
 	//beginRow와 rowPerPage, answer가 null이 아닌 경우에 변수에 저장
-	if(request.getParameter("currentPage") != null && request.getParameter("rowPerPage") != null){
+	if(request.getParameter("currentPage") != null 
+		&& request.getParameter("rowPerPage") != null){
 		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	} else if(request.getParameter("answer") != null){
@@ -35,16 +58,15 @@
 
 	int beginRow = (currentPage - 1)*rowPerPage;
 	
-	//review리스트 출력을 위한 dao타입객체생성
+	//리뷰목록 출력
 	ReviewDao rDao = new ReviewDao();
-	//리스트 받기
 	ArrayList<HashMap<String,Object>> list = rDao.selectReviewListByPage(beginRow, rowPerPage, answer);
 	System.out.println(KMJ + list.size() + " <--adminReview list.size()" + RESET);
 
 	//페이지네이션에 필요한 변수 선언: reviewCnt, lastPage, pagePerPage, startPage, endPage
 	int reviewCnt = rDao.selectReviewCnt(beginRow, rowPerPage, answer);
 	int lastPage = reviewCnt / rowPerPage;
-	//ordersCnt를 rowPerPage로 나눈 나머지가 있으면 lastPage + 1
+	//reviewCnt를 rowPerPage로 나눈 나머지가 있으면 lastPage + 1
 	if(reviewCnt % rowPerPage != 0){
 		lastPage = lastPage + 1;
 	}
@@ -74,9 +96,27 @@
 			<tr>
 				<th>답변여부</th>
 				<td>
-					<input type="radio" name="answer" value="all">전체
-					<input type="radio" name="answer" value="true">답변대기
-					<input type="radio" name="answer" value="false">답변완료
+					<%
+						if(answer.equals("all")){
+					%>
+							<input type="radio" name="answer" value="all" checked>전체
+							<input type="radio" name="answer" value="true">답변대기
+							<input type="radio" name="answer" value="false">답변완료
+					<%
+						} else if (answer.equals("true")){
+					%>
+							<input type="radio" name="answer" value="all">전체
+							<input type="radio" name="answer" value="true" checked>답변대기
+							<input type="radio" name="answer" value="false">답변완료
+					<%
+						} else {
+					%>
+							<input type="radio" name="answer" value="all">전체
+							<input type="radio" name="answer" value="true">답변대기
+							<input type="radio" name="answer" value="false" checked>답변완료
+					<%
+						}
+					%>
 				</td>
 				<td><button type="submit">보기</button></td>
 			</tr>
@@ -122,5 +162,68 @@
 			}
 		%>
 	</table>
+	<!-- 페이지네이션 -->
+	<ul class="pagination">
+		<!-- 첫페이지 -->
+		<li class="page-item">
+			<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=1">&#60;&#60;</a>
+		</li>
+		<!-- 이전 페이지블럭 (startPage - 1) -->
+		<%
+			if(startPage > 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
+		%>
+				<li class="page-item disabled"><a class="page-link" href="#">&#60;</a></li>
+		<%	
+			} else {
+		%>
+				<li class="page-item">
+					<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=<%=startPage-1%>">&#60;</a>
+				</li>
+		<%
+			}
+		%>
+		
+		<!-- 현재페이지 -->
+		<%
+			for(int i=startPage; i<=endPage; i+=1){ //startPage~endPage 사이의 페이지i 출력하기
+				if(currentPage == i){ //현재페이지와 i가 같은 경우에는 표시하기
+		%>
+				<li class="page-item active">
+					<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=<%=i%>">
+						<span class="sr-only"><%=i%></span>
+					</a>
+				</li>
+		<%
+				} else {
+		%>
+				<li class="page-item">
+					<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=<%=i%>">
+						<%=i%>
+					</a>
+				</li>
+		<%	
+				}
+			}
+		%>
+		<!-- 다음 페이지블럭 (endPage + 1) -->
+		<%
+			if(lastPage == endPage){ //마지막페이지에서는 '다음'버튼 비활성화
+		%>
+				<li class="page-item disabled"><a class="page-link" href="#">&#62;</a></li>
+		<%	
+			} else {
+		%>
+				<li class="page-item">
+					<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=<%=endPage+1%>">&#62;</a>
+				</li>
+		<%
+			}
+		%>
+		
+		<!-- 마지막페이지 -->
+		<li class="page-item">
+			<a class="page-link" href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=<%=lastPage%>">&#62;&#62;</a>
+		</li>
+	</ul>
 </body>
 </html>

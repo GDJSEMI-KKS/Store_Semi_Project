@@ -8,13 +8,13 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사
+	/* //로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
-		System.out.println(KMJ + "ordersAction 로그인 필요" + RESET);
+		response.sendRedirect(request.getContextPath()+"/로그인.jsp");
+		System.out.println(KMJ + "addReviewAnswerAction 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--ordersAction loginId");
+	Object o = session.getAttribute("loginId" + " <--addReviewAnswerAction loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -37,27 +37,30 @@
 	System.out.println(KMJ + request.getParameter("reviewAContent") + " <--addReviewAnswerAction param reviewAContent" + RESET);
 	
 	//요청값 유효성 검사
-	if(request.getParameter("reviewNo") == null || request.getParameter("reviewAContent") == null){
+	if(request.getParameter("reviewNo") == null 
+		|| request.getParameter("reviewAContent") == null){
 		response.sendRedirect(request.getContextPath()+"/admin_review/adminReview.jsp");
 		return;
 	}
 	int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
 	String reviewAContent = request.getParameter("reviewAContent");	
-	//변수 디버깅
 	System.out.println(KMJ + reviewNo + " <-addReviewAnswerAction reviewNo" + RESET);
 	System.out.println(KMJ + reviewAContent + " <-addReviewAnswerAction reviewAContent" + RESET);
+	
 	ReviewAnswer rAnswer = new ReviewAnswer();
 	rAnswer.setReviewNo(reviewNo);
 	rAnswer.setReviewAContent(reviewAContent);
 	
-	//입력을 위한 dao타입 객체생성
+	//review_answer테이블에 삽입
 	ReviewAnswerDao aDao = new ReviewAnswerDao();
 	int row = aDao.insertReviewAnswer(rAnswer);
 	
 	if(row == 0){
-		System.out.println(KMJ + "입력실패 addReviewAnswerAction" + RESET);
+		System.out.println(KMJ + row + " <--addReviewAnswerAction row 입력실패" + RESET);
 	} else {
-		System.out.println(KMJ + "입력성공 addReviewAnswerAction" + RESET);
+		System.out.println(KMJ + row + " <--addReviewAnswerAction row 입력성공" + RESET);
 	}
+	
+	//입력action완료 후 리뷰목록으로 리다이렉션
 	response.sendRedirect(request.getContextPath()+"/admin_review/adminReview.jsp?reviewNo="+reviewNo);
 %>

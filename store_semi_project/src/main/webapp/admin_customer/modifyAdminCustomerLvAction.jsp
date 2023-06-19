@@ -8,18 +8,18 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
+	//로그인 세션 유효성 검사: 로그아웃 상태이면 로그인창으로 리다이렉션
 	/* if(session.getAttribute("loginId") == null){
 		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "customerOne 로그인되어있지 않아 리다이렉션" + RESET);
+		System.out.println(KMJ + "modifyAdminCustomerLvAction 로그인필요" + RESET);
 		return;
 	}
-	String loginId = session.getAttribute(KMJ + "loginId" + " <--customerOne loginId" + RESET);*/
+	String loginId = session.getAttribute(KMJ + "loginId" + " <--modifyAdminCustomerLvAction loginId" + RESET);*/
 
 	/* //관리자가 아닌 경우 홈으로 리다이렉션
 	IdListDao iDao = new IdListDao();
 	IdList loginLevel = iDao.selectIdListOne(loginId);
-	int idLevel = loginLevel.getIdLevel();
+	String idLevel = loginLevel.getIdLevel();
 	if(idLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
@@ -28,9 +28,11 @@
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값이 넘어오는지 확인하기
-	System.out.println(request.getParameter("id") + " <--customerOne id" + RESET);
+	System.out.println(request.getParameter("id") + " <--modifyAdminCustomerLvAction param id" + RESET);
+	System.out.println(request.getParameter("name") + " <--modifyAdminCustomerLvAction param name" + RESET);
+	System.out.println(request.getParameter("idLevel") + " <--modifyAdminCustomerLvAction param idLevel" + RESET);
 	
-	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
+	//요청값 유효성 검사 : 요청값이 null인 경우 회원리스트로 리다이렉션
 	if(request.getParameter("id") == null 
 		|| request.getParameter("idLevel") == null
 		|| request.getParameter("name") == null){
@@ -40,7 +42,6 @@
 	String id = request.getParameter("id");
 	String idLevel = request.getParameter("idLevel");
 	String empName = request.getParameter("name");
-	
 	System.out.println(KMJ + id + " <--modifyAdminCustomerLvAction id" + RESET); 
 	System.out.println(KMJ + idLevel + " <--modifyAdminCustomerLvAction idLevel" + RESET);
 	System.out.println(KMJ + empName + " <--modifyAdminCustomerLvAction empName" + RESET);
@@ -50,7 +51,7 @@
 	employee.setEmpName(empName);
 	employee.setEmpLevel(idLevel);
 	
-	//사원목록에 추가
+	//해당 id를 employees테이블에 추가
 	EmployeesDao eDao = new EmployeesDao();
 	int row = eDao.insertEmployee(employee);
 	if(row == 1){
@@ -61,6 +62,7 @@
 	IdListDao iDao = new IdListDao();
 	int idRow = iDao.updateIdListIdLevel(id, Integer.parseInt(idLevel));
 	
+	//관리자로 등록 후 회원상세보기로 리다이렉션
 	response.sendRedirect(request.getContextPath()+"/admin_customer/customerOne.jsp?id="+id);
 
 %>
