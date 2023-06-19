@@ -6,7 +6,7 @@ import vo.*;
 import util.*;
 
 public class AddressDao {
-	//조회: 전체 목록 조회(주소는 10개까지만 추가 가능, 생성일 내림차순)
+	//조회: 전체 목록 조회(생성일 내림차순) / 고객상세-주소목록
 	public ArrayList<Address> selectAddressList(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -33,7 +33,7 @@ public class AddressDao {
 		return list;
 	}
 	
-	//조회: 행의 수 리턴
+	//조회: 행의 수 리턴(주소는 10개까지만 추가 가능)  / 고객상세-주소목록
 	public int selectAddressCnt(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -50,7 +50,7 @@ public class AddressDao {
 		return row;
 		}
 		
-	//조회: 주소이름에 따라 주소 리턴
+	//조회: 주소이름에 따라 주소 리턴 / 주문하기
 	public Address selectAddressName(String addressName) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -75,7 +75,7 @@ public class AddressDao {
 		return address; 
 	}
 	
-	//조회: 기본주소 리턴
+	//조회: 기본주소 리턴 / 고객상세-주소목록-주소수정
 	public Address selectDefaultAddress(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -83,6 +83,7 @@ public class AddressDao {
 		String sql = "SELECT address_no addressNo, id, address_name addressName, address, address_default addressDefault, address_last_date addressLastDate, createdate, updatedate "
 						+"FROM address WHERE id = ? AND address_default = 'Y'";
 		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
 		ResultSet rs = stmt.executeQuery();
 		//ResultSet->Address
 		Address address = null;
@@ -99,7 +100,7 @@ public class AddressDao {
 		return address; 
 	}
 	
-	//조회: 주소번호로 주소 리턴
+	//조회: 주소번호로 주소 리턴 / 고객상세-주소목록-주소수정
 	public Address selectAddressByOrderNo(int addressNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -124,7 +125,7 @@ public class AddressDao {
 		return address; 
 	}
 	
-	//삽입: 주소 데이터 추가
+	//삽입: 주소 데이터 추가 / 고객상세-주소목록-주소추가/주소수정
 	public int insertAddress(Address add) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -139,7 +140,7 @@ public class AddressDao {
 		return row;
 	}
 	
-	//수정
+	//수정: 주소 수정
 	public int updateAddress(Address address) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -154,7 +155,7 @@ public class AddressDao {
 		return row;
 	}
 	
-	//수정: 기본주소인 주소의 기본주소값을 N으로 변경
+	//수정: 기본주소인 주소의 기본주소값을 N으로 변경 / 고객상세-주소목록-주소수정
 		public int updateAddressDefault(String id) throws Exception {
 			DBUtil dbUtil = new DBUtil();
 			Connection conn = dbUtil.getConnection();
@@ -166,7 +167,7 @@ public class AddressDao {
 			return row;
 		}
 	
-	//수정: 주문이 완료되면 최근 주소사용 날짜 업데이트
+	//수정: 주문이 완료되면 최근 주소사용 날짜 업데이트 / 주문하기
 	public int updateAddressDate(int addressNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -178,7 +179,7 @@ public class AddressDao {
 		return row;
 	}
 	
-	//삭제
+	//삭제 / 고객상세-주소목록-삭제
 	public int deleteAddress(int addressNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();

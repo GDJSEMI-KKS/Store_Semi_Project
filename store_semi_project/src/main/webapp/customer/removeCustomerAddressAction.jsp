@@ -8,13 +8,17 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
-	/* if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "removeCustomerAddressAction 로그인되어있지 않아 리다이렉션" + RESET);
+	//로그인 세션 유효성 검사: 로그아웃 상태면 로그인창으로 리다이렉션
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(KMJ + request.getContextPath()+"/id_list/login.jsp" + RESET);
+		System.out.println(KMJ + "removeCustomerAddressAction 로그인필요" + RESET);
 		return;
 	}
-	String loginId = session.getAttribute(KMJ + "loginId" + " <--removeCustomerAddressAction loginId" + RESET);*/
+	Object o = session.getAttribute("loginId");
+	String loginId = "";
+	if(o instanceof String){
+		loginId = (String)o;
+	}
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
@@ -23,18 +27,17 @@
 	System.out.println(KMJ + request.getParameter("id") + " <--removeCustomerAddressAction param addNo" + RESET);
 	System.out.println(KMJ + request.getParameter("addNo") + " <--removeCustomerAddressAction param addNo" + RESET);
 	
-	String loginId = "user1";
-	
 	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null || request.getParameter("addNo") == null){
+	if(request.getParameter("id") == null 
+		|| request.getParameter("addNo") == null){
 		response.sendRedirect(KMJ + request.getContextPath()+"customer/addCustomerAddress.jsp?id=" + loginId + RESET);
 		return;
 	}
 	String id = request.getParameter("id");
 	int addNo = Integer.parseInt(request.getParameter("addNo"));
 	
-	System.out.println(KMJ + id + " <--addCustomerAddressAction id" + RESET); 
-	System.out.println(KMJ + addNo + " <--addCustomerAddressAction addNo" + RESET); 
+	System.out.println(KMJ + id + " <--removeCustomerAddressAction id" + RESET); 
+	System.out.println(KMJ + addNo + " <--removeCustomerAddressAction addNo" + RESET); 
 	
 	//기본주소는 삭제 불가
 	AddressDao aDao = new AddressDao();
@@ -44,5 +47,6 @@
 		System.out.println(KMJ + row + " <--removeCustomerAddressAction row 삭제성공" + RESET);
 	}
 	
+	//삭제action 완료 후 주소목록으로 리다이렉션
 	response.sendRedirect(request.getContextPath()+"/customer/addCustomerAddress.jsp?id="+id);
 %>

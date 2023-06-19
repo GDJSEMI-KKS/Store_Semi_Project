@@ -32,6 +32,24 @@ public class PointHistoryDao {
 		return list;
 	}
 	
+	//조회: id별 포인트의 수
+	public int SelectIdPointHistoryCnt(String id) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement 
+		String sql = "SELECT COUNT(*) cnt "
+				+ "FROM point_history "
+				+ "WHERE order_no IN(SELECT order_no FROM orders WHERE id = ?) ";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		ResultSet rs = stmt.executeQuery();
+		int row = 0;
+		if(rs.next()) {
+			row = rs.getInt(1);
+		}
+		return row;
+	}
+	
 	//조회: id별 포인트합계 조회
 	public int SelectIdPointSum(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();

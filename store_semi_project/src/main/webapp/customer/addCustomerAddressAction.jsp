@@ -8,13 +8,17 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
-	/* if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
-		System.out.println(KMJ + "modifyCustomer 로그인되어있지 않아 리다이렉션" + RESET);
+	//로그인 세션 유효성 검사: 로그아웃 상태면 로그인창으로 리다이렉션
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
+		System.out.println(KMJ + "customer/addCustomerAddressAction에서 리다이렉션" + RESET);
 		return;
 	}
-	String loginId = session.getAttribute(KMJ + "loginId" + " <--addCustomerAddressAction loginId" + RESET);*/
+	Object o = session.getAttribute("loginId");
+	String loginId = "";
+	if(o instanceof String){
+		loginId = (String)o;
+	}
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
@@ -26,15 +30,37 @@
 	System.out.println(KMJ + request.getParameter("addDefault") + " <--addCustomerAddressAction param addDefault" + RESET);
 	
 	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null || request.getParameter("addName") == null
-			|| request.getParameter("add") == null
-			|| request.getParameter("id").equals("") || request.getParameter("addName").equals("")){
-		response.sendRedirect(KMJ + request.getContextPath()+"/home.jsp" + RESET);
+	if(request.getParameter("id") == null 
+		|| request.getParameter("addName") == null
+		|| request.getParameter("add1") == null
+		|| request.getParameter("add2") == null
+		|| request.getParameter("id").equals("") 
+		|| request.getParameter("add1").equals("")
+		|| request.getParameter("add2").equals("")
+		|| request.getParameter("addName").equals("")){
+		response.sendRedirect(request.getContextPath()+"/customer/addCustomerAddress.jsp?id="+loginId);
+		System.out.println(KMJ + "customer/addCustomerAddressAction에서 리다이렉션" + RESET);
 		return;
 	}
 	String id = request.getParameter("id");
 	String addName = request.getParameter("addName");
-	String add = request.getParameter("add");
+	
+	//우편번호와 추가내용은 없어도 되는 내용이므로 null이 아닌 경우에만 합쳐서 주소에 저장
+	String add1 = request.getParameter("add1"); 
+	String add2 = request.getParameter("add2");
+	String zip = "*";
+	String add3 = "*";
+	if(request.getParameter("zip") != null 
+			&& !request.getParameter("zip").equals("")){
+		zip = request.getParameter("zip");
+	}
+	if(request.getParameter("add3") != null
+			&& !request.getParameter("add3").equals("")){
+		add3 = request.getParameter("add3");
+	}
+	String[] addArr = {zip, add1, add3, add2};
+	String add = String.join("-", addArr); //DB에 저장되는 주소
+	
 	String addDefault = "N"; //체크박스 체크되어있으면 on,아니면 null
 	if(request.getParameter("addDefault") != null){
 		addDefault = "Y";
@@ -66,6 +92,7 @@
 		System.out.println(KMJ + insertRow + " <--addCustomerAddressAction inserRow 추가여부" + RESET);
 	}
 	
+	//주소추가action 후 주소목록으로 리다이렉션
 	response.sendRedirect(request.getContextPath()+"/customer/addCustomerAddress.jsp?id="+id);
 
 %>

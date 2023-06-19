@@ -84,6 +84,7 @@ public class ReviewDao {
 			m.put("reviewContent", rs.getString("reviewContent"));
 			m.put("reviewCheckCnt", rs.getString("reviewCheckCnt"));
 			m.put("createdate", rs.getString("createdate"));
+			m.put("updatedate", rs.getString("updatedate"));
 			m.put("id", rs.getString("id"));
 			m.put("reviewOrgFilename", rs.getString("reviewOrgFilename"));
 			m.put("reviewSaveFilename", rs.getString("reviewSaveFilename"));
@@ -128,30 +129,6 @@ public class ReviewDao {
 		return row;
 	}
 	
-	//조회: Id별 리뷰
-	public Review selectReviewById(int id) throws Exception {
-		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
-		//PreparedStatement
-		String sql = "SELECT order_no orderNo, review_title reviewTitle, review_content reviewContent, review_check_cnt reviewCheckCnt, createdate, updatedate "
-				+ "FROM review WHERE order_no IN (SELECT order_no orderNo FROM orders WHERE id = ?)";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
-		stmt.setInt(1, id);
-		Review review = null;
-		if(rs.next()) {
-			review = new Review();
-			review.setReviewNo(rs.getInt("reviewNo"));
-			review.setOrderNo(rs.getInt("orderNo"));
-			review.setReviewTitle(rs.getString("reviewTitle"));
-			review.setReviewContent(rs.getString("reviewContent"));
-			review.setReviewCheckCnt(rs.getInt("reviewCheckCnt"));
-			review.setCreatedate(rs.getString("createdate"));
-			review.setUpdatedate(rs.getString("updatedate"));
-		}
-		return review;
-	}
-	
 	//조회: 리뷰번호별 리뷰
 	public HashMap<String, Object> selectReviewByReviewNo(int reviewNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
@@ -166,7 +143,7 @@ public class ReviewDao {
 				+ "FROM review r INNER JOIN orders o "
 				+ "ON r.order_no = o.order_no) t1 LEFT OUTER JOIN review_img t2 "
 				+ "ON t1.orderNo = t2.order_no "
-				+ "WHERE t1.reviewNo = ?";
+				+ "WHERE t1.reviewNo = ? ";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, reviewNo);
 		System.out.println(stmt + " <--revieDao");
@@ -180,12 +157,106 @@ public class ReviewDao {
 			map.put("reviewContent", rs.getString("reviewContent"));
 			map.put("reviewCheckCnt", rs.getString("reviewCheckCnt"));
 			map.put("createdate", rs.getString("createdate"));
+			map.put("updatedate", rs.getString("updatedate"));
 			map.put("id", rs.getString("id"));
 			map.put("reviewOrgFilename", rs.getString("reviewOrgFilename"));
 			map.put("reviewSaveFilename", rs.getString("reviewSaveFilename"));
 			map.put("reviewFiletype", rs.getString("reviewFiletype"));
 		}
 		return map;
+	}
+	
+	//조회: 주문번호별 리뷰
+	public HashMap<String, Object> selectReviewByOrderNo(int orderNo) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement
+		//답변여부에 따라 검색
+		String sql = "SELECT reviewNo, orderNo, reviewTitle, reviewContent, reviewCheckCnt, t1.createdate, t1.updatedate, id, "
+				+ "t2.review_ori_filename reviewOrgFilename, t2.review_save_filename reviewSaveFilename, t2.review_filetype reviewFiletype "
+				+ "FROM "
+				+ "(SELECT r.review_no reviewNo, r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, "
+				+ "r.review_check_cnt reviewCheckCnt, r.createdate, r.updatedate, o.id "
+				+ "FROM review r INNER JOIN orders o "
+				+ "ON r.order_no = o.order_no) t1 LEFT OUTER JOIN review_img t2 "
+				+ "ON t1.orderNo = t2.order_no "
+				+ "WHERE t1.orderNo = ? ";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, orderNo);
+		System.out.println(stmt + " <--revieDao");
+		ResultSet rs = stmt.executeQuery();
+		HashMap<String, Object> map = null;
+		if(rs.next()) {
+			map = new HashMap<String, Object>();
+			map.put("reviewNo", rs.getInt("reviewNo"));
+			map.put("orderNo", rs.getInt("orderNo"));
+			map.put("reviewTitle", rs.getString("reviewTitle"));
+			map.put("reviewContent", rs.getString("reviewContent"));
+			map.put("reviewCheckCnt", rs.getString("reviewCheckCnt"));
+			map.put("createdate", rs.getString("createdate"));
+			map.put("updatedate", rs.getString("updatedate"));
+			map.put("id", rs.getString("id"));
+			map.put("reviewOrgFilename", rs.getString("reviewOrgFilename"));
+			map.put("reviewSaveFilename", rs.getString("reviewSaveFilename"));
+			map.put("reviewFiletype", rs.getString("reviewFiletype"));
+		}
+		return map;
+	}
+	
+	//조회: id별 리뷰리스트
+	public ArrayList<HashMap<String, Object>> selectReviewListById(String id, int beginRow, int rowPerPage) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement
+		//답변여부에 따라 검색
+		String sql = "SELECT reviewNo, orderNo, reviewTitle, reviewContent, reviewCheckCnt, t1.createdate, t1.updatedate, id, "
+				+ "t2.review_ori_filename reviewOrgFilename, t2.review_save_filename reviewSaveFilename, t2.review_filetype reviewFiletype "
+				+ "FROM "
+				+ "(SELECT r.review_no reviewNo, r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, "
+				+ "r.review_check_cnt reviewCheckCnt, r.createdate, r.updatedate, o.id "
+				+ "FROM review r INNER JOIN orders o "
+				+ "ON r.order_no = o.order_no) t1 LEFT OUTER JOIN review_img t2 "
+				+ "ON t1.orderNo = t2.order_no "
+				+ "WHERE t1.id = ? LIMIT ?, ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		stmt.setInt(2, beginRow);
+		stmt.setInt(3, rowPerPage);
+		System.out.println(stmt + " <--revieDao");
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+		while(rs.next()) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("reviewNo", rs.getInt("reviewNo"));
+			map.put("orderNo", rs.getInt("orderNo"));
+			map.put("reviewTitle", rs.getString("reviewTitle"));
+			map.put("reviewContent", rs.getString("reviewContent"));
+			map.put("reviewCheckCnt", rs.getString("reviewCheckCnt"));
+			map.put("createdate", rs.getString("createdate"));
+			map.put("updatedate", rs.getString("updatedate"));
+			map.put("id", rs.getString("id"));
+			map.put("reviewOrgFilename", rs.getString("reviewOrgFilename"));
+			map.put("reviewSaveFilename", rs.getString("reviewSaveFilename"));
+			map.put("reviewFiletype", rs.getString("reviewFiletype"));
+		}
+		return list;
+	}
+	
+	//조회: id별 리뷰의 수
+	public int selectReviewCntById(String id) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement
+		String sql = "SELECT COUNT(*) FROM review WHERE id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, id);
+		ResultSet rs = stmt.executeQuery();
+		System.out.println(stmt + " <--ordersDao selectReviewCntByOrderNo");
+		int row = 0;
+		if(rs.next()) {
+			row = rs.getInt(1);
+		}
+		return row;
 	}
 	
 	//조회: 주문번호별 리뷰의 수
@@ -195,8 +266,9 @@ public class ReviewDao {
 		//PreparedStatement
 		String sql = "SELECT COUNT(*) FROM review WHERE order_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
 		stmt.setInt(1, orderNo);
+		ResultSet rs = stmt.executeQuery();
+		System.out.println(stmt + " <--ordersDao selectReviewCntByOrderNo");
 		int row = 0;
 		if(rs.next()) {
 			row = rs.getInt(1);

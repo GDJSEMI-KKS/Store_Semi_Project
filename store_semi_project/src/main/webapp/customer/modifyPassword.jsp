@@ -60,6 +60,7 @@
                   <ul class="nav nav-pills flex-column">
 	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
 	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
+	                  <a href="<%=request.getContextPath()%>/customer/customerReviewList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>리뷰목록</a>
 	                  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
                 </div>
               </div>
@@ -85,7 +86,7 @@
                     </div>
                   </div>
                   <!-- /.row-->
-                  <div class="col-md-12 text-center">
+                  <div class="box-footer d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>비밀번호변경</button>
                   </div>
                 </form>

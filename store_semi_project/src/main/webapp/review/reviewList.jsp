@@ -11,7 +11,7 @@
 	/* //로그인 유효성 검사
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
-		System.out.println(KMJ + "ordersAction 로그인 필요" + RESET);
+		System.out.println(KMJ + "reviewList 로그인 필요" + RESET);
 		return;
 	}
 	Object o = session.getAttribute("loginId" + " <--ordersAction loginId");
@@ -19,15 +19,7 @@
 	if(o instanceof String){
 		loginId = (String)o;
 	} 
-	
-	//관리자가 아닌 경우 홈으로 리다이렉션
-	IdListDao iDao = new IdListDao();
-	IdList loginLevel = iDao.selectIdListOne(loginId);
-	int idLevel = loginLevel.getIdLevel();
-	if(idLevel == 0){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
-		return;
-	}
+
 	*/
 	String loginId = "user1"; //test용: 삭제예정
 	System.out.println(KMJ + loginId + " <--ordersAction loginId");
@@ -37,7 +29,7 @@
 	
 	int productNo = 1;
 	int rCurrPage = 1;
-	int rRowPerPage = 10;
+	int rRowPerPage = 5;
 	int rBeginRow = (rCurrPage - 1)*rRowPerPage;
 	
 	//요청값 유효성검사

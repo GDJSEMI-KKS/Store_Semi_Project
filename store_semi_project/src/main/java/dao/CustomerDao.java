@@ -144,6 +144,19 @@ public class CustomerDao {
 		return row;
 	}
 	
+	//수정: 주소 업데이트
+	public int updateAddress(String id, String addr) throws Exception {
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		//PreparedStatement
+		String sql = "UPDATE customer SET cstm_address = ? WHERE id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, addr);
+		stmt.setString(2, id);
+		int row = stmt.executeUpdate();
+		return row;
+	}
+	
 	//수정: 마지막로그인 업데이트
 	public int updateLastLogin(String id) throws Exception {
 		DBUtil dbUtil = new DBUtil();
@@ -161,7 +174,7 @@ public class CustomerDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
-		String sql = "UPDATE customer SET cstm_sum_price = (SELECT sum(order_price) sumPrice FROM orders WHERE id = ? AND delevery_status = '배송완료')";
+		String sql = "UPDATE customer SET cstm_sum_price = (SELECT nvl(sum(order_price),0) sumPrice FROM orders WHERE id = ? AND delivery_status = '배송완료')";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, id);
 		int row = stmt.executeUpdate();
