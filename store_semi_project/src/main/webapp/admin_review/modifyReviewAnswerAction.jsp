@@ -8,13 +8,13 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
+	//로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "modifyReviewAnswerAction 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--modifyReviewAnswerAction loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -28,28 +28,30 @@
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
 	}
-	*/
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값이 넘어오는지 확인하기
 	System.out.println(KMJ + request.getParameter("reviewNo") + " <--modifyReviewAnswerAction param reviewNo" + RESET);
-	System.out.println(KMJ + request.getParameter("reviewAContent") + " <--modifyReviewAnswerAction param reviewAContent" + RESET);
+	System.out.println(KMJ + request.getParameter("modAContent") + " <--modifyReviewAnswerAction param modAContent" + RESET);
 	
 	//요청값 유효성 검사
-	if(request.getParameter("reviewAnswer") == null 
-		|| request.getParameter("reviewAContent") == null){
-		response.sendRedirect(request.getContextPath()+"/admin_review/adminReview.jsp");
+	if(request.getParameter("reviewNo") == null){
+		response.sendRedirect(request.getContextPath()+"/admin_review/addReviewAnswer.jsp");
+		return;
+	} else if(request.getParameter("modAContent") == null
+		|| request.getParameter("modAContent").equals("")){
+		response.sendRedirect(request.getContextPath()+"/admin_review/addReviewAnswer.jsp?reviewNo="+Integer.parseInt(request.getParameter("reviewNo")));
 		return;
 	}
 	int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
-	String reviewAContent = request.getParameter("reviewAContent");	
+	String modAContent = request.getParameter("modAContent");	
 	System.out.println(KMJ + reviewNo + " <--modifyReviewAnswerAction reviewNo" + RESET);
 	
 	ReviewAnswer rAnswer = new ReviewAnswer();
 	rAnswer.setReviewNo(reviewNo);
-	rAnswer.setReviewAContent(reviewAContent);
+	rAnswer.setReviewAContent(modAContent);
 	
 	//review_answer테이블 수정
 	ReviewAnswerDao rDao = new ReviewAnswerDao();
@@ -61,6 +63,6 @@
 		System.out.println(KMJ + row + " <--modifyReviewAnswerAction row 수정성공" + RESET);
 	}
 	
-	//리뷰수정action 완료 후 리뷰목록으로 리다이렉션
-	response.sendRedirect(request.getContextPath()+"/admin_review/adminReview.jsp?reviewNo="+reviewNo);
+	//리뷰수정action 완료 후 리뷰 상세로 리다이렉션
+	response.sendRedirect(request.getContextPath()+"/admin_review/addReviewAnswer.jsp?reviewNo="+reviewNo);
 %>

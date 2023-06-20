@@ -8,13 +8,13 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사 : 로그아웃상태면 로그인창으로 리다이렉션
+	//로그인 유효성 검사 : 로그아웃상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/로그인.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "adminOrders 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--adminOrders loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -23,14 +23,11 @@
 	//id가 employees테이블에 없는 경우(관리자가 아닌 경우) 홈으로 리다이렉션
 	IdListDao iDao = new IdListDao();
 	IdList loginLevel = iDao.selectIdListOne(loginId);
-	String idLevel = loginLevel.getIdLevel();
+	int idLevel = loginLevel.getIdLevel();
 	if(idLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
 	}
-	*/
-	
-	String id = "user1"; //테스트용 삭제예정
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
@@ -134,10 +131,10 @@
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=id%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>회원관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>주문관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
                 </div>
               </div>
               <!-- /.col-lg-3-->
@@ -148,7 +145,7 @@
               	<!-- 상세정보 -->
 				<div>
 					
-					<form action="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp" method="post">
+					<form method="post">
 					  <fieldset>
 						<legend>검색</legend>
 						<input type="hidden" name="currentPage" value="<%=currentPage%>">
@@ -178,35 +175,32 @@
 							 </table>
 							</div>
 							<div>
-								<button type="submit" class="btn btn-primary">
+								<button type="submit" class="btn btn-primary" formaction="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp" >
 		                    	<i class="fa fa-save"></i>
 								검색</button>
 							</div>
 						</div>
 					  </fieldset>
-					</form>
 					<br>
 					<br>
 					<!-- 주문목록 -->
 					<h1>주문정보</h1>
 					<div>
-						<button type="submit" class="btn btn-primary btn-sm">
+						<button type="submit" class="btn btn-primary btn-sm" formaction="<%=request.getContextPath()%>/admin_orders/modfyStatusAction.jsp">
                     	<i class="fa fa-save"></i>
 						변경적용</button>
 					</div>
 					<hr>
 					<table class="table">
 						<tr>
-							<th>주문번호</th>
+							<th>번호</th>
 							<th>아이디</th>
-							<th>카테고리</th>
-							<th>상품번호</th>
-							<th>주문수량</th>
-							<th>주문금액</th>
+							<th>상품</th>
+							<th>수량</th>
+							<th>금액</th>
 							<th>결제상태</th>
 							<th>배송상태</th>
-							<th>주문일시</th>
-							<th>수정일시</th>
+							<th>주문일</th>
 						</tr>
 						<%
 							for(HashMap<String, Object> m : list){
@@ -214,29 +208,18 @@
 								<tr>
 									<td><%=m.get("orderNo")%></td>
 									<td><%=m.get("id")%></td>
-									<td><%=m.get("categoryName")%></td>
-									<td><%=m.get("productNo")%></td>
+									<td><%=m.get("productName")%></td>
 									<td><%=m.get("orderCnt")%></td>
 									<td><%=m.get("orderPrice")%></td>
-									<td>
-										<select class="form-control">
-											<option value="결제대기">결제대기</option>
-											<option value="결제완료">결제완료</option>
-											<option value="취소">취소</option>
-											<option value="환불">환불</option>
-										</select>
-										<%=m.get("paymentStatus")%>
-									</td>
-									<td>
-										<%=m.get("deliveryStatus")%>
-									</td>
+									<td><span id="paymentStatus" class="badge"><%=m.get("paymentStatus")%></span></td>
+									<td><span id="deliveryStatus" class="badge"><%=m.get("deliveryStatus")%></span></td>
 									<td><%=m.get("createdate").toString().substring(0,10)%></td>
-									<td><%=m.get("updatedate").toString().substring(0,10)%></td>
 								</tr>
 						<%
 							}
 						%>
 					</table>
+					</form>
 					</div>
 					<!-- 페이지네이션 -->
 					<div class="d-flex justify-content-center">
@@ -316,5 +299,72 @@
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
 <jsp:include page="/inc/script.jsp"></jsp:include>
+<script>
+	//배송 및 결제상태에 따른 CSS 적용
+	const payStat = document.querySelectorAll("#paymentStatus");
+	const delStat = document.querySelectorAll("#deliveryStatus");
+	
+	payStat.forEach(function(item, index){
+		if(item.innerHTML === "결제대기"){
+			item.classList.add("badge-warning");
+		} else if(item.innerHTML === "결제완료"){
+			item.classList.add("badge-success");
+		} else if(item.innerHTML === "취소"){
+			item.classList.add("badge-danger");
+		} else {
+			item.classList.add("badge-secondary");
+		}
+	});
+	
+	delStat.forEach(function(item, index){
+		if(item.innerHTML === "발송준비"){
+			item.classList.add("badge-warning");
+		} else if(delStat.innerHTML === "발송완료"){
+			item.classList.add("badge-primary");
+		} else if(delStat.innerHTML === "배송중"){
+			item.classList.add("badge-secondary");
+		} else if(delStat.innerHTML === "배송완료"){
+			item.classList.add("badge-info");
+		} else {
+			item.classList.add("badge-success");
+		}
+	});
+	
+	// 검색 체크박스 유지 : chatGpt 참고
+	// 페이지 로드 시 저장된 checkbox 상태 복원
+	restoreCheckboxState();
+	  
+	// checkbox가 변경될 때마다 상태 저장
+	$("input[type='checkbox']").on("change", function() {
+		saveCheckboxState();
+	});
+	
+	function saveCheckboxState() {
+	// checkbox 상태를 저장하기 위해 localStorage 사용
+	$("input[type='checkbox']").each(function() {
+	     let name = $(this).attr("name");
+	     let value = $(this).val();
+	     let isChecked = $(this).is(":checked");
+	   
+	     localStorage.setItem(name + "_" + value, isChecked); //name_value:checked
+	   });
+	}
+	
+	function restoreCheckboxState() {
+	// 저장된 checkbox 상태 복원
+	$("input[type='checkbox']").each(function() {
+	   	let name = $(this).attr("name");
+	    let value = $(this).val();
+	    let isChecked = localStorage.getItem(name + "_" + value); //name_value
+	  
+	     if (isChecked === "true") { //name_value:checked이면,
+	       $(this).prop("checked", true); //자바스크립트 객체의 checked속성은 true
+	     } else {
+	       $(this).prop("checked", false); //자바스크립트 객체의 checked속성은 false
+	     }
+	   });
+	}
+
+</script>
 </body>
 </html>	

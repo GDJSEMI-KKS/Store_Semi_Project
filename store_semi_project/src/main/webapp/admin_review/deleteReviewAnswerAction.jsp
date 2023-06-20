@@ -8,13 +8,13 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
+	//로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		System.out.println(KMJ + "deleteReviewAnswerAction 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--deleteReviewAnswerAction loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -28,7 +28,6 @@
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
 	}
-	*/
 	
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
@@ -55,5 +54,5 @@
 	}
 	
 	//리뷰삭제action완료 후 리뷰목록으로 리다이렉션
-	response.sendRedirect(request.getContextPath()+"/admin_review/adminReview.jsp?reviewNo="+reviewNo);
+	response.sendRedirect(request.getContextPath()+"/admin_review/addReviewAnswer.jsp?reviewNo="+reviewNo);
 %>

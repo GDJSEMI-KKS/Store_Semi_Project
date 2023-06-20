@@ -26,13 +26,13 @@ public class ReviewDao {
 					+ "a.aCnt cnt, r.createdate createdate, r.updatedate updatedate "
 					+ "FROM review r LEFT OUTER JOIN (SELECT review_no, COUNT(*) aCnt FROM review_answer GROUP BY review_no) a "
 					+ "ON r.review_no = a.review_no "
-					+ "AND aCnt = 0";
+					+ "WHERE aCnt IS NULL"; //LEFT JOIN이므로 review_answer가 없으면 aCnt컬럼이 null이다 
 		} else { //답변이 있는 데이터만 조회
 			sql = "SELECT r.review_no reviewNo, r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.review_check_cnt reviewCheckCnt, "
 					+ "a.aCnt cnt, r.createdate createdate, r.updatedate updatedate "
 					+ "FROM review r LEFT OUTER JOIN (SELECT review_no, COUNT(*) aCnt FROM review_answer GROUP BY review_no) a "
 					+ "ON r.review_no = a.review_no "
-					+ "AND aCnt > 0";
+					+ "WHERE aCnt > 0";
 		}
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		System.out.println(stmt + " <--ReviewDao");

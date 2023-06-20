@@ -26,7 +26,7 @@ public class OrdersDao {
 		PreparedStatement stmt = null;
 		//PreparedStatement
 		if(payStat == null && delStat == null) { //검색조건이 모두 null인 경우
-			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
+			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, p.product_name productName, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
 					+ "o.delivery_status deliveryStatus, o.createdate createdate, o.updatedate updatedate "
 					+ "FROM orders o INNER JOIN product p "
 					+ "ON o.product_no = p.product_no "
@@ -37,7 +37,7 @@ public class OrdersDao {
 			stmt.setInt(2, rowPerPage);
 			
 		} else if (delStat == null){ //payStat만 선택된 경우
-			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
+			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, p.product_name productName, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
 					+ "o.delivery_status deliveryStatus, o.createdate, o.updatedate "
 					+ "FROM orders o INNER JOIN product p "
 					+ "ON o.product_no = p.product_no "
@@ -53,7 +53,7 @@ public class OrdersDao {
 					stmt.setInt(payStat.length + 1, beginRow);
 					stmt.setInt(payStat.length + 2, rowPerPage);
 		} else if (payStat == null) { //delStat만 선택된 경우
-			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
+			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, p.product_name productName, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
 					+ "o.delivery_status deliveryStatus, o.createdate, o.updatedate "
 					+ "FROM orders o INNER JOIN product p "
 					+ "ON o.product_no = p.product_no "
@@ -69,7 +69,7 @@ public class OrdersDao {
 					stmt.setInt(delStat.length + 1, beginRow);
 					stmt.setInt(delStat.length + 2, rowPerPage);
 		} else { //검색조건이 모두 선택된 경우
-			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
+			sql = "SELECT o.order_no orderNo, o.id, p.category_name categoryName, o.product_no productNo, p.product_name productName, o.order_cnt orderCnt, o.order_price orderPrice, o.payment_status paymentStatus, "
 					+ "o.delivery_status deliveryStatus, o.createdate, o.updatedate "
 					+ "FROM orders o INNER JOIN product p "
 					+ "ON o.product_no = p.product_no "
@@ -103,6 +103,7 @@ public class OrdersDao {
 			m.put("id", rs.getString("id"));
 			m.put("categoryName",rs.getString("categoryName"));
 			m.put("productNo", rs.getInt("productNo"));
+			m.put("productName", rs.getString("productName"));
 			m.put("orderCnt", rs.getInt("orderCnt"));
 			m.put("orderPrice", rs.getInt("orderPrice"));
 			m.put("paymentStatus", rs.getString("paymentStatus"));
