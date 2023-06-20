@@ -44,6 +44,7 @@ public class CategoryDao {
 		
 		String sql = "SELECT category_name categoryName, createdate, updatedate FROM category WHERE category_name = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, categoryName);
 		ResultSet rs = stmt.executeQuery();
 		
 		if(rs.next()) {
@@ -53,10 +54,10 @@ public class CategoryDao {
 	}
 	
 	// 삽입
-	public int insertCategory(Category category) throws Exception {
+	public int insertCategory(String categoryName) throws Exception {
 		
 		// 유효성 검사
-		if(category == null) {
+		if(categoryName == null) {
 			System.out.println("입력 error");
 			return 0;
 		}
@@ -66,7 +67,7 @@ public class CategoryDao {
 		
 		String sql = "INSERT INTO category (category_name, createdate, updatedate) VALUES (?, NOW(), NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, category.getCategoryName());
+		stmt.setString(1, categoryName);
 		int row = stmt.executeUpdate();
 		
 		return row;
@@ -87,7 +88,7 @@ public class CategoryDao {
 		String sql = "UPDATE category SET category_name = ?, updatedate = NOW() WHERE category_name = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, updateCategoryName);
-		stmt.setString(2, updateCategoryName);
+		stmt.setString(2, categoryName);
 		int row = stmt.executeUpdate();
 		
 		return row;
