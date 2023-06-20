@@ -11,7 +11,7 @@
 	//요청값 유효성 검사
 	if(request.getParameter("p.productNo") == null  
 		|| request.getParameter("p.productNo").equals("")) {
-		// subjectList.jsp으로
+		// 
 		response.sendRedirect(request.getContextPath() + "/product/productList.jsp");
 		return;
 	}
@@ -26,6 +26,6 @@
 	if(row == 1){
 		System.out.println(SJ + "상품 삭제 성공" + RE);
 	}
-	// subjectList.jsp으로
+	// 
 	response.sendRedirect(request.getContextPath() + "/product/productList.jsp");
 %>

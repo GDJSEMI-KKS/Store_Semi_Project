@@ -99,7 +99,17 @@
 	int rowPerPage = 10;
 	// 상품문의 출력을 위한 리스트
 	ArrayList<Question> pList = qDao.selectQuestionListByPage(product, beginRow, rowPerPage);
-		
+	
+	// 아이디 레벨 검사 
+	IdListDao iDao = new IdListDao();
+	IdList idList = new IdList();
+	int idLevel = idList.getIdLevel();
+	System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
+	
+	// 문의 객체 생성
+	Question question = new Question();
+	question.setProductNo(productNo);
+
 %>
 <!DOCTYPE html>
 <html>
@@ -246,7 +256,7 @@
 		</table>
 		</form>
 	</div>
-	<form action="<%=request.getContextPath()%>/question/modifyQuestion.jsp?p.productNo=<%=productNo%>" method="post">
+	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
 		<table>
 			<tr>
 				<th >p no.</th>
@@ -257,6 +267,7 @@
 				<th >문의 내용</th>
 				<th >등록일</th>
 				<th >수정일</th>
+				<th >조회수</th>
 			</tr>
 			<%
 				for(Question q : pList) {
@@ -266,7 +277,7 @@
 			<tr>
 				<td><%=productNo%></td>
 				<td>
-					<a href="<%=request.getContextPath()%>/question/questionDetail.jsp?p.productNo=<%=productNo%>">
+					<a href="<%=request.getContextPath()%>/question/questionDetail.jsp?qNo=<%=q.getqNo()%>">
 						<%=q.getqNo()%>
 					</a>
 				</td>
@@ -276,9 +287,21 @@
 				<td><%=q.getqContent()%></td>
 				<td><%=q.getCreatedate()%></td>
 				<td><%=q.getUpdatedate()%></td>
+				<td><%=q.getqCheckCnt()%></td>
 			</tr>
 			<%	
 				}
+				//if(idLevel ==0 ) {
+			%>
+			<tr>
+				<td>
+					<a href="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>">
+						<button type="button">문의 입력</button>
+					</a>
+				</td>
+			</tr>
+			<%
+				//}
 			%>
 		</table>
 	</form>

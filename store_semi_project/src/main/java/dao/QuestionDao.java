@@ -28,7 +28,31 @@ public class QuestionDao {
 		}
 		return row;
 		}
-
+	//	조회수 증가를 위한 메서드
+	public Question selectQCheckCnt(int qCheckCnt, int qNo) throws Exception {
+		if(qNo == 0) {
+			System.out.println(SJ +"잘못된 매개변수	<-- QuestionDao selectQuestion메서드" + RE);
+			return null;
+		}
+		Question question = null;
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		// sql 전송 후 결과셋 반환받아 저장
+		/*
+		UPDATE question SET q_check_cnt = ? WHERE q_no = ?
+		 */
+		String sql = "UPDATE question SET q_check_cnt = ? WHERE q_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, qCheckCnt);
+		stmt.setInt(2, qNo);
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			question = new Question();
+			question.setqCheckCnt(rs.getInt("qCheckCnt"));
+		}
+		return question;
+	}
 	// =============상세페이지 내 상품문의==============
 	// 상품문의 리스트
 	public ArrayList<Question> selectQuestionListByPage(Product product, int beginRow, int rowPerPage) throws Exception {
@@ -91,13 +115,13 @@ public class QuestionDao {
 	/*
 	SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, q_check_cnt qCheckCnt, createdate, updatedate
 	FROM question
-	WHERE product_no = 1
+	WHERE q_no = ?
 	ORDER BY productNo asc
 	 */
 	String sql = "SELECT q_no qNo, product_no productNo, id, q_category qCategory, q_title qTitle, q_content qContent, q_check_cnt qCheckCnt, createdate, updatedate\r\n"
-			+ "FROM question\r\n"
-			+ "WHERE product_no = ?\r\n"
-			+ "ORDER BY productNo asc";
+			+ "	FROM question\r\n"
+			+ "	WHERE q_no = ?\r\n"
+			+ "	ORDER BY productNo asc";
 	PreparedStatement stmt = conn.prepareStatement(sql);
 	stmt.setInt(1, qNo);
 	ResultSet rs = stmt.executeQuery();

@@ -102,7 +102,7 @@
 	int row = pDao.insertProduct(product, productImg);
 	
 	if(row == 1){
-		System.out.println(SJ+ "상품 추가 성공"+RE);
+		System.out.println(SJ+ "문의 추가 성공"+RE);
 	}
 	
 	

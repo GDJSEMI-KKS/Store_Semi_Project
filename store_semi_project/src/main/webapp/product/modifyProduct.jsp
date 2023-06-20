@@ -8,7 +8,7 @@
 	// 요청값 유효성 검사
 	if(request.getParameter("p.productNo") == null  
 		|| request.getParameter("p.productNo").equals("")) {
-		// subjectList.jsp으로
+		
 		response.sendRedirect(request.getContextPath() + "/product/productList.jsp");
 		return;
 	}
