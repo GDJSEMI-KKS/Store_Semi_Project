@@ -8,6 +8,34 @@
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
 	System.out.println(SJ+ "modifyQuestionAction 시작" + RE);
+	
+	/* session 유효성 검사
+	* session 값이 null이면 redirection. return.
+	*/
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	 * IdListDao selectIdListOne(loginId) method 호출
+	*/
+	
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	int qNo = Integer.parseInt(request.getParameter("qNo"));

@@ -8,6 +8,33 @@
 	final String SJ = "\u001B[44m";
 	request.setCharacterEncoding("utf-8");
 	
+	/* session 유효성 검사
+	* session 값이 null이면 redirection. return.
+	*/
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	 * IdListDao selectIdListOne(loginId) method 호출
+	*/
+	
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
 	if(request.getParameter("qNo") == null  
 			|| request.getParameter("qNo").equals("")) {
 			response.sendRedirect(request.getContextPath() + "/product/productDetail.jsp");
@@ -16,7 +43,6 @@
 	
 	IdListDao iDao = new IdListDao();
 	QuestionDao qDao = new QuestionDao();
-	IdList idList = new IdList();
 	Question question = new Question();
 	int qNo = Integer.parseInt(request.getParameter("qNo"));
 	Question qList = qDao.selectQuestion(qNo);
@@ -97,12 +123,18 @@
 			</tr>
 			<tr>
 			<tr>
+			<%
+				if(loginId == id) {
+			%>
 				<td>
 					<button type = "submit">문의 수정</button>
 					<a href="<%=request.getContextPath()%>/question/removeQuestionAction.jsp?qNo=<%=qNo%>">
 						<button type="button">삭제</button>
 					</a>
 				</td>
+			<%
+				}
+			%>
 			</tr>
 		</table>
 		</form>

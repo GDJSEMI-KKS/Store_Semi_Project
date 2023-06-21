@@ -6,14 +6,7 @@
 <%	
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
-	/*
-	//로그인 유효성 검사 : 로그아웃 상태면 어드민 홈으로
-		if(session.getAttribute("loginId") == null){
-			response.sendRedirect(request.getContextPath()+"/adminHome.jsp");
-			System.out.println(SJ + "productList 로그인 필요" + RE);
-			return;
-		}
-	*/
+	
 	// 아이디 레벨 검사 
 	IdListDao iDao = new IdListDao();
 	IdList idList = new IdList();
@@ -88,8 +81,6 @@
 	System.out.println(SJ+ dEndYear + RE );
 	System.out.println(SJ+ dEndMonth + RE );
 	System.out.println(SJ+ dEndDay + RE );
-	if((dStartYear >= todayYear && dStartMonth >= todayMonth&& dStartDay >= todayDate)
-			|| dEndYear >= todayYear && dEndMonth >= todayMonth&& dEndDay >= todayDate) 
 	
 	
 %>
@@ -107,6 +98,10 @@
 			<button type="button" >추가</button>
 		</a>
 	</div>
+	<form action="<%=request.getContextPath()%>/product/searchProduct.jsp" method="post">
+		<input type="text" name = "search">
+		<button type="submit" >검색</button>
+	</form>
 		<table >
 			<tr>
 				<th >p no.</th>
@@ -149,7 +144,6 @@
 			%>
 			
 		</table>
-
 	<%
 		// 페이징 수
 		int pagePerPage = 10;

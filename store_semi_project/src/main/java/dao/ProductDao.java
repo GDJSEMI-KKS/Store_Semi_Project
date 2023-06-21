@@ -12,11 +12,7 @@ public class ProductDao {
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
 	// 이름별 검색
-	public ArrayList<Product> searchProduct(int beginRow, int rowPerPage, String search) throws Exception{
-		if(rowPerPage ==0) {
-			System.out.println(SJ +"잘못된 매개변수 beginRow	<-- ProductDao searchProduct메서드" + RE);
-			return null;
-		}
+	public ArrayList<Product> searchProduct(String search) throws Exception{
 		if(search == null) {
 			System.out.println(SJ +"잘못된 매개변수 search <-- ProductDao searchProduct메서드" + RE);
 			return null;
@@ -35,7 +31,6 @@ public class ProductDao {
 		ON p.product_no = pim.product_no
 		WHERE p.product_name LIKE ?
 		ORDER BY productNo ASC
-		LIMIT ?, ?
 		 */
 		String sql = "SELECT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate,\r\n"
 				+ "	    pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate\r\n"
@@ -43,12 +38,9 @@ public class ProductDao {
 				+ "		INNER JOIN product_img pim\r\n"
 				+ "		ON p.product_no = pim.product_no\r\n"
 				+ "		WHERE p.product_name LIKE ?\r\n"
-				+ "		ORDER BY productNo ASC\r\n"
-				+ "		LIMIT ?, ?";
+				+ "		ORDER BY productNo ASC\r\n";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, "%"+search+"%");
-		stmt.setInt(2, beginRow);
-		stmt.setInt(3, rowPerPage);
 		ResultSet rs = stmt.executeQuery();
 		while(rs.next()) {
 			product = new Product();

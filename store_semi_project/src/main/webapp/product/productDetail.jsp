@@ -7,6 +7,12 @@
 	final String SJ = "\u001B[44m";
 	
 	String productSaveFilename = null;
+	// idLevel 분기에 따라 문의 입력 추가를 위한 코드
+	String loginId = null;
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
 	
 	// 요청값 유효성 검사
 	if(request.getParameter("p.productNo") == null  
@@ -99,12 +105,6 @@
 	int rowPerPage = 10;
 	// 상품문의 출력을 위한 리스트
 	ArrayList<Question> pList = qDao.selectQuestionListByPage(product, beginRow, rowPerPage);
-	
-	// 아이디 레벨 검사 
-	IdListDao iDao = new IdListDao();
-	IdList idList = new IdList();
-	int idLevel = idList.getIdLevel();
-	System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
 	
 	// 문의 객체 생성
 	Question question = new Question();
@@ -291,7 +291,7 @@
 			</tr>
 			<%	
 				}
-				//if(idLevel ==0 ) {
+				if(idLevel ==0 ) {
 			%>
 			<tr>
 				<td>
@@ -301,7 +301,7 @@
 				</td>
 			</tr>
 			<%
-				//}
+				}
 			%>
 		</table>
 	</form>
