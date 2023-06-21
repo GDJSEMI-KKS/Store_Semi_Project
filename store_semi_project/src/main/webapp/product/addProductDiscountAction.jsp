@@ -12,6 +12,7 @@
 	/* session 유효성 검사
 	* session 값이 null이면 redirection. return.
 	*/
+	/*
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
@@ -22,12 +23,12 @@
 	if(session.getAttribute("loginId") != null){
 		loginId = (String)session.getAttribute("loginId");
 	}
-	
+	*/
 	/* idLevel 유효성 검사
 	 * idLevel == 0이면 redirection. return
 	 * IdListDao selectIdListOne(loginId) method 호출
 	*/
-	
+	/*
 	IdListDao idListDao = new IdListDao();
 	IdList idList = idListDao.selectIdListOne(loginId);
 	int idLevel = idList.getIdLevel();
@@ -36,6 +37,7 @@
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
 	}
+	*/
 	//유효성검사
 	if(request.getParameter("p.productNo") == null
 		||request.getParameter("p.productNo").equals("")) {
@@ -77,6 +79,13 @@
 	System.out.println(discountStart + "<-discountStart");
 	System.out.println(discountEnd + "<-discountEnd");
 	System.out.println(discountRate + "<-discountRate"+ RE);
+	if(productNo != 0){
+		if(discount.getProductNo() == (productNo)){
+			response.sendRedirect(request.getContextPath() + "/product/productDetail.jsp");
+			System.out.println(SJ+ "중복되는 할인"+RE);
+			return;
+		}
+	}
 	//row에 값 넣기
 	int row = dDao.insertDiscount(discount);
 		System.out.println(SJ+ row + "<--row"+RE);

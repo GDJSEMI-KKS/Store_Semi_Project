@@ -42,7 +42,7 @@
 	// 현재 페이지에 표시 할 리스트
 	ArrayList<HashMap<String, Object>> list = pDao.selectProductNoByPage(true, beginRow, rowPerPage);
 	ArrayList<HashMap<String, Object>> dList = dDao.selectDiscount(beginRow, rowPerPage);
-	ArrayList<HashMap<String, Object>> dayList = pDao.selectProduct(productNo);
+	ArrayList<HashMap<String, Object>> dayList = pDao.selectProduct(productNo);	
 	
 	// 다양한 상품 출력을 위한 리스트
 	// 판매량 순
@@ -53,21 +53,22 @@
 	ArrayList<HashMap<String, Object>> kpopList = pDao.selectKpopByPage(true, beginRow, rowPerPage);
 	// classic
 	ArrayList<HashMap<String, Object>> classicList = pDao.selectClassicByPage(true, beginRow, rowPerPage);
+	
+	// 상품이미지 코드
+	String productSaveFilename = null;
+	String dir = request.getContextPath() + "/product/productImg/" + productSaveFilename;
+	System.out.println(SJ+ dir + "<-dir" +RE);
+	System.out.println(SJ+productSaveFilename + RE );
 %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>관리자 상품리스트</title>
+<title>고객 상품리스트</title>
 </head>
 <body>
 <div>
-	<h1>관리페이지 : 상품 리스트</h1>
-	<div>
-		<a href="<%=request.getContextPath()%>/product/addProduct.jsp">
-			<button type="button" >추가</button>
-		</a>
-	</div>
+	<h1>고객 : 상품 리스트</h1>
 	<form action="<%=request.getContextPath()%>/product/searchProduct.jsp" method="post">
 		<input type="text" name = "search">
 		<button type="submit" >검색</button>
@@ -102,12 +103,12 @@
 						<td><%=p.get("p.createdate")%></td>
 						<td><%=p.get("p.updatedate")%></td>
 						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
+							<div>상품 이미지  
+								<img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" width="300px">
+								<input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+								<input type="hidden" name = "productImg" onchange="previewImage(event)">
+								<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+							</div> 
 						</td>
 					</tr>
 			<%		
@@ -144,14 +145,6 @@
 						<td><%=p.get("productStock")%></td>
 						<td><%=p.get("p.createdate")%></td>
 						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
 					</tr>
 			<%		
 				}
@@ -187,14 +180,6 @@
 						<td><%=p.get("productStock")%></td>
 						<td><%=p.get("p.createdate")%></td>
 						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
 					</tr>
 			<%		
 				}
@@ -230,14 +215,6 @@
 						<td><%=p.get("productStock")%></td>
 						<td><%=p.get("p.createdate")%></td>
 						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
 					</tr>
 			<%		
 				}
@@ -259,7 +236,7 @@
 		// 최소 페이지가 1보타 클 경우 이전 페이지 표시
 		if(minPage>1) {
 	%>
-			<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=minPage-pagePerPage%>">이전</a>
+			<a href="<%=request.getContextPath()%>/productHome.jsp?currentPage=<%=minPage-pagePerPage%>">이전</a>
 	<%			
 		}
 		// 최소 페이지부터 최대 페이지까지 표시
@@ -270,7 +247,7 @@
 	<%			
 			}else {					// 현재페이지가 아닌 페이지는 링크 활성화
 	%>	
-				<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=i%>"><%=i%></a>
+				<a href="<%=request.getContextPath()%>/productHome.jsp?currentPage=<%=i%>"><%=i%></a>
 	<%				
 			}
 		}
@@ -278,7 +255,7 @@
 		// 최대 페이지가 마지막 페이지와 다를 경우 다음 페이지 표시
 		if(maxPage != lastPage) {
 	%>
-			<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=minPage+pagePerPage%>">다음</a>
+			<a href="<%=request.getContextPath()%>/productHome.jsp?currentPage=<%=minPage+pagePerPage%>">다음</a>
 	<%	
 		}
 	%>

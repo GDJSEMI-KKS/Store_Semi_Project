@@ -371,7 +371,7 @@ public class ProductDao {
 		while(rs.next()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
 			
-			m.put("productNo",rs.getInt("productNo"));
+			m.put("p.productNo",rs.getInt("p.productNo"));
 			m.put("categoryName",rs.getString("categoryName"));
 			m.put("productName",rs.getString("productName"));
 			m.put("productPrice",rs.getInt("productPrice"));
@@ -387,11 +387,6 @@ public class ProductDao {
 			m.put("pim.createdate",rs.getString("pim.createdate"));
 			m.put("pim.updatedate",rs.getString("pim.updatedate"));
 			
-			m.put("discountNo",rs.getInt("discountNo"));
-			m.put("dProductNo",rs.getInt("dProductNo"));
-			m.put("discountStart",rs.getString("discountStart"));
-			m.put("discountEnd",rs.getString("discountEnd"));
-			m.put("discountRate",rs.getDouble("discountRate"));
 			list.add(m);
 		}
 		return list;

@@ -11,8 +11,8 @@
 	String loginId = null;
 	IdListDao idListDao = new IdListDao();
 	IdList idList = idListDao.selectIdListOne(loginId);
-	int idLevel = idList.getIdLevel();
-	System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
+	//int idLevel = idList.getIdLevel();
+	//System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
 	
 	// 요청값 유효성 검사
 	if(request.getParameter("p.productNo") == null  
@@ -110,6 +110,7 @@
 	Question question = new Question();
 	question.setProductNo(productNo);
 
+	int discountNo = 1;
 %>
 <!DOCTYPE html>
 <html>
@@ -130,7 +131,8 @@
 			<%
 				for(HashMap<String, Object> p : list) {
 					// 할인 기간 확인을 위한 변수와 분기
-					
+					discountNo = Integer.parseInt(p.get("discountNo").toString());
+					System.out.println(SJ+ discountNo + RE );
 			%>
 			<tr>
 				<th >p no.</th>
@@ -248,6 +250,15 @@
 					<a href="<%=request.getContextPath()%>/product/addProductDiscount.jsp?p.productNo=<%=productNo%>">
 						<button type="button">할인추가</button>
 					</a>
+				</td>
+				<td>
+					<a href="<%=request.getContextPath()%>/product/removeDiscountAction.jsp?discountNo=<%=discountNo%>">
+						<button type="button">할인삭제</button>
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="<%=request.getContextPath()%>/question/removeQuestionAction.jsp?p.productNo=<%=productNo%>">
 						<button type="button">삭제</button>
 					</a>
@@ -291,7 +302,7 @@
 			</tr>
 			<%	
 				}
-				if(idLevel ==0 ) {
+			//	if(idLevel ==0 ) {
 			%>
 			<tr>
 				<td>
@@ -301,7 +312,7 @@
 				</td>
 			</tr>
 			<%
-				}
+			//	}
 			%>
 		</table>
 	</form>
