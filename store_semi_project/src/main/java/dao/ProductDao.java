@@ -937,7 +937,31 @@ public class ProductDao {
 	}
 	// =============== 정렬 끝 ====================
 	
-	
-	
-	
+	// =============== 상품1개 조회 ====================
+	public Product selectProductOne(int productNo) throws Exception {
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		// sql 전송 후 결과셋 반환받아 리스트에 저장
+		String sql = "SELECT product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, "
+					+ "product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, createdate, updatedate "
+					+ "FROM product WHERE product_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, productNo);
+		ResultSet rs = stmt.executeQuery();
+		Product product = new Product();
+		if(rs.next()) {
+			product.setProductNo(rs.getInt("productNo"));
+			product.setCategoryName(rs.getString("categoryName"));
+			product.setProductName(rs.getString("productName"));
+			product.setProductPrice(rs.getInt("productPrice"));
+			product.setProductStatus(rs.getString("productStatus"));
+			product.setProductStock(rs.getInt("productStock"));
+			product.setProductInfo(rs.getString("productInfo"));
+			product.setProductSumCnt(rs.getInt("productSumCnt"));
+			product.setCreatedate(rs.getString("createdate"));
+			product.setUpdatedate(rs.getString("updatedate"));
+		}
+		return product;
+	}
 }
