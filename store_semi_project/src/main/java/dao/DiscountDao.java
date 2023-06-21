@@ -174,4 +174,33 @@ public class DiscountDao {
 		row = stmt.executeUpdate();
 		return row;
 	}
+	
+	// 상품에 현재 적용되는 할인률 가져오기
+	public Discount selectProductCurrentDiscount(int productNo) throws Exception {
+		// db 접속
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		String sql = "SELECT discount_no discountNo, product_no productNo, discount_start discountStart, discount_end discountEnd, discount_rate discountRate, "
+					+ "createdate, updatedate "
+					+ "FROM discount "
+					+ "WHERE product_no = ? "
+					+ "AND NOW() > discount_start AND NOW() < discount_end "
+					+ "ORDER BY discount_end DESC LIMIT 0, 1";
+		// sql 전송 후 영향받은 행의 수 반환받아 저장
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, productNo);
+		ResultSet rs = stmt.executeQuery();
+		Discount discount = null;
+		if(rs.next()) {
+			discount = new Discount();
+			discount.setDiscountNo(rs.getInt("discountNo"));
+			discount.setProductNo(rs.getInt("productNo"));
+			discount.setDiscountStart(rs.getString("discountStart"));
+			discount.setDiscountEnd(rs.getString("discountEnd"));
+			discount.setDiscountRate(rs.getDouble("discountRate"));
+			discount.setCreatedate(rs.getString("createdate"));
+			discount.setUpdatedate(rs.getString("updatedate"));
+		}
+		return discount;
+	}
 }

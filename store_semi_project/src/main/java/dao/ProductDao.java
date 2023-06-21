@@ -925,30 +925,37 @@ public class ProductDao {
 	// =============== 정렬 끝 ====================
 	
 	// =============== 상품1개 조회 ====================
-	public Product selectProductOne(int productNo) throws Exception {
+	public HashMap<String,Object> selectProductOne(int productNo) throws Exception {
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 리스트에 저장
-		String sql = "SELECT product_no productNo, category_name categoryName, product_name productName, product_price productPrice, product_status productStatus, "
-					+ "product_stock productStock, product_info productInfo, product_sum_cnt productSumCnt, createdate, updatedate "
-					+ "FROM product WHERE product_no = ?";
+		String sql = "SELECT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, "
+				+ "p.product_stock productStock, p.product_info productInfo, p.product_sum_cnt productSumCnt, p.createdate, p.updatedate, "
+				+ "pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype "
+				+ "FROM product p LEFT OUTER JOIN product_img pim "
+				+ "ON p.product_no = pim.product_no "
+				+ "WHERE p.product_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, productNo);
 		ResultSet rs = stmt.executeQuery();
-		Product product = new Product();
+		HashMap<String, Object> map = null;
 		if(rs.next()) {
-			product.setProductNo(rs.getInt("productNo"));
-			product.setCategoryName(rs.getString("categoryName"));
-			product.setProductName(rs.getString("productName"));
-			product.setProductPrice(rs.getInt("productPrice"));
-			product.setProductStatus(rs.getString("productStatus"));
-			product.setProductStock(rs.getInt("productStock"));
-			product.setProductInfo(rs.getString("productInfo"));
-			product.setProductSumCnt(rs.getInt("productSumCnt"));
-			product.setCreatedate(rs.getString("createdate"));
-			product.setUpdatedate(rs.getString("updatedate"));
+			map = new HashMap<String, Object>();
+			map.put("productNo", rs.getInt("productNo"));
+			map.put("categoryName", rs.getString("categoryName"));
+			map.put("productName", rs.getString("productName"));
+			map.put("productPrice", rs.getInt("productPrice"));
+			map.put("productStatus", rs.getString("productStatus"));
+			map.put("productStock",rs.getInt("productStock"));
+			map.put("productInfo", rs.getString("productInfo"));
+			map.put("productSumCnt", rs.getInt("productSumCnt"));
+			map.put("createdate", rs.getString("createdate"));
+			map.put("updatedate", rs.getString("updatedate"));
+			map.put("productOriFilename", rs.getString("productOriFilename"));
+			map.put("productSaveFilename", rs.getString("productSaveFilename"));
+			map.put("productFiletype", rs.getString("productFiletype"));
 		}
-		return product;
+		return map;
 	}
 }

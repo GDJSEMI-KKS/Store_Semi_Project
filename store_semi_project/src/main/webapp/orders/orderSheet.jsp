@@ -25,13 +25,18 @@
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값 유효성 검사
-	/* if(request.getParameter("cartNo") == null){
+	if(request.getParameter("cartNo") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
+	} 
+	int disPrice = 0;
+	if(request.getParameter("disPrice") != null){
+		disPrice = Integer.parseInt(request.getParameter("disPrice"));
 	}
-	int cartNo = Integer.parseInt(request.getParameter("cartNo")); */
-	int cartNo = 3; //test용: 삭제예정
+	
+	int cartNo = Integer.parseInt(request.getParameter("cartNo"));
 	System.out.println(KMJ + cartNo + " <--orderSheet cartNo" + RESET);
+	System.out.println(KMJ + disPrice + " <--orderSheet disPrice" + RESET);
 		
 	//주문정보 출력
 	CartDao cDao = new CartDao();
@@ -174,9 +179,13 @@
                           <td>수량</td>
                           <th><%=cart.get("cartCnt")%></th>
                         </tr>
+                        <tr>
+                          <td>할인액</td>
+                          <th><%=disPrice%>원</th>
+                        </tr>
                         <tr class="total">
                           <td>합계</td>
-                          <th><%=totalPrice%>원</th>
+                          <th><%=totalPrice - disPrice%>원</th>
                         </tr>
                       </tbody>
                     </table>
