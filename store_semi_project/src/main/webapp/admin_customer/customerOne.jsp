@@ -8,13 +8,13 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
+	//로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/로그인.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "admin_customer/customerOne 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--ordersAction loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -23,7 +23,7 @@
 	//id가 employees테이블에 없는 경우(관리자가 아닌 경우) 홈으로 리다이렉션
 	IdListDao iDao = new IdListDao();
 	IdList loginLevel = iDao.selectIdListOne(loginId);
-	String idLevel = loginLevel.getIdLevel();
+	int idLevel = loginLevel.getIdLevel();
 	if(idLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
@@ -41,16 +41,13 @@
 		return;
 	}
 	String id = request.getParameter("id");
-	System.out.println(KMJ + id + " <-admin_customer/customerOne id" + RESET); */
-	
-	String idLevel = "2"; //테스트용 삭제예정
-	String id = "user5"; //테스트용 삭제예정
+	System.out.println(KMJ + id + " <-admin_customer/customerOne id" + RESET);
 
 	//id가 employees테이블에 있는 경우(관리자인 경우) 관리자 상세페이지로 리다이렉션
 	EmployeesDao eDao = new EmployeesDao();
 	Employees employee = eDao.selectEmployee(id);
 	if(employee != null){ 
-		response.sendRedirect(request.getContextPath()+"/admin_customer/adminOne.jsp");
+		response.sendRedirect(request.getContextPath()+"/admin_customer/adminOne.jsp?id="+id);
 		return;
 	}
 	
@@ -78,29 +75,31 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_category/adminCategoryList.jsp">관리페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp">회원관리</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">회원 상세정보</li>
                 </ol>
               </nav>
             </div>
             <div class="col-lg-3">
-              <!-- 고객메뉴 시작 -->
+              <!-- 관리메뉴 시작 -->
               <div class="card sidebar-menu">
-                <div class="card-header">
-                  <h3 class="h4 card-title">관리자 메뉴</h3>
-                </div>
-                <div class="card-body">
-                  <ul class="nav nav-pills flex-column">
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
-	                  <a href="<%=request.getContextPath()%>/product/productList.jsp" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=id%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>회원관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
-                </div>
-              </div>
+				<div class="card-header">
+				  <h3 class="h4 card-title">관리자 메뉴</h3>
+				</div>
+				<div class="card-body">
+				  <ul class="nav nav-pills flex-column">
+				    <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
+				   <a href="#" class="nav-link active"><i class="fa fa-list"></i>회원관리</a>
+				   <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
+				   <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+				  </div>
+				</div>
               <!-- /.col-lg-3-->
-              <!-- 고객메뉴 끝 -->
+              <!-- 관리메뉴 끝 -->
             </div>
             <div class="col-lg-9">
               <div class="box">
@@ -110,7 +109,7 @@
 						<input type="hidden" name="id" value="<%=id%>">
 						<input type="hidden" name="name" value="<%=customer.getCstmName()%>">
 						<input type="hidden" name="idLevel" value="1">
-						<h1>회원상세정보</h1>
+						<h1>회원 상세정보</h1>
 						<hr>
 						<table class="table">
 							<tr><!-- 1행 -->
@@ -147,7 +146,7 @@
 							</tr>
 							<%
 								//관리자등급이 2인 경우에만 회원등급 변경가능
-								if(idLevel.equals("2")){
+								if(idLevel == 2){
 							%>
 									<tr>
 										<th>관리자권한부여</th>
