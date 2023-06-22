@@ -127,6 +127,21 @@ public class DiscountDao {
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
+		String checkSql = "SELECT COUNT(*) FROM discount WHERE product_no = ?";
+		PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+		checkStmt.setInt(1, discount.getProductNo());
+		ResultSet rs = checkStmt.executeQuery();
+		if(rs.next()) {
+			row = rs.getInt(1);
+		}
+		if (row > 0) {
+		    // 중복된 데이터가 있음
+		    System.out.println("중복된 데이터가 있습니다.");
+		    return row;
+		} else {
+		    // 중복된 데이터가 없음
+		    System.out.println("중복된 데이터가 없습니다.");
+		}
 		String sql = "INSERT INTO discount(product_no, discount_start, discount_end, discount_rate, createdate, updatedate) VALUES(?,?,?,?, NOW(),NOW())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, discount.getProductNo());

@@ -1,4 +1,63 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="vo.*" %>
+<%@ page import="dao.*" %>
+<%@ page import="java.util.*" %>
+
+<%
+	final String RE = "\u001B[0m"; 
+	final String SJ = "\u001B[44m";
+	
+	// 아이디 레벨 검사 
+	IdListDao iDao = new IdListDao();
+	IdList idList = new IdList();
+	int idLevel = idList.getIdLevel();
+	System.out.println(SJ+idLevel + RE );
+	
+	// 현재페이지
+	int currentPage = 1;
+	if(request.getParameter("currentPage") != null) {
+		currentPage = Integer.parseInt(request.getParameter("currentPage"));
+	}
+	
+	
+	int productNo = 1;
+	// sql 메서드들이 있는 클래스의 객체 생성
+	ProductDao pDao = new ProductDao();
+	DiscountDao dDao = new DiscountDao();
+	
+	// 전체 행의 수
+	int totalRow = pDao.selectProductCnt();
+	// 페이지 당 행의 수
+	int rowPerPage = 10;
+	// 시작 행 번호
+	int beginRow = (currentPage-1) * rowPerPage;
+	// 마지막 페이지 번호
+	int lastPage = totalRow / rowPerPage;
+	// 표시하지 못한 행이 있을 경우 페이지 + 1
+	if(totalRow % rowPerPage != 0) {
+		lastPage = lastPage + 1;
+	}
+	
+	
+	// 현재 페이지에 표시 할 리스트
+	ArrayList<HashMap<String, Object>> list = pDao.selectProductNoByPage(true, beginRow, rowPerPage);
+	ArrayList<HashMap<String, Object>> dList = dDao.selectDiscount(beginRow, rowPerPage);
+	ArrayList<HashMap<String, Object>> dayList = pDao.selectProduct(productNo);	
+	
+	// 다양한 상품 출력을 위한 리스트
+	// 판매량 순
+	int startNum = 0;
+	ArrayList<HashMap<String, Object>> cntList = pDao.selectSumCntByPage(true, beginRow, rowPerPage);
+	ArrayList<HashMap<String, Object>> cntList1 = pDao.selectSumCntByPage(true, startNum, 1);
+	
+	
+	
+	// 상품이미지 코드
+	String productSaveFilename = null;
+	String dir = request.getContextPath() + "/product/productImg/" + productSaveFilename;
+	System.out.println(SJ+ dir + "<-dir" +RE);
+	System.out.println(SJ+productSaveFilename + RE );
+%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -18,7 +77,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <div id="main-slider" class="owl-carousel owl-theme">
+              <div id="main-slider" class="owl-carousel owl-theme">음반 타이틀 이미지 넣기
                 <div class="item"><img src="img/main-slider1.jpg" alt="" class="img-fluid"></div>
                 <div class="item"><img src="img/main-slider2.jpg" alt="" class="img-fluid"></div>
                 <div class="item"><img src="img/main-slider3.jpg" alt="" class="img-fluid"></div>
@@ -38,23 +97,30 @@
               <div class="col-md-4">
                 <div class="box clickable d-flex flex-column justify-content-center mb-0 h-100">
                   <div class="icon"><i class="fa fa-heart"></i></div>
-                  <h3><a href="#">We love our customers</a></h3>
+                  <form action="<%=request.getContextPath()%>/product/categoryProduct.jsp" method="post">
+                  <h3><a href="<%=request.getContextPath()%>/product/categoryProduct.jsp?category=pop">POP</a></h3>
                   <p class="mb-0">We are known to provide best possible service ever</p>
+                  </form>
                 </div>
+                <h3><a href="#"></a></h3>
               </div>
               <div class="col-md-4">
                 <div class="box clickable d-flex flex-column justify-content-center mb-0 h-100">
                   <div class="icon"><i class="fa fa-tags"></i></div>
-                  <h3><a href="#">Best prices</a></h3>
-                  <p class="mb-0">You can check that the height of the boxes adjust when longer text like this one is used in one of them.</p>
-                </div>
+                  <form action="<%=request.getContextPath()%>/product/categoryProduct.jsp" method="post">
+                  <h3><a href="<%=request.getContextPath()%>/product/categoryProduct.jsp?category=kpop">K-POP</a></h3>
+                  <p class="mb-0">We are known to provide best possible service ever</p>
+                  </form></div>
+                <h3><a href="#"></a></h3>
               </div>
               <div class="col-md-4">
                 <div class="box clickable d-flex flex-column justify-content-center mb-0 h-100">
                   <div class="icon"><i class="fa fa-thumbs-up"></i></div>
-                  <h3><a href="#">100% satisfaction guaranteed</a></h3>
-                  <p class="mb-0">Free returns on everything for 3 months.</p>
-                </div>
+                  <form action="<%=request.getContextPath()%>/product/categoryProduct.jsp" method="post">
+                  <h3><a href="<%=request.getContextPath()%>/product/categoryProduct.jsp?category=classic">CLASSIC</a></h3>
+                  <p class="mb-0">We are known to provide best possible service ever</p>
+                  </form></div>
+                <h3><a href="#"></a></h3>
               </div>
             </div>
             <!-- /.row-->
@@ -67,6 +133,7 @@
         *** HOT PRODUCT SLIDESHOW ***
         _________________________________________________________
         -->
+        
         <div id="hot">
           <div class="box py-4">
             <div class="container">
@@ -77,206 +144,218 @@
               </div>
             </div>
           </div>
+          
           <div class="container">
             <div class="product-slider owl-carousel owl-theme">
+            <%ArrayList<HashMap<String, Object>> cntList2 = pDao.selectSumCntByPage(true, ++startNum, 1);
+                for(HashMap<String, Object> p : cntList1) {
+			%>
               <div class="item">
                 <div class="product">
                   <div class="flip-container">
                     <div class="flipper">
                       <div class="front"><a href="detail.html"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product1_2.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="back"><a href="<%=request.getContextPath()%>/product/customerProductDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "200px" width="300px" alt="" class="img-fluid">
+                      <img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "50px" width="300px">
+                      <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+					  <input type="hidden" name = "productImg" onchange="previewImage(event)">
+					  <input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+                      </a></div>
                     </div>
                   </div><a href="detail.html" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
+                  
                   <div class="text">
-                    <h3><a href="detail.html">Fur coat with very but very very long name</a></h3>
+                    <h3><a href="detail.html">
+                    </a></h3>
+                    <br></br>
+					<br></br>
+					
                     <p class="price"> 
-                      <del></del>$143.00
+                      <del></del>
                     </p>
                   </div>
+                  <div >
+                  <h3><%=p.get("categoryName")%></h3>
+                  <h2><%=p.get("productName")%></h2>
+				  <h4><%=p.get("productPrice")%>원</h4>
+        		  </div>
                   <!-- /.text-->
-                  <div class="ribbon sale">
-                    <div class="theribbon">SALE</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon new">
-                    <div class="theribbon">NEW</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon gift">
-                    <div class="theribbon">GIFT</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
+                 
                 </div>
                 <!-- /.product-->
               </div>
-              <div class="item">
-                <div class="product">
-                  <div class="flip-container">
-                    <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product2.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product2_2.jpg" alt="" class="img-fluid"></a></div>
-                    </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product2.jpg" alt="" class="img-fluid"></a>
-                  <div class="text">
-                    <h3><a href="detail.html">White Blouse Armani</a></h3>
-                    <p class="price"> 
-                      <del>$280</del>$143.00
-                    </p>
-                  </div>
-                  <!-- /.text-->
-                  <div class="ribbon sale">
-                    <div class="theribbon">SALE</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon new">
-                    <div class="theribbon">NEW</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon gift">
-                    <div class="theribbon">GIFT</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                </div>
-                <!-- /.product-->
-              </div>
-              <div class="item">
-                <div class="product">
-                  <div class="flip-container">
-                    <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product3.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product3_2.jpg" alt="" class="img-fluid"></a></div>
-                    </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product3.jpg" alt="" class="img-fluid"></a>
-                  <div class="text">
-                    <h3><a href="detail.html">Black Blouse Versace</a></h3>
-                    <p class="price"> 
-                      <del></del>$143.00
-                    </p>
-                  </div>
-                  <!-- /.text-->
-                </div>
-                <!-- /.product-->
-              </div>
-              <div class="item">
-                <div class="product">
-                  <div class="flip-container">
-                    <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product3.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product3_2.jpg" alt="" class="img-fluid"></a></div>
-                    </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product3.jpg" alt="" class="img-fluid"></a>
-                  <div class="text">
-                    <h3><a href="detail.html">Black Blouse Versace</a></h3>
-                    <p class="price"> 
-                      <del></del>$143.00
-                    </p>
-                  </div>
-                  <!-- /.text-->
-                </div>
-                <!-- /.product-->
-              </div>
-              <div class="item">
-                <div class="product">
-                  <div class="flip-container">
-                    <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product2.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product2_2.jpg" alt="" class="img-fluid"></a></div>
-                    </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product2.jpg" alt="" class="img-fluid"></a>
-                  <div class="text">
-                    <h3><a href="detail.html">White Blouse Versace</a></h3>
-                    <p class="price"> 
-                      <del></del>$143.00
-                    </p>
-                  </div>
-                  <!-- /.text-->
-                  <div class="ribbon new">
-                    <div class="theribbon">NEW</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                </div>
-                <!-- /.product-->
-              </div>
+              <%		
+              
+				}
+				%>
+               <%ArrayList<HashMap<String, Object>> cntList3 = pDao.selectSumCntByPage(true, ++startNum, 1);
+                for(HashMap<String, Object> p : cntList2) {
+                	
+			%>
               <div class="item">
                 <div class="product">
                   <div class="flip-container">
                     <div class="flipper">
                       <div class="front"><a href="detail.html"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product1_2.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="back"><a href="<%=request.getContextPath()%>/product/customerProductDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "200px" width="300px" alt="" class="img-fluid">
+                      <img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "50px" width="300px">
+                      <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+					  <input type="hidden" name = "productImg" onchange="previewImage(event)">
+					  <input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+                      </a></div>
                     </div>
                   </div><a href="detail.html" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
+                  
                   <div class="text">
-                    <h3><a href="detail.html">Fur coat</a></h3>
+                    <h3><a href="detail.html">
+                    </a></h3>
+                    <br></br>
+					<br></br>
+					
                     <p class="price"> 
-                      <del></del>$143.00
+                      <del></del>
                     </p>
                   </div>
+                  <div >
+                  <h3><%=p.get("categoryName")%></h3>
+                  <h2><%=p.get("productName")%></h2>
+				  <h4><%=p.get("productPrice")%>원</h4>
+        		  </div>
                   <!-- /.text-->
-                  <div class="ribbon gift">
-                    <div class="theribbon">GIFT</div>
-                    <div class="ribbon-background"></div>
-                  </div>
+                  
                   <!-- /.ribbon-->
                 </div>
                 <!-- /.product-->
               </div>
+              <%		
+				}
+			  %>
+               
+                <%ArrayList<HashMap<String, Object>> cntList4 = pDao.selectSumCntByPage(true, ++startNum, 1);
+                for(HashMap<String, Object> p : cntList3) {
+			%>
               <div class="item">
                 <div class="product">
                   <div class="flip-container">
                     <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product2.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product2_2.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="front"><a href="detail.html"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="back"><a href="<%=request.getContextPath()%>/product/customerProductDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "200px" width="300px" alt="" class="img-fluid">
+                      <img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "50px" width="300px">
+                      <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+					  <input type="hidden" name = "productImg" onchange="previewImage(event)">
+					  <input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+                      </a></div>
                     </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product2.jpg" alt="" class="img-fluid"></a>
+                  </div><a href="detail.html" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
+                  
                   <div class="text">
-                    <h3><a href="detail.html">White Blouse Armani</a></h3>
+                    <h3><a href="detail.html">
+                    </a></h3>
+                    <br></br>
+					<br></br>
+					
                     <p class="price"> 
-                      <del>$280</del>$143.00
+                      <del></del>
                     </p>
                   </div>
+                  <div >
+                  <h3><%=p.get("categoryName")%></h3>
+                  <h2><%=p.get("productName")%></h2>
+				  <h4><%=p.get("productPrice")%>원</h4>
+        		  </div>
                   <!-- /.text-->
-                  <div class="ribbon sale">
-                    <div class="theribbon">SALE</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon new">
-                    <div class="theribbon">NEW</div>
-                    <div class="ribbon-background"></div>
-                  </div>
-                  <!-- /.ribbon-->
-                  <div class="ribbon gift">
-                    <div class="theribbon">GIFT</div>
-                    <div class="ribbon-background"></div>
-                  </div>
+                 
                   <!-- /.ribbon-->
                 </div>
                 <!-- /.product-->
               </div>
+              <%		
+				}
+			  %>
+                <%
+                for(HashMap<String, Object> p : cntList4) {
+                	beginRow +=1;
+			%>
               <div class="item">
                 <div class="product">
                   <div class="flip-container">
                     <div class="flipper">
-                      <div class="front"><a href="detail.html"><img src="img/product3.jpg" alt="" class="img-fluid"></a></div>
-                      <div class="back"><a href="detail.html"><img src="img/product3_2.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="front"><a href="detail.html"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="back"><a href="<%=request.getContextPath()%>/product/customerProductDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "200px" width="300px" alt="" class="img-fluid">
+                      <img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "50px" width="300px">
+                      <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+					  <input type="hidden" name = "productImg" onchange="previewImage(event)">
+					  <input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+                      </a></div>
                     </div>
-                  </div><a href="detail.html" class="invisible"><img src="img/product3.jpg" alt="" class="img-fluid"></a>
+                  </div><a href="detail.html" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
+                  
                   <div class="text">
-                    <h3><a href="detail.html">Black Blouse Versace</a></h3>
+                    <h3><a href="detail.html">
+                    </a></h3>
+                    <br></br>
+					<br></br>
+					
                     <p class="price"> 
-                      <del></del>$143.00
+                      <del></del>
                     </p>
                   </div>
+                  <div >
+                  <h3><%=p.get("categoryName")%></h3>
+                  <h2><%=p.get("productName")%></h2>
+				  <h4><%=p.get("productPrice")%>원</h4>
+        		  </div>
                   <!-- /.text-->
+                
+                  <!-- /.ribbon-->
                 </div>
                 <!-- /.product-->
+              </div>
+              <%		
+				}
+			  %>
+                <%ArrayList<HashMap<String, Object>> cntList5 = pDao.selectSumCntByPage(true, ++startNum, 1);
+                for(HashMap<String, Object> p : cntList5) {
+                	startNum +=1;
+			%>
+              <div class="item">
+                <div class="product">
+                  <div class="flip-container">
+                    <div class="flipper">
+                      <div class="front"><a href="detail.html"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
+                      <div class="back"><a href="<%=request.getContextPath()%>/product/customerProductDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "200px" width="300px" alt="" class="img-fluid">
+                      <img src="<%=dir = request.getContextPath() + "/product/productImg/" + p.get("productSaveFilename")%>" id="preview" height  = "10px" width="300px">
+                      <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+					  <input type="hidden" name = "productImg" onchange="previewImage(event)">
+					  <input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+                      </a></div>
+                    </div>
+                  </div><a href="detail.html" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
+                  
+                  <div class="text">
+                    <h3><a href="detail.html">
+                    </a></h3>
+                    <br></br>
+					<br></br>
+					
+                    <p class="price"> 
+                      <del></del>
+                    </p>
+                  </div>
+                  <div >
+                  <h3><%=p.get("categoryName")%></h3>
+                  <h2><%=p.get("productName")%></h2>
+				  <h4><%=p.get("productPrice")%>원</h4>
+        		  </div>
+                  <!-- /.text-->
+                  
+                  <!-- /.ribbon-->
+                </div>
+                <!-- /.product-->
+              </div>
+              <%		
+				}
+			  %>
               </div>
               <!-- /.product-slider-->
             </div>
@@ -292,12 +371,10 @@
         <div class="container">
           <div class="col-md-12">
             <div class="box slideshow">
-              <h3>Get Inspired</h3>
+              <h3>음반 목록</h3>
               <p class="lead">Get the inspiration from our world class designers</p>
               <div id="get-inspired" class="owl-carousel owl-theme">
-                <div class="item"><a href="#"><img src="img/getinspired1.jpg" alt="Get inspired" class="img-fluid"></a></div>
-                <div class="item"><a href="#"><img src="img/getinspired2.jpg" alt="Get inspired" class="img-fluid"></a></div>
-                <div class="item"><a href="#"><img src="img/getinspired3.jpg" alt="Get inspired" class="img-fluid"></a></div>
+                <div class="item"><a href="<%=request.getContextPath()%>/product/productHome.jsp"><img src="img/getinspired1.jpg" alt="Get inspired" class="img-fluid"></a></div>
               </div>
             </div>
           </div>
@@ -344,6 +421,8 @@
         <!-- *** BLOG HOMEPAGE END ***-->
       </div>
     </div>
+    
+  
     <!--
     *** FOOTER ***
     _________________________________________________________

@@ -11,7 +11,7 @@
 	if(request.getParameter("search") != null) {
 		search = request.getParameter("search");
 	} else {
-		response.sendRedirect(request.getContextPath()+"/product/productList.jsp");
+		response.sendRedirect(request.getContextPath()+"/product/productHome.jsp");
 		return;	
 	}
 	
@@ -28,11 +28,12 @@
 </head>
 <body>
 	<div>
-		<a href="<%=request.getContextPath()%>/product/productList.jsp">
+		<a href="<%=request.getContextPath()%>/product/productHome.jsp">
 			<button type="button">목록으로</button>
 		</a>
 	</div>
 	<table >
+	<h1>"<%=search %>" 검색결과</h1>
 		<tr>
 			<th >p no.</th>
 			<th >카테고리</th>

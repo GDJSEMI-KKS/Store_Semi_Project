@@ -11,7 +11,7 @@
 	IdListDao iDao = new IdListDao();
 	IdList idList = new IdList();
 	int idLevel = idList.getIdLevel();
-	System.out.println(SJ+idLevel + RE );
+	System.out.println(SJ+idLevel +"<-- idLevel" +RE );
 	
 	// 현재페이지
 	int currentPage = 1;
@@ -86,7 +86,6 @@
 			</tr>
 			<%
 				for(HashMap<String, Object> p : cntList) {
-					// 할인 기간 확인을 위한 변수와 분기
 			%>
 					<tr>
 						<td>

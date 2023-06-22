@@ -92,7 +92,7 @@
                   <ul class="nav nav-pills flex-column">
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
+	                  <a href="<%=request.getContextPath()%>/product/productList.jsp" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
 	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=id%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>회원관리</a>
 	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>

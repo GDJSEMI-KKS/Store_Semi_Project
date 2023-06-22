@@ -13,6 +13,7 @@
 	/* session 유효성 검사
 	* session 값이 null이면 redirection. return.
 	*/
+	/*
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
@@ -23,12 +24,12 @@
 	if(session.getAttribute("loginId") != null){
 		loginId = (String)session.getAttribute("loginId");
 	}
-	
+	*/
 	/* idLevel 유효성 검사
 	 * idLevel == 0이면 redirection. return
 	 * IdListDao selectIdListOne(loginId) method 호출
 	*/
-	
+	/*
 	IdListDao idListDao = new IdListDao();
 	IdList idList = idListDao.selectIdListOne(loginId);
 	int idLevel = idList.getIdLevel();
@@ -37,7 +38,7 @@
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
 	}
-	
+	*/
 	int max = 10 * 1024 * 1024; 
 	String dir = request.getServletContext().getRealPath("/product/productImg");
 	System.out.println(SJ+ dir +RE);
