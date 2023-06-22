@@ -99,6 +99,6 @@
 	//리뷰입력완료 후 상품상세페이지로 리다이렉션
 	OrdersDao oDao = new OrdersDao();
 	int productNo = oDao.selectOrderOne(orderNo).getProductNo();
-	response.sendRedirect(request.getContextPath()+"/product.jsp?productNo="+productNo);
+	response.sendRedirect(request.getContextPath()+"/customer/customerOrderList.jsp?id="+loginId);
 	
 %>
