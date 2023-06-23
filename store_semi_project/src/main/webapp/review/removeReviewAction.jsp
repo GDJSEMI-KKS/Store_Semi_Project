@@ -11,7 +11,7 @@
 	
 	//로그인 유효성 검사
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "removeReviewAction 로그인 필요" + RESET);
 		return;
 	}
@@ -32,11 +32,8 @@
 	}
 	int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
 	
-	//리뷰삭제
-	ReviewDao rDao = new ReviewDao();
-	int row = rDao.deleteReview(reviewNo);
-	
 	//리뷰이미지 폴더에서 삭제
+	ReviewDao rDao = new ReviewDao();
 	String dir = request.getServletContext().getRealPath("/review/reviewImg");
 	HashMap<String, Object> imgInfo = rDao.selectReviewByReviewNo(reviewNo);
 	String saveFilename = (String)imgInfo.get("reviewSaveFilename");
@@ -46,6 +43,17 @@
 		System.out.println(KMJ + "removeReviewAction 리뷰이미지 삭제" + RESET);
 	}
 	
-	//삭제완료 후 상품상세페이지로 리다이렉션
-	response.sendRedirect(request.getContextPath()+"/customer/customerOrderList.jsp?id="+loginId+"&currnetPage=1");
+	//리뷰답변이 있으면 리뷰답변 삭제
+	ReviewAnswerDao rADao = new ReviewAnswerDao();
+	if(rADao.selectReviewAnswerCnt(reviewNo) > 0){
+		int aRow = rADao.deleteReviewAnswer(reviewNo);
+		System.out.println(KMJ + "removeReviewAction 리뷰답변 삭제" + RESET);
+	}
+	
+	//리뷰삭제
+	int row = rDao.deleteReview(reviewNo);
+	System.out.println(KMJ + row + " <--removeReviewAction row 리뷰삭제 결과" + RESET);
+	
+	//삭제완료 후 주문목록으로 리다이렉션
+	response.sendRedirect(request.getContextPath()+"/customer/customerOrderList.jsp?currentPage=1");
 %>

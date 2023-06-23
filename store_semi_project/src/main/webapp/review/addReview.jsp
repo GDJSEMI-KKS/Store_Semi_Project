@@ -48,7 +48,9 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp">마이페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp">주문목록</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">리뷰작성</li>
                 </ol>
               </nav>
             </div>
@@ -60,9 +62,9 @@
                 </div>
                 <div class="card-body">
                   <ul class="nav nav-pills flex-column">
-	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link"><i class="fa fa-list"></i>프로필</a>
-	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
-	                  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link"><i class="fa fa-list"></i>프로필</a>
+					  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
+					  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
                 </div>
               </div>
               <!-- /.col-lg-3-->
@@ -71,21 +73,22 @@
             <div class="col-lg-9">
               <div class="box">
                 <h1>리뷰 작성하기</h1>
+                <p class="msg" id="reviewMsg"></p>
                 <hr>
                 	<form action="<%=request.getContextPath()%>/review/addReviewAction.jsp" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="orderNo" value="<%=orderNo%>">
 							<table class="table">
 								<tr>
 									<th>제목</th>
-									<td><input type="text" name="title" size="80" required></td>
+									<td><input id="reviewTitle" class="form-control" type="text" name="title" size="80" required></td>
 								</tr>
 								<tr>
 									<th>내용</th>
-									<td><textarea name="content" cols="80" rows="10" required></textarea></td>
+									<td><textarea id="reviewContent" class="form-control" name="content" cols="80" rows="10" required></textarea></td>
 								</tr>
 								<tr>
 									<th>작성자</th>
-									<td><input type="text" name="id" value="<%=loginId%>" readonly required></td>
+									<td><input class="form-control" type="text" name="id" value="<%=loginId%>" readonly required></td>
 								</tr>
 								<tr>
 									<th>이미지첨부</th>
@@ -110,5 +113,18 @@
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
 <jsp:include page="/inc/script.jsp"></jsp:include>
+<script>
+	//리뷰 입력폼 유효성 검사
+	$("#reviewTitle").blur(function(){
+		if($("#reviewTitle").val() == ""){
+			$("#reviewMsg").text("리뷰제목을 입력하세요.");
+		}
+	})
+	$("#reviewContent").blur(function(){
+		if($("#reviewContent").val() == ""){
+			$("#reviewMsg").text("리뷰내용을 입력하세요.");
+		}
+	})
+</script>
 </body>
 </html>

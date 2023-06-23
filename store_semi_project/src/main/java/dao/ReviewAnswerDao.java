@@ -7,7 +7,7 @@ import util.*;
 
 public class ReviewAnswerDao {
 	//조회: 리뷰번호별 답변
-	public ArrayList<ReviewAnswer> SelectReviewAnswerList(int reviewNo) throws Exception {
+	public ArrayList<ReviewAnswer> selectReviewAnswerList(int reviewNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement
@@ -31,7 +31,7 @@ public class ReviewAnswerDao {
 	}
 	
 	//조회: 리뷰번호별 답변 수 (1이상이면 답변 완료로 처리)
-	public int SelectReviewAnswerCnt(int reviewNo) throws Exception {
+	public int selectReviewAnswerCnt(int reviewNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement

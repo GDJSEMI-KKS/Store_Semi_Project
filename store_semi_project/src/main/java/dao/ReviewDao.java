@@ -146,7 +146,7 @@ public class ReviewDao {
 				+ "WHERE t1.reviewNo = ? ";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, reviewNo);
-		System.out.println(stmt + " <--revieDao");
+		System.out.println(stmt + " <--reviewDao");
 		ResultSet rs = stmt.executeQuery();
 		HashMap<String, Object> map = null;
 		if(rs.next()) {
@@ -183,7 +183,7 @@ public class ReviewDao {
 				+ "WHERE t1.orderNo = ? ";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, orderNo);
-		System.out.println(stmt + " <--revieDao");
+		System.out.println(stmt + " <--reviewDao");
 		ResultSet rs = stmt.executeQuery();
 		HashMap<String, Object> map = null;
 		if(rs.next()) {

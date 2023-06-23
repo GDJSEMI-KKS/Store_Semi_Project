@@ -10,7 +10,7 @@
 	
 	//로그인 유효성 검사
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "modifyReview 로그인 필요" + RESET);
 		return;
 	}
@@ -64,8 +64,8 @@
                 </div>
                 <div class="card-body">
                   <ul class="nav nav-pills flex-column">
-	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
-	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
 	                  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
                 </div>
               </div>
@@ -81,19 +81,19 @@
 					<table class="table">
 						<tr>
 							<th>주문번호</th>
-							<td><input type="text" name="title" value="<%=review.get("orderNo")%>" size="80"></td>
+							<td><input type="text" class="form-control" name="orderNo" value="<%=review.get("orderNo")%>" size="80" required readonly></td>
 						</tr>
 						<tr>
 							<th>제목</th>
-							<td><input type="text" name="title" value="<%=review.get("reviewTitle")%>" size="80"></td>
+							<td><input type="text" class="form-control" name="title" value="<%=review.get("reviewTitle")%>" size="80" required></td>
 						</tr>
 						<tr>
 							<th>내용</th>
-							<td><textarea name="content" cols="80" rows="10"><%=review.get("reviewContent")%></textarea></td>
+							<td><textarea class="form-control" name="content" cols="80" rows="10" required><%=review.get("reviewContent")%></textarea></td>
 						</tr>
 						<tr>
 							<th>작성자</th>
-							<td><input type="text" name="id" value="<%=loginId%>" readonly></td>
+							<td><input type="text" class="form-control" name="id" value="<%=loginId%>" readonly required></td>
 						</tr>
 						<tr>
 							<th>등록이미지</th>
@@ -104,7 +104,7 @@
 							<td><input type="file" name="img"></td>
 						</tr>
 					</table>
-					<div class="box-footer d-flex justify-content-between">
+					<div class="box-footer d-flex justify-content-center">
 						<button class="btn btn-primary" type="submit"><i class="fa fa-save"></i>수정하기</button>
 					</div>
 				</form>

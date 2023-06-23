@@ -7,7 +7,7 @@ import util.*;
 
 public class ReviewImgDao {
 	//조회: 주문번호별 리뷰이미지 (1개만 가능)
-	public ReviewImg SelectReviewImg(int orderNo) throws Exception {
+	public ReviewImg selectReviewImg(int orderNo) throws Exception {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		//PreparedStatement

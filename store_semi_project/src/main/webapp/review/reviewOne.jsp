@@ -14,7 +14,7 @@
 		System.out.println(KMJ + "reviewOne 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--reviewOne loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
@@ -38,7 +38,7 @@
 	
 	//리뷰번호별 답변 출력
 	ReviewAnswerDao aDao = new ReviewAnswerDao();
-	ArrayList<ReviewAnswer> aList = aDao.SelectReviewAnswerList(reviewNo);
+	ArrayList<ReviewAnswer> aList = aDao.selectReviewAnswerList(reviewNo);
 	
 	//리뷰이미지 저장위치
 	String dir = request.getServletContext().getRealPath("/review/reviewImg");
@@ -47,7 +47,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>customerOne</title>
+	<title>Review One</title>
 	<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
@@ -63,7 +63,9 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp">마이페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp">주문목록</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">리뷰보기</li>
                 </ol>
               </nav>
             </div>
@@ -75,9 +77,9 @@
                 </div>
                 <div class="card-body">
                   <ul class="nav nav-pills flex-column">
-	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link "><i class="fa fa-list"></i>프로필</a>
-	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
-	                  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link"><i class="fa fa-list"></i>프로필</a>
+					  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
+					  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
                 </div>
               </div>
               <!-- /.col-lg-3-->

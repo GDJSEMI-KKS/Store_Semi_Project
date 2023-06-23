@@ -11,18 +11,17 @@
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
-	/* //로그인 유효성 검사
+	//로그인 유효성 검사
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "addReviewAction 로그인 필요" + RESET);
 		return;
 	}
-	Object o = session.getAttribute("loginId" + " <--addReviewAction loginId");
+	Object o = session.getAttribute("loginId");
 	String loginId = "";
 	if(o instanceof String){
 		loginId = (String)o;
-	} */
-	String loginId = "user1"; //test용: 삭제예정
+	}
 	System.out.println(KMJ + loginId + " <--addReviewAction loginId");
 	
 	//mRequest맵핑
