@@ -101,11 +101,11 @@ public class IdListDao {
 		return row;
 	}
 	
-	// 수정(active)
-	public int updateIdListActive(String id, String active) throws Exception {
+	// 회원탈퇴시 수정(active)
+	public int updateIdListActive(String id) throws Exception {
 		
 		// 유효성 검사
-		if(id == null || active == null) {
+		if(id == null) {
 			System.out.println("입력 error");
 			return 0;
 		}
@@ -113,10 +113,9 @@ public class IdListDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "UPDATE id_list SET active = ? WHERE id = ?";
+		String sql = "UPDATE id_list SET active = 'N' WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, active);
-		stmt.setString(2, id);
+		stmt.setString(1, id);
 		int row = stmt.executeUpdate();
 		
 		return row;
