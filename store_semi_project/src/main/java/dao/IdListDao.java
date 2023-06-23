@@ -92,7 +92,7 @@ public class IdListDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "UPDATE id_list SET last_pw = ? WHERE id = ?";
+		String sql = "UPDATE id_list SET last_pw = PASSWORD(?) WHERE id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, lastPw);
 		stmt.setString(2,  id);
