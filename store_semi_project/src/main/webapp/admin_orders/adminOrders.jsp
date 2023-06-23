@@ -133,9 +133,9 @@
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
 	                  <a href="#" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>주문관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?currentPage=1" class="nav-link active"><i class="fa fa-list"></i>주문관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
                 </div>
               </div>
               <!-- /.col-lg-3-->
