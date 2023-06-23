@@ -1,1 +1,16 @@
 /* your styles go here */
+.pageNav{
+	display: flex;
+	margin: 30px;
+	justify-content: center;
+	align-items: center;
+}
+.pageNavLi:hover{
+	background-color: #2d7b6b;
+	color: #FFFFFF;
+   	cursor: pointer;
+}
+.currentPageNav{
+	background-color: #2d7b6b;
+	color: #000000;
+}

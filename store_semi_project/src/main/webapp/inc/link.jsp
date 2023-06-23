@@ -14,7 +14,7 @@
 <!-- theme stylesheet-->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/style.default.css" id="theme-stylesheet">
 <!-- Custom stylesheet - for your changes-->
-<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/custom.css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/custom.css?v20230623">
 <!-- Favicon-->
 <link rel="shortcut icon" href="<%=request.getContextPath()%>/resources_customer/favicon.png">
 <!-- Tweaks for older IEs--><!--[if lt IE 9]>
