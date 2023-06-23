@@ -65,10 +65,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
-      
-    <!-- FOOTER -->
-	<jsp:include page="/inc/footer.jsp"></jsp:include>   
+	</div>  
     <!-- COPYRIGHT -->
     <jsp:include page="/inc/copy.jsp"></jsp:include>
     <!-- JavaScript files-->
