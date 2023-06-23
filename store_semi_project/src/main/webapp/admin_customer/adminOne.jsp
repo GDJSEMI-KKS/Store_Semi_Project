@@ -32,17 +32,15 @@
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값이 넘어오는지 확인하기
-	String id = "user1"; //테스트용 삭제 예정
 	System.out.println(KMJ + request.getParameter("id") + " <--adminOne param id" + RESET);
 		
 	//요청값 유효성 검사 : id가 넘어오지 않으면 회원리스트로 리다이렉션
-	/*
 	if(request.getParameter("id") == null){
 		response.sendRedirect(request.getContextPath()+"/admin_customer/adminCustomerList.jsp");
-		System.out.println("admin_customer/adminOne에서 리다이렉션");
+		System.out.println(KMJ + "admin_customer/adminOne에서 리다이렉션" + RESET);
 		return;
-	}*/
-	//String id = request.getParameter("id");
+	}
+	String id = request.getParameter("id");
 	System.out.println(KMJ + id + " <-adminOne id" + RESET);
 	
 	//관리자정보 출력
@@ -69,7 +67,9 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_category/adminCategoryList.jsp">관리페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp">회원관리</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">관리자 상세정보</li>
                 </ol>
               </nav>
             </div>
@@ -100,12 +100,12 @@
 					<form action="<%=request.getContextPath()%>/admin_customer/modifyAdminLvAction.jsp" method="post">
 						<input type="hidden" name="id" value="<%=id%>">
 						<input type="hidden" name="idLevel" value="0">
-						<h1>회원상세정보</h1>
+						<h1>관리자 상세정보</h1>
 						<hr>
 						<table class="table">
 							<tr>
 								<th>아이디</th>
-								<td><%=employee.getId()%></td>
+								<td><%=id%></td>
 							</tr>
 							<tr>
 								<th>이름</th>
