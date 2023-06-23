@@ -4,7 +4,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import ="vo.*" %>
 <%
-	//ANSI코드
+//ANSI코드
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
@@ -30,13 +30,6 @@
 	int currentPage = 1;
 	int rowPerPage = 10;
 	//요청값 유효성 검사
-	if(request.getParameter("id") == null){
-		response.sendRedirect(request.getContextPath()+"/customer/pointHistory.jsp?id="+loginId);
-		return;
-	}
-	String id = request.getParameter("id");
-	System.out.println(KMJ + id + " <--modifyPassword id" + RESET); 
-
 	if(request.getParameter("currentPage") != null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
@@ -44,29 +37,28 @@
 	
 	//포인트 이력 조회를 위한 dao객체 생성
 	PointHistoryDao pDao = new PointHistoryDao();
-	ArrayList<HashMap<String, Object>> list = pDao.SelectIdPointHistoryByPage(id, beginRow, rowPerPage);
-	
+	ArrayList<HashMap<String, Object>> list = pDao.SelectIdPointHistoryByPage(loginId, beginRow, rowPerPage);
+
 	//페이지네이션에 필요한 변수 선언: ordersCnt, lastPage, pagePerPage, startPage, endPage
-	int pointCnt = pDao.SelectIdPointHistoryCnt(id);
+	int pointCnt = pDao.SelectIdPointHistoryCnt(loginId);
 	int lastPage = pointCnt / rowPerPage;
 	//ordersCnt를 rowPerPage로 나눈 나머지가 있으면 lastPage + 1
-	if(pointCnt % rowPerPage != 0){
+	if (pointCnt % rowPerPage != 0) {
 		lastPage = lastPage + 1;
 	}
 	int pagePerPage = 10;
-	int startPage = ((currentPage - 1)/pagePerPage)*pagePerPage + 1;
+	int startPage = ((currentPage - 1) / pagePerPage) * pagePerPage + 1;
 	int endPage = startPage + pagePerPage - 1;
 	//endPage가 lastPage보다 크면 endPage = lastPage
-	if(endPage > lastPage){
-		endPage = lastPage; 
+	if (endPage > lastPage) {
+		endPage = lastPage;
 	}
-	
+
 	//변수 디버깅
 	System.out.println(KMJ + pointCnt + " <--pointHistory pointCnt" + RESET);
 	System.out.println(KMJ + lastPage + " <--pointHistory lastPage" + RESET);
 	System.out.println(KMJ + startPage + " <--pointHistory startPage" + RESET);
 	System.out.println(KMJ + lastPage + " <--pointHistory endPage" + RESET);
-	
 %>
 <!DOCTYPE html>
 <html>
@@ -88,7 +80,7 @@
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>">마이페이지</a></li>
                   <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>">프로필</a></li>
-                  <li aria-current="page" class="breadcrumb-item active">주소목록</li>
+                  <li aria-current="page" class="breadcrumb-item active">나의포인트</li>
                 </ol>
               </nav>
             </div>
@@ -144,7 +136,7 @@
 						</li>
 						<!-- 이전 페이지블럭 (startPage - 1) -->
 						<%
-							if(startPage > 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
+							if(startPage <= 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
 						%>
 								<li class="page-item disabled"><a class="page-link" href="#">&#60;</a></li>
 						<%	
@@ -164,7 +156,7 @@
 						%>
 								<li class="page-item active">
 									<a class="page-link" href="<%=request.getContextPath()%>/customer/pointHistory.jsp?currentPage=<%=i%>">
-										<span class="sr-only"><%=i%></span>
+										<%=i%>
 									</a>
 								</li>
 						<%

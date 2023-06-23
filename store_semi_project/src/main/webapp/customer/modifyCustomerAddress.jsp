@@ -10,7 +10,7 @@
 	
 	//로그인 세션 유효성 검사: 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/id_list/login.jsp" + RESET);
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "modifyCustomer 로그인필요" + RESET);
 		return;
 	}
@@ -24,18 +24,14 @@
 	request.setCharacterEncoding("utf-8");
 	
 	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("id") + " <--modifyCustomerAddress param id" + RESET);
 	System.out.println(KMJ + request.getParameter("addNo") + " <--modifyCustomerAddress param addNo" + RESET);
 
 	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null 
-		|| request.getParameter("addNo") == null){
+	if(request.getParameter("addNo") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
 	}
-	String id = request.getParameter("id");
 	int addNo = Integer.parseInt(request.getParameter("addNo"));
-	System.out.println(KMJ + id + " <--modifyCustomerAddress id" + RESET); 
 	System.out.println(KMJ + addNo + " <--modifyCustomerAddress addNo" + RESET); 
 	
 	//주소정보 출력을 위한 dao생성
@@ -102,7 +98,7 @@
                 <hr>
                 <div>
                   <form action="<%=request.getContextPath()%>/customer/modifyCustomerAddressAction.jsp" method="post">
-						<input type=hidden name="id" value="<%=id%>">
+						<input type=hidden name="id" value="<%=loginId%>">
 						<input type=hidden name="addNo" value="<%=addNo%>">
 						
 						<div class="row">
@@ -114,9 +110,9 @@
 								<label for="add">주소</label>
 								<div id="add">
 									<div>
-										<input type="text" name="zip" id="sample6_postcode" placeholder="우편번호" class="form-control" value="<%=zip%>">
-										<input type="text" name="add1" id="sample6_address" placeholder="주소" class="form-control" value="<%=add1%>">
-										<input type="text" name="add2" id="sample6_detailAddress" placeholder="상세주소" class="form-control" value="<%=add2%>">
+										<input type="text" name="zip" id="sample6_postcode" placeholder="우편번호" class="form-control" value="<%=zip%>" required>
+										<input type="text" name="add1" id="sample6_address" placeholder="주소" class="form-control" value="<%=add1%>" required>
+										<input type="text" name="add2" id="sample6_detailAddress" placeholder="상세주소" class="form-control" value="<%=add2%>" required>
 										<input type="text" name="add3" id="sample6_extraAddress" placeholder="참고항목" class="form-control" value="<%=add3%>">
 										<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-sm btn-primary">
 									</div>

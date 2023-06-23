@@ -23,21 +23,15 @@
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
-	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("id") + " <--modifyCustomer param id" + RESET);
-	
 	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null 
-		|| !loginId.equals(request.getParameter("id"))){
+	if(!loginId.equals(request.getParameter("id"))){
 		response.sendRedirect(KMJ + request.getContextPath()+"/home.jsp" + RESET);
 		return;
 	}
-	String id = request.getParameter("id");
-	System.out.println(KMJ + id + " <--modifyCustomer id" + RESET);
-	
+
 	//고객정보 출력을 위한 dao생성
 	CustomerDao cDao = new CustomerDao();
-	Customer customer = cDao.selectCustomer(id);
+	Customer customer = cDao.selectCustomer(loginId);
 
 %>
 <!DOCTYPE html>
@@ -72,9 +66,8 @@
                 </div>
                 <div class="card-body">
                   <ul class="nav nav-pills flex-column">
-	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=id%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
-	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=id%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
-	                  <a href="<%=request.getContextPath()%>/customer/customerReviewList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>리뷰목록</a>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
+	                  <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
 	                  <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
                 </div>
               </div>
@@ -96,7 +89,7 @@
                     <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="name">이름</label>
+                        <label for="name">이름&nbsp;<span class="msg" id="nameMsg"></span></label>
                         <input id="name" name="name" value="<%=customer.getCstmName()%>" type="text" class="form-control">
                       </div>
                     </div>
@@ -104,22 +97,16 @@
                     <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="address">주소</label>
-                        <input id="address" name="address" value="<%=customer.getCstmAddress()%>" type="text" class="form-control">
-                      </div>
+                        <label for="address">주소&nbsp;<span class="msg" id="addMsg"></span></label>
+                        <input id="address" name="address" value="<%=customer.getCstmAddress()%>" type="text" class="form-control"><p>
+                        <a class="btn btn-primary" id="addrPopup" href="<%=request.getContextPath()%>/customer/addCustomerAddress.jsp"><i class="fa fa-save"></i>주소추가</a>
                     </div>
                    </div>
-                   <div class="row">
-                    <div class="col-md-3">
-                      <div>
-                        <a class="btn btn-primary" id="addrPopup" target="_blank" href="<%=request.getContextPath()%>/customer/addCustomerAddress.jsp?id=<%=customer.getId()%>"><i class="fa fa-save"></i>주소추가</a>
-                      </div>
-                    </div>
                    </div>
                     <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="email">이메일</label>
+                        <label for="email">이메일&nbsp;<span class="msg" id="emailMsg"></span></label>
                         <input id="email" name="email" value="<%=customer.getCstmEmail()%>" type="email" class="form-control">
                       </div>
                     </div>
@@ -127,7 +114,7 @@
                     <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="birth">생일</label>
+                        <label for="birth">생일&nbsp;<span class="msg" id="birthMsg"></span></label>
                         <input id="birth" name="birth" value="<%=customer.getCstmBirth()%>" type="date" class="form-control">
                       </div>
                     </div>
@@ -135,7 +122,7 @@
                     <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="phone">연락처</label>
+                        <label for="phone">연락처&nbsp;<span class="msg" id="phoneMsg"></span></label>
                         <input id="phone" name="phone" value="<%=customer.getCstmPhone()%>" type="text" class="form-control">
                       </div>
                     </div>
@@ -149,11 +136,13 @@
                         %>
                         		<input id="gender" name="gender" value="M" type="radio" checked>남
                        			<input id="gender" name="gender" value="F" type="radio">여
+                       			&nbsp;<span class="msg" id="genderMsg"></span>
                         <%
                         	} else {
                         %>
                         		<input id="gender" name="gender" value="M" type="radio">남
                         		<input id="gender" name="gender" value="F" type="radio" checked>여
+                        		&nbsp;<span class="msg" id="genderMsg"></span>
                         <%
                         	}
                         %>
@@ -179,5 +168,38 @@
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
 <jsp:include page="/inc/script.jsp"></jsp:include>
+<script>
+	//입력값 유효성 검사
+	$("#name").blur(function(){
+		if($("#name").val()==""){
+			$("#nameMsg").text("이름을 입력하세요");
+		}
+	})
+	$("#address").blur(function(){
+		if($("#address").val()==""){
+			$("#addMsg").text("주소를 입력하세요");
+		}
+	})
+	$("#email").blur(function(){
+		if($("#email").val()==""){
+			$("#emailMsg").text("이메일을 입력하세요");
+		}
+	})
+	$("#birth").blur(function(){
+		if($("#birth").val()==""){
+			$("#birthMsg").text("생일을 입력하세요");
+		}
+	})
+	$("#phone").blur(function(){
+		if($("#phone").val()==""){
+			$("#phoneMsg").text("연락처를 입력하세요");
+		}
+	})
+	$("#gender").blur(function(){
+		if(!$("#gender").checked){
+			$("#genderMsg").text("성별을 선택하세요");
+		}
+	})
+</script>
 </body>
 </html>

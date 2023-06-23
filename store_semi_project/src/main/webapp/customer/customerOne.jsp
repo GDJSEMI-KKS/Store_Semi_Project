@@ -20,24 +20,9 @@
 		loginId = (String)o;
 	}
 	
-	//요청값 post방식 인코딩
-	request.setCharacterEncoding("utf-8");
-	
-	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("id") + " <--customerOne param id" + RESET);
-	
-	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null 
-		|| !loginId.equals(request.getParameter("id"))){
-		response.sendRedirect(request.getContextPath()+"/login.jsp");
-		return;
-	}
-	String id = request.getParameter("id");
-	System.out.println(KMJ + id + " <--customerOne id" + RESET);
-	
 	//고객정보 출력을 위한 dao생성
 	CustomerDao cDao = new CustomerDao();
-	Customer customer = cDao.selectCustomer(id);
+	Customer customer = cDao.selectCustomer(loginId);
 
 %>
 <!DOCTYPE html>
@@ -73,9 +58,8 @@
 				</div>
 				<div class="card-body">
 				  <ul class="nav nav-pills flex-column">
-				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=id%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
-				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=id%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
-				   <a href="<%=request.getContextPath()%>/customer/customerReviewList.jsp?id=<%=id%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>리뷰목록</a>
+				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
+				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
 				   <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
 				  </div>
 				</div>
@@ -99,7 +83,7 @@
 							<th>주소</th>
 							<td><%=customer.getCstmAddress()%></td>
 							<td>
-								<a href="<%=request.getContextPath()%>/customer/addCustomerAddress.jsp?id=<%=id%>&currentPage=1">주소목록</a>
+								<a href="<%=request.getContextPath()%>/customer/addCustomerAddress.jsp?&currentPage=1">주소목록</a>
 							</td>						
 						</tr>
 						<tr><!-- 4행 -->
@@ -128,20 +112,25 @@
 								<%=customer.getCstmPoint()%>
 							</td>
 							<td>
-								<a href="<%=request.getContextPath()%>/customer/pointHistory.jsp?id=<%=id%>&currentPage=1">포인트이력확인</a> 
+								<a href="<%=request.getContextPath()%>/customer/pointHistory.jsp?&currentPage=1">포인트이력확인</a> 
 							</td>
 						</tr>
 					</table>
 					<div class="box-footer d-flex justify-content-center">
-                    <div class="col-md-6 text-center">
+                    <div class="col-md-4 text-center">
                     	<a href="<%=request.getContextPath()%>/customer/modifyCustomer.jsp?id=<%=customer.getId()%>" class="btn btn-primary">
                     	<i class="fa fa-save"></i>
 						회원정보수정</a>
                     </div>
-                    <div class="col-md-6 text-center">
+                    <div class="col-md-4 text-center">
                      	<a href="<%=request.getContextPath()%>/customer/modifyPassword.jsp?id=<%=customer.getId()%>" class="btn btn-primary">
                     	<i class="fa fa-save"></i>
 						비밀번호변경</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                     	<a href="#" class="btn btn-primary">
+                    	<i class="fa fa-save"></i>
+						회원탈퇴</a>
                     </div>
                   </div>
               </div>

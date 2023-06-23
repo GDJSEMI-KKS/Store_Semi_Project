@@ -10,7 +10,7 @@
 	
 	//로그인 유효성 검사
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "customerOrderList 로그인 필요" + RESET);
 		return;
 	}
@@ -22,10 +22,6 @@
 	System.out.println(KMJ + loginId + " <--customerOrderList loginId");
 	
 	//요청값 유효성 검사
-	if(request.getParameter("id") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
-		return;
-	}
 	int currentPage = 1;
 	if(request.getParameter("currentPage") != null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
@@ -78,7 +74,7 @@
               <!-- breadcrumb-->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="#">마이페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp">마이페이지</a></li>
                   <li aria-current="page" class="breadcrumb-item active">주문목록</li>
                 </ol>
               </nav>
@@ -94,8 +90,8 @@
 				</div>
 				<div class="card-body">
 				  <ul class="nav nav-pills flex-column">
-				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link"><i class="fa fa-list"></i>프로필</a>
-				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
+				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp" class="nav-link"><i class="fa fa-list"></i>프로필</a>
+				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?currentPage=1" class="nav-link active"><i class="fa fa-user"></i>주문목록</a>
 				   <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
 				  </div>
 				</div>
@@ -131,8 +127,8 @@
 								</td>
 								<td><%=(Integer)m.get("orderCnt")%></td>
 								<td><%=(Integer)m.get("orderCnt") * (Integer)m.get("orderPrice")%></td>
-								<td><span id="paymentStatus" class="badge badge-info"><%=(String)m.get("paymentStatus")%></span></td>
-								<td><span id="deliveryStatus" class="badge badge-info"><%=(String)m.get("deliveryStatus")%></span></td>
+								<td><span id="paymentStatus" class="badge"><%=(String)m.get("paymentStatus")%></span></td>
+								<td><span id="deliveryStatus" class="badge"><%=(String)m.get("deliveryStatus")%></span></td>
 								<td><%=m.get("createdate").toString().substring(0, 11)%></td>
 								<%
 									if(orderNo == 0){ //해당 주문번호의 리뷰 수가 0일 경우에는 리뷰작성 출력
@@ -140,7 +136,7 @@
 										<td><a class="btn btn-primary" href="<%=request.getContextPath()%>/review/addReview.jsp?orderNo=<%=(Integer)m.get("orderNo")%>">리뷰작성</a></td>
 								<%
 									} else {
-										HashMap<String, Object> review = rDao.selectReviewByOrderNo(orderNo);
+										HashMap<String, Object> review = rDao.selectReviewByOrderNo((Integer)m.get("orderNo"));
 										int reviewNo = (Integer)review.get("reviewNo");
 								%>
 										<td><a class="btn btn-outline-primary" href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=reviewNo%>&id=<%=loginId%>">리뷰보기</a></td>
@@ -162,7 +158,7 @@
 						</li>
 						<!-- 이전 페이지블럭 (startPage - 1) -->
 						<%
-							if(startPage < 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
+							if(startPage <= 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
 						%>
 								<li class="page-item disabled"><a class="page-link" href="#">&#60;</a></li>
 						<%	
@@ -235,30 +231,33 @@
 <jsp:include page="/inc/script.jsp"></jsp:include>
 <script>
 	//결제상태, 배송상태 색 바꾸기
-	const paymentStatus = document.querySelector("span #paymentStatus");
-	const deliveryStatus = document.querySelector("span #deliveryStatus");
-	if(paymentStatus === '결제대기'){
-		paymentStatus.className = 'badge badge-warning';
-	} else if (paymentStatus === '결제완료'){
-		paymentStatu.className = 'badge badge-success';
-	} else if (paymentStatus === '취소'){
-		paymentStatus.className = 'badge badge-danger';
-	} else {
-		paymentStatus.className = 'badge badge-info';
-	}
+	const payStat = document.querySelectorAll("#paymentStatus");
+	const delStat = document.querySelectorAll("#deliveryStatus");
+	payStat.forEach(function(item, index){
+		if(item.innerHTML === '결제대기'){
+			item.classList.add('badge-warning');
+		} else if (item.innerHTML === '결제완료'){
+			item.classList.add("badge-success");
+		} else if (item.innerHTML === '취소'){
+			item.classList.add('badge badge-danger');
+		} else {
+			item.classList.add('badge badge-info');
+		}
+	})
 	
-	if(deliveryStatus === '발송준비'){
-		paymentStatus.className = 'badge badge-secondary';
-	} else if (deliveryStatus === '발송완료'){
-		paymentStatu.className = 'badge badge-primary';
-	} else if (deliveryStatus === '배송중'){
-		paymentStatus.className = 'badge badge-warning';
-	} else if(deliveryStatus === '배송완료'){
-		paymentStatus.className = 'badge badge-info';
-	} else {
-		paymentStatus.className = 'badge badge-success';
-	}
-
+	delStat.forEach(function(item, index){
+		if(item.innerHTML === '발송준비'){
+			item.classList.add('badge-secondary');
+		} else if (item.innerHTML === '발송완료'){
+			item.classList.add('badge-primary');
+		} else if (item.innerHTML === '배송중'){
+			item.classList.add('badge-warning');
+		} else if(item.innerHTML === '배송완료'){
+			item.classList.add('badge-info');
+		} else {
+			item.classList.add('badge-success');
+		}
+	})
 </script>
 </body>
 </html>

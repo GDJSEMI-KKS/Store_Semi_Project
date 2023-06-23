@@ -10,7 +10,7 @@
 	
 	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
+		response.sendRedirect(KMJ + request.getContextPath()+"/id_list/login.jsp" + RESET);
 		System.out.println(KMJ + "customerOne 로그인되어있지 않아 리다이렉션" + RESET);
 		return;
 	}
@@ -32,10 +32,10 @@
 		|| request.getParameter("cnfmNewPw") == null
 		|| request.getParameter("newPw").equals("") 
 		|| request.getParameter("cnfmNewPw").equals("")){
-		response.sendRedirect(request.getContextPath()+"/modifyPassword.jsp?id="+loginId);
+		response.sendRedirect(request.getContextPath()+"/modifyPassword.jsp");
 		return;
 	} else if(!request.getParameter("newPw").equals(request.getParameter("cnfmNewPw"))) {
-		response.sendRedirect(request.getContextPath()+"/customer/modifyPassword.jsp?id="+loginId);
+		response.sendRedirect(request.getContextPath()+"/customer/modifyPassword.jsp");
 		return;
 	}
 	String newPw = request.getParameter("newPw");

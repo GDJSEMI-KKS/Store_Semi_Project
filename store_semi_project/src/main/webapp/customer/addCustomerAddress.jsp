@@ -4,7 +4,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import ="vo.*" %>
 <%
-	//ANSI코드
+//ANSI코드
 	final String KMJ = "\u001B[42m";
 	final String RESET = "\u001B[0m";
 	
@@ -20,39 +20,25 @@
 		loginId = (String)o;
 	}
 	
-	//요청값 post방식 인코딩
-	request.setCharacterEncoding("utf-8");
-	
-	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("id") + " <--addCustomerAddress param id" + RESET);
-	
-	//요청값 유효성 검사: 요청값이 null인 경우 메인화면으로 리다이렉션
-	if(request.getParameter("id") == null 
-		|| !loginId.equals(request.getParameter("id"))){
-		response.sendRedirect(KMJ + request.getContextPath()+"/home.jsp" + RESET);
-		return;
-	}
-	String id = request.getParameter("id");
-	System.out.println(KMJ + id + " <--addCustomerAddress id" + RESET);
-	
 	//주소목록 번호
 	int num = 0;
 	
 	//주소정보 출력
 	//주소는 10개까지만 추가가 가능하고, 기본 주소는 삭제 불가
 	AddressDao aDao = new AddressDao();
-	ArrayList<Address> addList = aDao.selectAddressList(id);
+	ArrayList<Address> addList = aDao.selectAddressList(loginId);
 	
 	//현재 id의 주소개수 저장
-	int addCnt = aDao.selectAddressCnt(id);
-
+	int addCnt = aDao.selectAddressCnt(loginId);
+	
 %>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>customerOne</title>
+	<title>Add Customer Address</title>
 	<jsp:include page="/inc/link.jsp"></jsp:include>
+	
 </head>
 <body>
 <!-- 메뉴 -->
@@ -84,7 +70,6 @@
 				  <ul class="nav nav-pills flex-column">
 				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
 				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
-				   <a href="<%=request.getContextPath()%>/customer/customerReviewList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>리뷰목록</a>
 				   <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
 				  </div>
 				</div>
@@ -98,7 +83,7 @@
                 <br>주소목록은 10개까지 추가 가능합니다.</p>
                 <hr>
                 <div class="table-responsive">
-                  <form action="<%=request.getContextPath()%>/customer/addCustomerAddressAction.jsp?id=<%=id%>" method="post">
+                	<form method="post">
 					<table class="table table-hover">
 						<tr>
 							<th>번호</th>
@@ -130,15 +115,13 @@
 									<!-- 주소 -->
 									<td colspan="2"><%=a.getAddress()%></td>
 									<!-- 수정 -->
-									<td><a class="btn btn-sm btn-primary" href="<%=request.getContextPath()%>/customer/modifyCustomerAddress.jsp?addNo=<%=a.getAddressNo()%>&id=<%=id%>">수정</a></td>
+									<td><a class="btn btn-sm btn-primary" href="<%=request.getContextPath()%>/customer/modifyCustomerAddress.jsp?addNo=<%=a.getAddressNo()%>">수정</a></td>
 									<!-- 삭제 -->
 						<%
 									if(a.getAddressDefault().equals("N")){ //기본주소가 아닌 경우에만 삭제 가능
 						%>
 										<td>
-											<a class="btn btn-sm btn-primary" href="<%=request.getContextPath()%>/customer/removeCustomerAddressAction.jsp?addNo=<%=a.getAddressNo()%>&id=<%=id%>">
-											삭제
-											</a>
+											<a class="btn btn-sm btn-primary" href="<%=request.getContextPath()%>/customer/removeCustomerAddressAction.jsp?addNo=<%=a.getAddressNo()%>">삭제</a>
 										</td>
 						<%
 									} else {
@@ -156,20 +139,20 @@
 								<td>&nbsp;</td>
 								<td>
 								
-									<div class="row"><input type="text" name="addName" class="form-control" size="10"></div>
+									<div class="row"><input id="addName" type="text" name="addName" class="form-control" size="10" required></div>
 									<div class="row">
 										<label class="form-check-label" for="add-default">기본주소</label>
 										&nbsp;<input id="add-default" class="form-check form-check-inline" type="checkbox" name="addDefault">
 									</div>
 								</td>
 								<td colspan="2">
-									<input type="text" name="zip" id="sample6_postcode" placeholder="우편번호" class="form-control">
-									<input type="text" name="add1" id="sample6_address" placeholder="주소" class="form-control">
-									<input type="text" name="add2" id="sample6_detailAddress" placeholder="상세주소" class="form-control">
-									<input type="text" name="add3" id="sample6_extraAddress" placeholder="참고항목" class="form-control">
-									<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-sm btn-primary">
+									<input type="text" name="zip" id="sample6_postcode" placeholder="우편번호" class="form-control" required>
+										<input type="text" name="add1" id="sample6_address" placeholder="주소" class="form-control" required>
+										<input type="text" name="add2" id="sample6_detailAddress" placeholder="상세주소" class="form-control" required>
+										<input type="text" name="add3" id="sample6_extraAddress" placeholder="참고항목" class="form-control">
+										<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-sm btn-primary">
 								</td>
-								<td colspan="2"><button class="btn btn-sm btn-primary" type="submit">추가</button></td>
+								<td colspan="2"><button id="addBtn" class="btn btn-sm btn-primary" formaction="<%=request.getContextPath()%>/customer/addCustomerAddressAction.jsp" type="submit">추가</button></td>
 							</tr>
 						<%
 						}
@@ -242,6 +225,7 @@
             }
         }).open();
     }
+	
 </script>
 </body>
 </html>

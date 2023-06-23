@@ -10,7 +10,7 @@
 	
 	//로그인 세션 유효성 검사: 로그인이 되어있지 않거나 로그인정보가 요청id와 다를 경우 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
+		response.sendRedirect(KMJ + request.getContextPath()+"/id_list/login.jsp" + RESET);
 		System.out.println(KMJ + "customerOne 로그인되어있지 않아 리다이렉션" + RESET);
 		return;
 	}
@@ -19,12 +19,6 @@
 	if(o instanceof String){
 		loginId = (String)o;
 	}
-	
-	//요청값 post방식 인코딩
-	request.setCharacterEncoding("utf-8");
-	
-	//요청값이 넘어오는지 확인하기
-	System.out.println(KMJ + request.getParameter("id") + " <--modifyPassword param id" + RESET);
 %>
 <!DOCTYPE html>
 <html>
@@ -75,13 +69,15 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="password_1">새로운 비밀번호</label>
-                        <input id="password_1" name="newPw" type="password" class="form-control">
+                        <input id="password_1" name="newPw" type="password" class="form-control" required>
+                        <span class="msg" id="pw1Msg"></span>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="password_2">새로운 비밀번호 확인</label>
-                        <input id="password_2" name="cnfmNewPw" type="password" class="form-control">
+                        <input id="password_2" name="cnfmNewPw" type="password" class="form-control" required>
+                        <span class="msg" id="pw2Msg"></span>
                       </div>
                     </div>
                   </div>
@@ -104,4 +100,18 @@
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
 <jsp:include page="/inc/script.jsp"></jsp:include>
+<script>
+	$("#password_1").blur(function(){
+		if($("#password_1").val() == ""){
+			$("#pw1Msg").text("비밀번호를 입력해주세요.");
+		}
+	})
+	$("#password_2").blur(function(){
+		if($("#password_2").val() == ""){
+			$("#pw2Msg").text("비밀번호를 입력해주세요.");
+		} else if($("#password_2").val() != $("#password_1").val()){
+			$("#pw2Msg").text("입력된 비밀번호와 다릅니다.");
+		}
+	})
+</script>
 </body>

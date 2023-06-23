@@ -74,5 +74,5 @@
 	}
 	
 	//수정action 완료 후 고객정보로 리다이렉션
-	response.sendRedirect(request.getContextPath()+"/customer/customerOne.jsp?id="+loginId);
+	response.sendRedirect(request.getContextPath()+"/customer/customerOne.jsp");
 %>
