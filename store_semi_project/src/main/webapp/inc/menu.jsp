@@ -36,49 +36,26 @@
               	<%
               		if(session.getAttribute("loginId") == null){ //로그인이 안되어 있는 경우
               	%>
-              			<li class="list-inline-item"><a href="<%=request.getContextPath()%>/id_list/login.jsp" data-toggle="modal" data-target="#login-modal">로그인</a></li>
+              			<li class="list-inline-item"><a href="<%=request.getContextPath()%>/id_list/login.jsp">로그인</a></li>
                 		<li class="list-inline-item"><a href="<%=request.getContextPath()%>/id_list/signUp.jsp">회원가입</a></li>
               	<%
               		} else if(emp != null){ //로그인이 되어있고, 관리자인 경우
               	%>
               			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp">로그아웃</a></li>
-              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>">마이페이지</a></li>
-              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>">관리페이지</a></li>
-              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/home.jsp?id=<%=loginId%>">고객페이지</a></li>
+              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp">마이페이지</a></li>
+              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp">관리페이지</a></li>
+              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/home.jsp">고객페이지</a></li>
               	<% 
               		} else { //로그인 되어있고, 관리자가 아닌 경우
               	%>
               			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp">로그아웃</a></li>
-              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>">마이페이지</a></li>
+              			 <li class="list-inline-item"><a href="<%=request.getContextPath()%>/customer/customerOne.jsp">마이페이지</a></li>
               	<%
               		}
               	%>
 	                <li class="list-inline-item"><a href="<%=request.getContextPath()%>/board_question/boardQuestion.jsp">Q&A</a></li>
               	
               </ul>
-            </div>
-          </div>
-        </div>
-        <div id="login-modal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true" class="modal fade">
-          <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">로그인</h5>
-                <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
-              </div>
-              <div class="modal-body">
-                <form action="<%=request.getContextPath()%>/id_list/loginAction.jsp" method="post">
-                  <div class="form-group">
-                    <input id="email-modal" type="text" name="id" placeholder="ID" class="form-control">
-                  </div>
-                  <div class="form-group">
-                    <input id="password-modal" type="password" name="pw" placeholder="PASSWORD" class="form-control">
-                  </div>
-                  <p class="text-center">
-                    <button class="btn btn-primary"><i class="fa fa-sign-in"></i>로그인</button>
-                  </p>
-                </form>
-              </div>
             </div>
           </div>
         </div>
@@ -99,7 +76,7 @@
             <div class="navbar-buttons d-flex justify-content-end">
               <!-- /.nav-collapse-->
               <div id="search-not-mobile" class="navbar-collapse collapse"></div><a data-toggle="collapse" href="#search" class="btn navbar-btn btn-primary d-none d-lg-inline-block"><span class="sr-only">검색</span><i class="fa fa-search"></i></a>
-              <div id="basket-overview" class="navbar-collapse collapse d-none d-lg-block"><a href="basket.html" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span>장바구니</span></a></div>
+              <div id="basket-overview" class="navbar-collapse collapse d-none d-lg-block"><a href="<%=request.getContextPath()%>/cart/cart.jsp" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span>장바구니</span></a></div>
             </div>
           </div>
         </div>
