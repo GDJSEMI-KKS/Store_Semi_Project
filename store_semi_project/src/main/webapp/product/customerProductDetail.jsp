@@ -231,7 +231,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>구매 수량<input type="number" name="orderCnt"></td>
+				<td>구매 수량<input type="number" name="cartCnt"></td>
 				<td><input type="hidden" name="productNo" value="<%=productNo%>">
 						<button type="submit">장바구니로</button>
 				</td>
