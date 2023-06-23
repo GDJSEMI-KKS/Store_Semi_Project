@@ -25,14 +25,14 @@
 		|| request.getParameter("pw") == null
 		|| request.getParameter("id").equals("")
 		|| request.getParameter("pw").equals("")){
-		response.sendRedirect(request.getContextPath()+"/id_list/login.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		return;
 	}
 	// 값 저장
 	String id = request.getParameter("id");
 	String pw = request.getParameter("pw");
 	System.out.println(BG_YELLOW+BLUE+id + "<-- loginAction.jsp id" +RESET);
-	System.out.println(BG_YELLOW+BLUE+id + pw + "<-- loginAction.jsp pw" +RESET);
+	System.out.println(BG_YELLOW+BLUE+pw + "<-- loginAction.jsp pw" +RESET);
 	
 	// vo.IdList 객체 생성하여 값 저장
 	IdList paramIdList = new IdList();
@@ -50,7 +50,7 @@
 	*/ 
 	
 	boolean loginCheck = idListDao.selectIdList(paramIdList);
-	System.out.println(BG_YELLOW+BLUE+id +loginCheck +"<-- loginAction.jsp loginCheck" +RESET);
+	System.out.println(BG_YELLOW+BLUE+loginCheck +"<-- loginAction.jsp loginCheck" +RESET);
 	
 	if(loginCheck == true){
 		IdList idListCheck = idListDao.selectIdListOne(id);
@@ -58,27 +58,26 @@
 		if(idListCheck.getActive().equals("Y")){
 			session.setAttribute("loginId", id);
 			response.sendRedirect(request.getContextPath()+"/home.jsp");
-			System.out.println(BG_YELLOW+BLUE+id +"로그인 성공, 세션 정보 :" +session.getAttribute("loginId") +RESET);
+			System.out.println(BG_YELLOW+BLUE+id+" 로그인 성공, 세션 정보 :" +session.getAttribute("loginId") +RESET);
 			
 			// CustomerDao
 			CustomerDao customerDao = new CustomerDao();
 			int row = customerDao.updateLastLogin(id);
 			if(row == 0){
-				System.out.println(BG_YELLOW+BLUE+id + row + "<--loginAction.jsp updateLastLogin 실패 row" +RESET);
+				System.out.println(BG_YELLOW+BLUE+row + "<--loginAction.jsp updateLastLogin 실패 row" +RESET);
 			} else if(row == 1){
-				System.out.println(BG_YELLOW+BLUE+id + row + "<--loginAction.jsp updateLastLogin 성공 row" +RESET);
+				System.out.println(BG_YELLOW+BLUE+row + "<--loginAction.jsp updateLastLogin 성공 row" +RESET);
 			} else {
-				System.out.println(BG_YELLOW+BLUE+id + "loginAction.jsp error row" +RESET);
+				System.out.println(BG_YELLOW+BLUE+row +"loginAction.jsp error row" +RESET);
 			}
 			
 		} else {
-			response.sendRedirect(request.getContextPath()+"/id_list/login.html");
+			response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 			System.out.println(BG_YELLOW+BLUE+id + "로그인 실패 : Id Active N" +RESET);
 		} 	
 	} else {
-		response.sendRedirect(request.getContextPath()+"/id_list/login.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(BG_YELLOW+BLUE+id + "로그인 실패 : Id 정보 없음" +RESET);
 	}	
-	
 	
 %>
