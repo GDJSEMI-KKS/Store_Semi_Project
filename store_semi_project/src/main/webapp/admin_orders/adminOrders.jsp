@@ -198,7 +198,7 @@
 							<th>아이디</th>
 							<th>상품</th>
 							<th>수량</th>
-							<th>금액</th>
+							<th>결제금액</th>
 							<th>결제상태</th>
 							<th>배송상태</th>
 							<th>주문일</th>
@@ -294,8 +294,6 @@
         </div>
       </div>
 	<!-- -----------------------------메인 끝----------------------------------------------- -->
-<!-- footer -->
-<jsp:include page="/inc/footer.jsp"></jsp:include>
 <!-- copy -->
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
