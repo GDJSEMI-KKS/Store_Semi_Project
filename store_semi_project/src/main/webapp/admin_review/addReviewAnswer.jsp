@@ -46,7 +46,7 @@
 	ReviewDao rDao = new ReviewDao();
 	HashMap<String, Object> review = rDao.selectReviewByReviewNo(reviewNo);
 	ReviewAnswerDao aDao = new ReviewAnswerDao();
-	ArrayList<ReviewAnswer> aList = aDao.SelectReviewAnswerList(reviewNo);
+	ArrayList<ReviewAnswer> aList = aDao.selectReviewAnswerList(reviewNo);
 %>
 <!DOCTYPE html>
 <html>
@@ -59,6 +59,36 @@
 		}
 	</style>
 	<jsp:include page="/inc/link.jsp"></jsp:include>
+	<script>
+		$(document).ready(function(){
+			const MAX_COUNT = 150;
+			
+			//답변 입력 글자 수 제한 (150자)
+			$("#addAContent").keyup(function(){
+				let len = $("#addAContent").val().length;
+				if(len > MAX_COUNT){
+					let str = $("#addAContent").val().substring(0, MAX_COUNT);
+					$("#addAContent").val(str);
+					alert(MAX_COUNT+"자까지만 입력가능합니다");
+				} else {
+					$("#addACnt").text(len);
+				}
+			})
+			
+			//답변 수정 글자 수 제한
+			$("#modAContent").keyup(function(){
+				let len = $("#modAContent").val().length;
+				if(len > MAX_COUNT){
+					let str = $("#modAContent").val().substring(0, MAX_COUNT);
+					$("#modAContent").val(str);
+					alert(MAX_COUNT+"자까지만 입력가능합니다");
+				} else {
+					$("#modACnt").text(len);
+				}
+			})
+			
+		})
+	</script>
 </head>
 <body>
 <!-- 메뉴 -->
@@ -73,29 +103,31 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_category/adminCategoryList.jsp">관리페이지</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp">리뷰관리</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">답변하기</li>
                 </ol>
               </nav>
             </div>
             <div class="col-lg-3">
-              <!-- 고객메뉴 시작 -->
+              <!-- 관리자메뉴 시작 -->
               <div class="card sidebar-menu">
-                <div class="card-header">
-                  <h3 class="h4 card-title">관리자 메뉴</h3>
-                </div>
-                <div class="card-body">
-                  <ul class="nav nav-pills flex-column">
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>주문관리</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>리뷰관리</a>
-                </div>
-              </div>
+				<div class="card-header">
+				  <h3 class="h4 card-title">관리자 메뉴</h3>
+				</div>
+				<div class="card-body">
+				  <ul class="nav nav-pills flex-column">
+				    <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>회원관리</a>
+				   <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
+				   <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
+				   <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>리뷰관리</a>
+				  </div>
+				</div>
               <!-- /.col-lg-3-->
-              <!-- 고객메뉴 끝 -->
+              <!-- 관리자메뉴 끝 -->
             </div>
             <div class="col-lg-9">
               <div class="box">
@@ -119,7 +151,10 @@
 							%>
 									<tr>
 										<th>답변입력</th>
-										<td><textarea name="addAContent" cols="70" rows="2"></textarea></td>
+										<td>
+											<textarea id="addAContent" name="addAContent" cols="70" rows="2" class="form-control"></textarea>
+											<div class="text-right">(<span id="addACnt">0</span>자/150자)</div>
+										</td>
 										<td colspan="2">
 											<button class="btn btn-primary" type="submit" formaction="<%=request.getContextPath()%>/admin_review/addReviewAnswerAction.jsp">입력</button>
 										</td>
@@ -139,7 +174,10 @@
 									</tr>
 									<tr id="modForm" class="hidden">
 										<th>답변수정</th>
-										<td><textarea name="modAContent" class="form-control" cols="70" rows="2"><%=a.getReviewAContent()%></textarea></td>
+										<td>
+											<textarea id="modAContent" name="modAContent" class="form-control" cols="70" rows="2"><%=a.getReviewAContent()%></textarea>
+											<div class="text-right">(<span id="modACnt">0</span>자/150자)</div>
+										</td>
 										<td>
 											<button type="submit" class="btn btn-primary" formaction="<%=request.getContextPath()%>/admin_review/modifyReviewAnswerAction.jsp">수정</button>
 										</td>

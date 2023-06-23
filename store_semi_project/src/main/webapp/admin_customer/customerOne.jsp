@@ -114,7 +114,7 @@
 						<table class="table">
 							<tr><!-- 1행 -->
 								<th>아이디</th>
-								<td><%=customer.getId()%></td>
+								<td><%=id%></td>
 							</tr>
 							<tr><!-- 2행 -->
 								<th>이름</th>

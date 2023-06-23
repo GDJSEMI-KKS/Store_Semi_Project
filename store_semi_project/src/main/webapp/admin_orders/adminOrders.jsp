@@ -100,7 +100,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Admin Customer One</title>
+	<title>Admin Orders</title>
 	<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
@@ -116,7 +116,8 @@
               <!-- 마이페이지 -->
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/admin_category/adminCategoryList.jsp">관리페이지</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">주문관리</li>
                 </ol>
               </nav>
             </div>
@@ -131,7 +132,7 @@
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
+	                  <a href="#" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
 	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>주문관리</a>
 	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
 	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
@@ -230,7 +231,7 @@
 						</li>
 						<!-- 이전 페이지블럭 (startPage - 1) -->
 						<%
-							if(startPage < 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
+							if(startPage <= 1){ //startPage가 1인 페이지블럭에서는 '이전'버튼 비활성화
 						%>
 								<li class="page-item disabled"><a class="page-link" href="#">&#60;</a></li>
 						<%	
@@ -319,11 +320,11 @@
 	delStat.forEach(function(item, index){
 		if(item.innerHTML === "발송준비"){
 			item.classList.add("badge-warning");
-		} else if(delStat.innerHTML === "발송완료"){
+		} else if(item.innerHTML === "발송완료"){
 			item.classList.add("badge-primary");
-		} else if(delStat.innerHTML === "배송중"){
+		} else if(item.innerHTML === "배송중"){
 			item.classList.add("badge-secondary");
-		} else if(delStat.innerHTML === "배송완료"){
+		} else if(item.innerHTML === "배송완료"){
 			item.classList.add("badge-info");
 		} else {
 			item.classList.add("badge-success");

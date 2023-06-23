@@ -9,21 +9,25 @@
 	final String RESET = "\u001B[0m";
 	
 	//로그인 세션 유효성 검사: 로그아웃 상태이면 로그인창으로 리다이렉션
-	/* if(session.getAttribute("loginId") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/로그인페이지.jsp" + RESET);
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "modifyAdminCustomerLvAction 로그인필요" + RESET);
 		return;
 	}
-	String loginId = session.getAttribute(KMJ + "loginId" + " <--modifyAdminCustomerLvAction loginId" + RESET);*/
+	Object o = session.getAttribute("loginId");
+	String loginId = "";
+	if(o instanceof String){
+		loginId = (String)o;
+	}
 
-	/* //관리자가 아닌 경우 홈으로 리다이렉션
+	//관리자가 아닌 경우 홈으로 리다이렉션
 	IdListDao iDao = new IdListDao();
-	IdList loginLevel = iDao.selectIdListOne(loginId);
-	String idLevel = loginLevel.getIdLevel();
-	if(idLevel == 0){
+	IdList loginIdInfo = iDao.selectIdListOne(loginId);
+	int loginLevel = loginIdInfo.getIdLevel();
+	if(loginLevel == 0){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
-	} */
+	}
 	//요청값 post방식 인코딩
 	request.setCharacterEncoding("utf-8");
 	
@@ -36,7 +40,7 @@
 	if(request.getParameter("id") == null 
 		|| request.getParameter("idLevel") == null
 		|| request.getParameter("name") == null){
-		response.sendRedirect(KMJ + request.getContextPath()+"/admin_customer/adminCustomerList.jsp" + RESET);
+		response.sendRedirect(request.getContextPath()+"/admin_customer/adminCustomerList.jsp");
 		return;
 	}
 	String id = request.getParameter("id");
@@ -59,7 +63,6 @@
 	}
 	
 	//idList테이블 level변경
-	IdListDao iDao = new IdListDao();
 	int idRow = iDao.updateIdListIdLevel(id, Integer.parseInt(idLevel));
 	
 	//관리자로 등록 후 회원상세보기로 리다이렉션
