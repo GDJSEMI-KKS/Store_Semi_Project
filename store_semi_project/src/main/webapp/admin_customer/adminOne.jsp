@@ -75,21 +75,7 @@
             </div>
             <div class="col-lg-3">
               <!-- 고객메뉴 시작 -->
-              <div class="card sidebar-menu">
-                <div class="card-header">
-                  <h3 class="h4 card-title">관리자 메뉴</h3>
-                </div>
-                <div class="card-body">
-                  <ul class="nav nav-pills flex-column">
-	                   <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
-	                  <a href="<%=request.getContextPath()%>/product/productList.jsp" class="nav-link "><i class="fa fa-list"></i>상품관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=id%>&currentPage=1" class="nav-link active"><i class="fa fa-list"></i>회원관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
-	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=id%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
-                </div>
-              </div>
+              <jsp:include page="/inc/adminSideMenu.jsp"></jsp:include>
               <!-- /.col-lg-3-->
               <!-- 고객메뉴 끝 -->
             </div>
@@ -147,8 +133,6 @@
       </div>
 	</div>
 	<!-- -----------------------------메인 끝----------------------------------------------- -->
-<!-- footer -->
-<jsp:include page="/inc/footer.jsp"></jsp:include>
 <!-- copy -->
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->
