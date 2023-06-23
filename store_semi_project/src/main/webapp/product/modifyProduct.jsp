@@ -11,13 +11,13 @@
 	/* session 유효성 검사
 	* session 값이 null이면 redirection. return.
 	*/
-	/*
+
 	if(session.getAttribute("loginId") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;	
 	}
-	*/
-	// 현재 로그인 Id
+	
+	// 현재 로그인 I
 	String loginId = null;
 	if(session.getAttribute("loginId") != null){
 		loginId = (String)session.getAttribute("loginId");
@@ -100,11 +100,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>Admin Customer One</title>
+	<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
-	
+<!-- 메뉴 -->
+<jsp:include page="/inc/menu.jsp"></jsp:include>
+
+<!-- -----------------------------메인 시작----------------------------------------------- -->
+	<div id="all">
+      <div id="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- 마이페이지 -->
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-lg-3">
+              <!-- 고객메뉴 시작 -->
+              <div class="card sidebar-menu">
+                <div class="card-header">
+                  <h3 class="h4 card-title">관리자 메뉴</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="nav nav-pills flex-column">
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
+	                  <a href="<%=request.getContextPath()%>/product/productList.jsp?id=<%=loginId%>" class="nav-link active "><i class="fa fa-list"></i>상품관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>주문관리</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+               </ul> </div>
+              </div>
+              <!-- /.col-lg-3-->
+              <!-- 고객메뉴 끝 -->
+            </div>
+            <div class="col-lg-9">
+              <div class="box">
+              	<!-- 상세정보 -->
+				<div>
 	<form action = "<%=request.getContextPath()%>/product/modifyProductAction.jsp" method="post" encType="multipart/form-data">
 		<div> 상품 번호 <input type="number" readonly="readonly" name = "productNo" value = "<%=productNo%>"></div>
 		<div> 상품 카테고리
@@ -151,7 +191,13 @@
 		<div>
 			<button type="submit">수정</button>
 			<button type="submit" formaction="<%=request.getContextPath()%>/product/productList.jsp">이전</button>
-		</div>
-	</form>
+</div></form></div>
+					</div>
+				</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 </body>
 </html>

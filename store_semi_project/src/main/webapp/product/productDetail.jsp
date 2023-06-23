@@ -7,12 +7,27 @@
 	final String SJ = "\u001B[44m";
 	
 	String productSaveFilename = null;
-	// idLevel 분기에 따라 문의 입력 추가를 위한 코드
+	// 현재 로그인 Id
 	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	 * IdListDao selectIdListOne(loginId) method 호출
+	*/
+	
 	IdListDao idListDao = new IdListDao();
 	IdList idList = idListDao.selectIdListOne(loginId);
-	//int idLevel = idList.getIdLevel();
-	//System.out.println(SJ+idLevel +"<-- productDetail idLevel"+ RE );
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	// 아이디 레벨 검사 
+	System.out.println(SJ+idLevel +"<-- idLevel" +RE );
 	
 	// 요청값 유효성 검사
 	if(request.getParameter("p.productNo") == null  
@@ -115,19 +130,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>Admin Customer One</title>
+	<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
-	<div >
-		<h1>관리자 페이지 : 상품 상세</h1>
-		<div >
+<!-- 메뉴 -->
+<jsp:include page="/inc/menu.jsp"></jsp:include>
+
+<!-- -----------------------------메인 시작----------------------------------------------- -->
+	<div id="all">
+      <div id="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- 마이페이지 -->
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-lg-3">
+              <!-- 고객메뉴 시작 -->
+              <div class="card sidebar-menu">
+                <div class="card-header">
+                  <h3 class="h4 card-title">관리자 메뉴</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="nav nav-pills flex-column">
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
+	                  <a href="<%=request.getContextPath()%>/product/productList.jsp" class="nav-link active "><i class="fa fa-list"></i>상품관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>주문관리</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+                	</ul>
+                	
+                </div>
+              </div>
+              <!-- /.col-lg-3-->
+              <!-- 고객메뉴 끝 -->
+            </div>
+            <div class="col-lg-9">
+              <div class="box">
+              	<!-- 상세정보 -->
+				<div>
+		<h1> 상품 상세</h1>
+		<div>
 			<a href="<%=request.getContextPath()%>/product/productList.jsp">
 				<button type="button">목록으로</button>
 			</a>
 		</div>
 		<form action="<%=request.getContextPath()%>/product/modifyProduct.jsp?p.productNo=<%=productNo%>" method="post">
-			<table >
+			<table>
 			<%
 				for(HashMap<String, Object> p : list) {
 					// 할인 기간 확인을 위한 변수와 분기
@@ -218,8 +275,9 @@
 				<td><%=p.get("p.updatedate")%></td>
 			</tr>
 			<tr>
-				<td></td>
-				<td></td>
+				<td>&nbsp</td>
+				<td>&nbsp</td>
+				<td>&nbsp</td>
 				<td>
 					<div>상품 이미지  
 						<img src="<%=dir%>" id="preview" width="300px">
@@ -264,7 +322,8 @@
 					</a>
 				</td>
 			</tr>
-		</table>
+			
+			</table>
 		</form>
 	</div>
 	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
@@ -302,7 +361,7 @@
 			</tr>
 			<%	
 				}
-			//	if(idLevel ==0 ) {
+			if(idLevel ==0 ) {
 			%>
 			<tr>
 				<td>
@@ -312,9 +371,16 @@
 				</td>
 			</tr>
 			<%
-			//	}
+				}
 			%>
-		</table>
-	</form>
+		
+					</table>
+					</form>
+					</div>
+				</div>
+              </div>
+            </div>
+          </div>
+        </div>
 </body>
 </html>

@@ -372,9 +372,12 @@
           <div class="col-md-12">
             <div class="box slideshow">
               <h3>음반 목록</h3>
-              <p class="lead">Get the inspiration from our world class designers</p>
+              <p class="lead">사진을 누르면 목록으로 이동합니다</p>
               <div id="get-inspired" class="owl-carousel owl-theme">
-                <div class="item"><a href="<%=request.getContextPath()%>/product/productHome.jsp"><img src="img/getinspired1.jpg" alt="Get inspired" class="img-fluid"></a></div>
+                <div class="item"><a href="<%=request.getContextPath()%>/product/productHome.jsp"><img src="<%=dir = request.getContextPath() + "/product/productImg/" + "2Week_3.jpg" %>" alt="Get inspired" class="img-fluid"></a></div>
+                <div class="item"><a href="#"><img src="/getinspired1.jpg" alt="Get inspired" class="img-fluid"></a></div>
+                <div class="item"><a href="#"><img src="img/getinspired2.jpg" alt="Get inspired" class="img-fluid"></a></div>
+                <div class="item"><a href="#"><img src="img/getinspired3.jpg" alt="Get inspired" class="img-fluid"></a></div>
               </div>
             </div>
           </div>

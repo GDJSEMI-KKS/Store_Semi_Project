@@ -56,7 +56,15 @@
 	}
 	
 	int productNo = Integer.parseInt(mRequest.getParameter("productNo"));
-	
+	System.out.println(SJ+ mRequest.getParameter("productName") + "productName" +RE);
+	System.out.println(SJ+ mRequest.getParameter("productInfo") + "productInfo" +RE);
+	System.out.println(SJ+ mRequest.getParameter("productPrice") + "productPrice" +RE);
+	System.out.println(SJ+ mRequest.getParameter("productStock") + "productStock" +RE);
+	System.out.println(SJ+ mRequest.getParameter("productStatus") + "productStatus" +RE);
+	System.out.println(SJ+ mRequest.getParameter("discountRate") + "discountRate" +RE);
+	System.out.println(SJ+ mRequest.getParameter("discountStart") + "discountStart" +RE);
+	System.out.println(SJ+ mRequest.getParameter("discountEnd") + "discountEnd" +RE);
+	System.out.println(SJ+ mRequest.getParameter("productImg") + "productImg" +RE);
 	// 수정값 유효성 섬사
 	if(mRequest.getParameter("productName") == null
 		||mRequest.getParameter("productInfo") == null
@@ -67,7 +75,7 @@
 		||mRequest.getParameter("discountRate") == null
 		||mRequest.getParameter("discountStart") == null
 		||mRequest.getParameter("discountEnd") == null
-		||mRequest.getParameter("productImg") == null
+		//||mRequest.getParameter("productImg") == null
 		||mRequest.getParameter("productName").equals("")
 		||mRequest.getParameter("productInfo").equals("")
 		||mRequest.getParameter("productPrice").equals("")
@@ -76,7 +84,8 @@
 		||mRequest.getParameter("productStatus").equals("")
 		||mRequest.getParameter("discountStart").equals("")
 		||mRequest.getParameter("discountEnd").equals("")
-		||mRequest.getParameter("productImg").equals("")) {
+		//||mRequest.getParameter("productImg").equals("")
+		) {
 		
 		System.out.println(SJ+"매개변수 요청"+RE); 
 		response.sendRedirect(request.getContextPath() + "/product/modifyProduct.jsp?p.productNo=" + productNo);

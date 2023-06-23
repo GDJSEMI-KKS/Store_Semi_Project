@@ -7,12 +7,37 @@
 	final String RE = "\u001B[0m"; 
 	final String SJ = "\u001B[44m";
 	
-	// 아이디 레벨 검사 
-	IdListDao iDao = new IdListDao();
-	IdList idList = new IdList();
-	int idLevel = idList.getIdLevel();
-	System.out.println(SJ+idLevel +"<-- idLevel" +RE );
 	
+	/* session 유효성 검사
+	* session 값이 null이면 redirection. return.
+	*/
+	
+	if(session.getAttribute("loginId") == null){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	
+	// 현재 로그인 Id
+	String loginId = null;
+	if(session.getAttribute("loginId") != null){
+		loginId = (String)session.getAttribute("loginId");
+	}
+	
+	/* idLevel 유효성 검사
+	 * idLevel == 0이면 redirection. return
+	 * IdListDao selectIdListOne(loginId) method 호출
+	*/
+	
+	IdListDao idListDao = new IdListDao();
+	IdList idList = idListDao.selectIdListOne(loginId);
+	int idLevel = idList.getIdLevel();
+	
+	if(idLevel == 0){
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		return;	
+	}
+	// 아이디 레벨 검사 
+	System.out.println(SJ+idLevel +"<-- idLevel" +RE );
 	// 현재페이지
 	int currentPage = 1;
 	if(request.getParameter("currentPage") != null) {
@@ -57,11 +82,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>관리자 상품리스트</title>
+	<meta charset="UTF-8">
+	<title>Admin Customer One</title>
+	<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
-<div>
+<!-- 메뉴 -->
+<jsp:include page="/inc/menu.jsp"></jsp:include>
+
+<!-- -----------------------------메인 시작----------------------------------------------- -->
+	<div id="all">
+      <div id="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- 마이페이지 -->
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li aria-current="page" class="breadcrumb-item active">마이페이지</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-lg-3">
+              <!-- 고객메뉴 시작 -->
+              <div class="card sidebar-menu">
+                <div class="card-header">
+                  <h3 class="h4 card-title">관리자 메뉴</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="nav nav-pills flex-column">
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>통계</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>카테고리관리</a>
+	                  <a href="<%=request.getContextPath()%>/product/productList.jsp" class="nav-link active "><i class="fa fa-list"></i>상품관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>회원관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-list"></i>주문관리</a>
+	                  <a href="#" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
+	                  <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp?id=<%=loginId%>&currentPage=1" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+                </ul></div>
+              </div>
+              <!-- /.col-lg-3-->
+              <!-- 고객메뉴 끝 -->
+            </div>
+            <div class="col-lg-9">
+              <div class="box">
+              	<!-- 상세정보 -->
+				<div>
+								<table class="table table-borderless">
 	<h1>관리페이지 : 상품 리스트</h1>
 	<div>
 		<a href="<%=request.getContextPath()%>/product/addProduct.jsp">
@@ -76,6 +142,7 @@
 		<table >
 			<tr>
 				<th >p no.</th>
+				<th >판매량</th>
 				<th >카테고리</th>
 				<th >이름</th>
 				<th >가격</th>
@@ -83,6 +150,7 @@
 				<th >재고</th>
 				<th >등록일</th>
 				<th >수정일</th>
+				
 			</tr>
 			<%
 				for(HashMap<String, Object> p : cntList) {
@@ -93,6 +161,7 @@
 								<%=p.get("p.productNo")%>
 							</a>
 						</td>
+						<td><%=p.get("productSumCnt")%></td>
 						<td><%=p.get("categoryName")%></td>
 						<td><%=p.get("productName")%></td>
 						<td><%=p.get("productPrice")%></td>
@@ -114,135 +183,7 @@
 			%>
 			
 		</table>
-		<h1>pop 리스트</h1>
-		<table >
-			<tr>
-				<th >p no.</th>
-				<th >카테고리</th>
-				<th >이름</th>
-				<th >가격</th>
-				<th >상태</th>
-				<th >재고</th>
-				<th >등록일</th>
-				<th >수정일</th>
-			</tr>
-			<%
-				for(HashMap<String, Object> p : popList) {
-					// 할인 기간 확인을 위한 변수와 분기
-			%>
-					<tr>
-						<td>
-							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>">
-								<%=p.get("p.productNo")%>
-							</a>
-						</td>
-						<td><%=p.get("categoryName")%></td>
-						<td><%=p.get("productName")%></td>
-						<td><%=p.get("productPrice")%></td>
-						<td><%=p.get("productStatus")%></td>
-						<td><%=p.get("productStock")%></td>
-						<td><%=p.get("p.createdate")%></td>
-						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
-					</tr>
-			<%		
-				}
-			%>
-			
-		</table>
-		<h1>kpop 리스트</h1>
-		<table >
-			<tr>
-				<th >p no.</th>
-				<th >카테고리</th>
-				<th >이름</th>
-				<th >가격</th>
-				<th >상태</th>
-				<th >재고</th>
-				<th >등록일</th>
-				<th >수정일</th>
-			</tr>
-			<%
-				for(HashMap<String, Object> p : kpopList) {
-					// 할인 기간 확인을 위한 변수와 분기
-			%>
-					<tr>
-						<td>
-							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>">
-								<%=p.get("p.productNo")%>
-							</a>
-						</td>
-						<td><%=p.get("categoryName")%></td>
-						<td><%=p.get("productName")%></td>
-						<td><%=p.get("productPrice")%></td>
-						<td><%=p.get("productStatus")%></td>
-						<td><%=p.get("productStock")%></td>
-						<td><%=p.get("p.createdate")%></td>
-						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
-					</tr>
-			<%		
-				}
-			%>
-			
-		</table>
-		<h1>classic 리스트</h1>
-		<table >
-			<tr>
-				<th >p no.</th>
-				<th >카테고리</th>
-				<th >이름</th>
-				<th >가격</th>
-				<th >상태</th>
-				<th >재고</th>
-				<th >등록일</th>
-				<th >수정일</th>
-			</tr>
-			<%
-				for(HashMap<String, Object> p : classicList) {
-					// 할인 기간 확인을 위한 변수와 분기
-			%>
-					<tr>
-						<td>
-							<a href="<%=request.getContextPath()%>/product/productDetail.jsp?p.productNo=<%=p.get("p.productNo")%>&dproductNo=<%=p.get("dProductNo")%>&discountRate=<%=p.get("discountRate")%>">
-								<%=p.get("p.productNo")%>
-							</a>
-						</td>
-						<td><%=p.get("categoryName")%></td>
-						<td><%=p.get("productName")%></td>
-						<td><%=p.get("productPrice")%></td>
-						<td><%=p.get("productStatus")%></td>
-						<td><%=p.get("productStock")%></td>
-						<td><%=p.get("p.createdate")%></td>
-						<td><%=p.get("p.updatedate")%></td>
-						<td>
-						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
-						</td>
-					</tr>
-			<%		
-				}
-			%>
-			
-		</table>
+		
 	<%
 		// 페이징 수
 		int pagePerPage = 10;
@@ -281,6 +222,12 @@
 	<%	
 		}
 	%>
-	</div>
+					</table></div>
+					</div>
+				</div>
+              </div>
+            </div>
+          </div>
+        </div>
 </body>
 </html>
