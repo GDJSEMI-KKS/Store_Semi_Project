@@ -40,6 +40,9 @@
 	double disRate = 0;
 	int cartPrice = 0;
 	int disPrice = 0;
+	
+	//수량변경에 필요한 변수
+	int i = 0;
 %>
 <!DOCTYPE html>
 <html>
@@ -47,6 +50,7 @@
 	<meta charset="UTF-8">
 	<title>Cart</title>
 	<jsp:include page="/inc/link.jsp"></jsp:include>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 </head>
 <body>
 <!-- 메뉴 -->
@@ -83,9 +87,9 @@
 	                    <table class="table">
 	                      <thead>
 	                      	<tr>
-	                          <th>주문상품선택</th>
+	                          <th>주문번호</th>
 	                          <th colspan="2">제품</th>
-	                          <th colspan="2">수량</th>
+	                          <th>수량</th>
 	                          <th>가격</th>
 	                          <th>할인금액</th>
 	                          <th colspan="2">합계</th>
@@ -94,27 +98,25 @@
 	                      <tbody>
 	                      	<%
 	                      		for(HashMap<String, Object> m : cartList){
+	                      			i += 1;
 	                      			productStock = cDao.productCartStock((Integer)m.get("productNo"));
-	                      			cartSum += (Integer)m.get("cartCnt") * (Integer)m.get("productPrice");
 	                      			discount = disDao.selectProductCurrentDiscount((Integer)m.get("productNo"));
 	                      			disRate = discount.getDiscountRate();
 	                      			cartPrice = (Integer)m.get("productPrice") * (Integer)m.get("cartCnt");
-	                      			disPrice = (int)Math.floor(cartPrice - cartPrice*(1-disRate));
+	                      			disPrice = (int)Math.floor(cartPrice*(1-disRate));
+	                      			cartSum += (cartPrice - disPrice);
 	                      	%>
 	                      			<tr>
-	                      			  <td><input type="radio" name="cartNo" value="<%=m.get("cartNo")%>"></td> <!-- 선택한 cartNo가 넘어간다! -->
+	                      			  <td><input id="cartNo" type="radio" name="cartNo" value="<%=m.get("cartNo")%>" required><%=m.get("cartNo")%></td> <!-- 선택한 cartNo가 넘어간다! -->
                       			  	  <td><a href="#"><img src="<%=dir%>/<%=m.get("productSaveFilename")%>" height="50" width="auto" alt="이미지준비중"></a></td>
 			                          <td><a href="#"><%=(String)m.get("productName")%></a></td>
 			                          <td>
-			                          	<input name="cartCnt" type="number" value="<%=(Integer)m.get("cartCnt")%>" class="form-control" min="1" max="<%=productStock%>">
-			                          </td>
-			                          <td>
-			                          	<button id="changeCtn" class="btn btn-sm btn-primary" type="button">수량변경</button>
+			                          	<input name="cartCnt" type="number" value="<%=(Integer)m.get("cartCnt")%>" class="form-control" min="1" max="<%=productStock%>" readonly>
 			                          </td>
 			                          <td><%=cartPrice%></td>
 			                          <td><%=disPrice%><input type="hidden" name="disPrice" value="<%=disPrice%>"></td>
-			                          <td><%=cartPrice-disPrice%></td>
-			                          <td><a href="<%=request.getContextPath()%>/cart/removeCartNo.jsp?cartNo=<%=m.get("cartNo")%>"><i class="fa fa-trash-o"></i></a></td>
+			                          <td><%=cartPrice-disPrice%><input type="hidden" name="orderPrice" value="<%=cartPrice-disPrice%>"></td>
+			                          <td><a href="<%=request.getContextPath()%>/cart/removeCartNoAction.jsp?cartNo=<%=m.get("cartNo")%>"><i class="fa fa-trash-o"></i></a></td>
 			                        </tr>
 	                      	<%
 	                      		}
@@ -122,8 +124,8 @@
 	                      </tbody>
 	                      <tfoot>
 	                        <tr>
-	                          <th colspan="7">합계</th>
-	                          <th colspan="2"><%=cartSum%></th>
+	                          <th colspan="6">합계</th>
+	                          <th colspan="2"><%=cartSum%>원</th>
 	                        </tr>
 	                      </tfoot>
 	                    </table>
@@ -132,7 +134,6 @@
 	                  <div class="box-footer d-flex justify-content-between flex-column flex-lg-row">
 	                    <div class="left"><a href="<%=request.getContextPath()%>/home.jsp" class="btn btn-outline-secondary"><i class="fa fa-chevron-left"></i> 쇼핑계속하기</a></div>
 	                    <div class="right">
-	                      <button class="btn btn-outline-secondary"><i class="fa fa-refresh"></i> 주문하기</button>
 	                      <button type="submit" class="btn btn-primary">주문하기 <i class="fa fa-chevron-right"></i></button>
 	                    </div>
 	                  </div>
@@ -149,8 +150,6 @@
       </div>
     </div>
 	<!-- -----------------------------메인 끝----------------------------------------------- -->
-<!-- footer -->
-<jsp:include page="/inc/footer.jsp"></jsp:include>
 <!-- copy -->
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->

@@ -99,7 +99,7 @@
 		//리뷰이미지 파일 삭제,DB수정
 		ReviewImgDao rImgDao = new ReviewImgDao();
 		//기존파일정보 불러오기
-		String oldSaveFilename = rImgDao.SelectReviewImg(orderNo).getReviewSaveFilename();
+		String oldSaveFilename = rImgDao.selectReviewImg(orderNo).getReviewSaveFilename();
 		System.out.println(oldSaveFilename);
 		File f = new File(dir+"/"+oldSaveFilename);
 		if(f.exists()){ //이미 저장된 파일 삭제

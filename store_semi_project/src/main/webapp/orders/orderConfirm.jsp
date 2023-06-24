@@ -77,22 +77,9 @@
         </div>
       </div>
     </div>
-    <!--
-    *** FOOTER ***
-    _________________________________________________________
-    -->
-    <jsp:include page="/inc/footer.jsp"></jsp:include>
-    <!-- /#footer-->
-    <!-- *** FOOTER END ***-->
-    
-    
-    <!--
-    *** COPYRIGHT ***
-    _________________________________________________________
-    -->
+    <!-- copy -->
    <jsp:include page="/inc/copy.jsp"></jsp:include>
-    <!-- *** COPYRIGHT END ***-->
-    <!-- JavaScript files-->
+    <!-- 자바스크립트 -->
     <jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
 </html>

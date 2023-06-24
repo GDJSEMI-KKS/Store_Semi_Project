@@ -58,23 +58,9 @@
               </nav>
             </div>
             <div class="col-lg-3">
-              <!--
-              *** CUSTOMER MENU ***
-              _________________________________________________________
-              -->
-              <div class="card sidebar-menu">
-				<div class="card-header">
-				  <h3 class="h4 card-title">고객 메뉴</h3>
-				</div>
-				<div class="card-body">
-				  <ul class="nav nav-pills flex-column">
-				   <a href="<%=request.getContextPath()%>/customer/customerOne.jsp?id=<%=loginId%>" class="nav-link active"><i class="fa fa-list"></i>프로필</a>
-				   <a href="<%=request.getContextPath()%>/customer/customerOrderList.jsp?id=<%=loginId%>&currentPage=1" class="nav-link"><i class="fa fa-user"></i>주문목록</a>
-				   <a href="<%=request.getContextPath()%>/id_list/logoutAction.jsp" class="nav-link"><i class="fa fa-sign-out"></i>로그아웃</a></ul>
-				  </div>
-				</div>
-				<!-- /.col-lg-3-->
-              <!-- *** CUSTOMER MENU END ***-->
+              <!-- 고객메뉴 시작-->
+              <jsp:include page="/inc/customerSideMenu.jsp"></jsp:include>
+              <!-- 고객메뉴 끝 -->
             </div>
             <div id="customer-orders" class="col-lg-9">
               <div class="box">
@@ -169,8 +155,6 @@
 
 	
 	<!-- -----------------------------메인 끝----------------------------------------------- -->
-<!-- footer -->
-<jsp:include page="/inc/footer.jsp"></jsp:include>
 <!-- copy -->
 <jsp:include page="/inc/copy.jsp"></jsp:include>
 <!-- 자바스크립트 -->

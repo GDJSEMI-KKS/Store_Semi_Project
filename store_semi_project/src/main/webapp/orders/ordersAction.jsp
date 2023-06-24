@@ -10,7 +10,7 @@
 	
 	//로그인 유효성 검사 : 로그아웃 상태면 로그인창으로 리다이렉션
 	if(session.getAttribute("loginId") == null){
-		response.sendRedirect(request.getContextPath()+"/home.jsp");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		System.out.println(KMJ + "ordersAction 로그인 필요" + RESET);
 		return;
 	}
@@ -26,10 +26,9 @@
 
 	//요청값 유효성 검사
 	if(request.getParameter("cartNo") == null
-		|| request.getParameter("productNo") == null 
-		|| request.getParameter("id") == null
+		|| request.getParameter("productNo") == null
 		|| request.getParameter("orderCnt") == null 
-		|| request.getParameter("orderPrice") == null
+		|| request.getParameter("finalPrice") == null
 		|| request.getParameter("payment") == null 
 		|| request.getParameter("usePoint") == null){
 		response.sendRedirect(request.getContextPath()+"/home.jsp");
@@ -37,9 +36,8 @@
 	}
 	int cartNo = Integer.parseInt(request.getParameter("cartNo"));
 	int productNo = Integer.parseInt(request.getParameter("productNo"));
-	String id = request.getParameter("id");
 	int orderCnt = Integer.parseInt(request.getParameter("orderCnt"));
-	int orderPrice = Integer.parseInt(request.getParameter("orderPrice"));
+	int orderPrice = Integer.parseInt(request.getParameter("finalPrice"));
 	String payment = request.getParameter("payment");
 	int usePoint = Integer.parseInt(request.getParameter("usePoint"));
 	String paymentStatus = "결제완료";
@@ -51,7 +49,7 @@
 	//orders DB에 저장하기 위하여 Orders타입으로 묶기
 	Orders order = new Orders();
 	order.setProductNo(productNo);
-	order.setId(id);
+	order.setId(loginId);
 	order.setPaymentStatus(paymentStatus); //무통장입금 선택시에는 결제대기로 바꾸기
 	order.setDeliveryStatus(deliveryStatus);
 	order.setOrderCnt(orderCnt);
@@ -82,7 +80,7 @@
 	
 	//id의 등급에 따라 주문금액의 3%, 5%, 10% 적립 
 	CustomerDao cDao = new CustomerDao();
-	String rank = cDao.selectCustomer(id).getCstmRank();
+	String rank = cDao.selectCustomer(loginId).getCstmRank();
 	int point = 0;
 	if(rank.equals("bronze")){
 		point = (int)(orderPrice * 0.03);
@@ -106,7 +104,7 @@
 	}
 	
 	//고객 포인트 합계 업데이트
-	int sumPointRow = cDao.updatePoint(id);
+	int sumPointRow = cDao.updatePoint(loginId);
 	if(sumPointRow != 1){
 		System.out.println(KMJ + sumPointRow + " <--ordersAction sumPointRow 입력실패" + RESET);
 	} else {
@@ -114,7 +112,7 @@
 	}
 	
 	//고객 주문금액 합계 업데이트
-	int sumPriceRow = cDao.updateSumPrice(id);
+	int sumPriceRow = cDao.updateSumPrice(loginId);
 	if(sumPriceRow != 1){
 		System.out.println(KMJ + sumPriceRow + " <--ordersAction sumPriceRow 입력실패" + RESET);
 	} else {
