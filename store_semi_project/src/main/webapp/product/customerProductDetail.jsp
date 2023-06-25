@@ -268,7 +268,6 @@
 					
 			%>
 			<tr>
-				<td></td>
 				<td>
 					<a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=r.get("reviewNo")%>">
 						<%=r.get("orderNo")%>
