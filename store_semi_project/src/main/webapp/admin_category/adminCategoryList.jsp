@@ -50,54 +50,91 @@
 <head>
 <meta charset="UTF-8">
 <title>adminCategory</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
-	<div>
-		<table>
-			<tr>
-				<td>카테고리</td>
-			</tr>
-			<%
-			    int num = 0;
-				String categoryName = "";
-			    for (Category c : list) {
-			        num = num + 1;
-			        categoryName = "categoryName" +num;
-			%>
-			    <tr>
-			        <td>
-			            <form method="post" id="modifyCategoryForm">
-				            <span data-category-name="<%=categoryName%>"><%=c.getCategoryName()%></span>
-				            <input type="text" name="modifyCategoryName" id="<%=categoryName%>" value="<%=c.getCategoryName()%>" style="display:none">
-				            <input type="hidden" name="categoryName" value="<%=c.getCategoryName()%>">
-			            </form>
-			        </td>
-			        <td>
-			            <button type="button" class="modifyBtn" data-modify="<%=categoryName%>">수정</button>
-			            <button type="button" class="removeBtn" data-modify="<%=categoryName%>" data-remove="<%=c.getCategoryName()%>">삭제</button>
-			            <button type="button" class="confirmBtn" data-modify-confirm="<%=categoryName%>" style="display:none">확인</button>
-			            <button type="button" class="cancelBtn" data-modify-cancel="<%=categoryName%>" style="display:none">취소</button>
-			        </td>
-			    </tr>    
-			<%
-			    }
-			%>
-			<tr id="addCategoryTr" style="display:none">
-				<td>
-					<form method="post" id="addCategoryForm">
-						<input type="text" name="addCategoryName">
-					</form>
-				</td>
-				<td>
-					<button type="button" id="addBtn">등록</button>
-				</td>
-			</tr>
-		</table>
+	<!-- 메뉴 -->
+	<jsp:include page="/inc/menu.jsp"></jsp:include>
+
+	<!-- 메인 -->
+	<div id="all">
+		<div id="content">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<!-- breadcrumb -->
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li aria-current="page" class="breadcrumb-item active">관리자페이지</li>
+								<li aria-current="page" class="breadcrumb-item active">카테고리관리</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- 관리자메뉴 시작 -->
+					<div class="col-lg-3">
+						<jsp:include page="/inc/adminSideMenu.jsp"></jsp:include>
+					</div>
+					<!-- 관리자메뉴 끝 -->
+					<div class="col-lg-9">
+              			<div class="box">
+              				<div>
+								<table class="table">
+									<tr>
+										<th>카테고리</th>
+										<th>&nbsp;</th>
+									</tr>
+									<%
+									    int num = 0;
+										String categoryName = "";
+									    for (Category c : list) {
+									        num = num + 1;
+									        categoryName = "categoryName" +num;
+									%>
+								    <tr>
+								        <td>
+								            <form method="post" id="modifyCategoryForm">
+									            <span data-category-name="<%=categoryName%>"><%=c.getCategoryName()%></span>
+									            <input type="text" name="modifyCategoryName" id="<%=categoryName%>" class="form-control" value="<%=c.getCategoryName()%>" style="display:none">
+									            <input type="hidden" name="categoryName" value="<%=c.getCategoryName()%>">
+								            </form>
+								        </td>
+								        <td class="text-right">
+								            <button type="button" class="modifyBtn btn btn-primary" data-modify="<%=categoryName%>">수정</button>
+								            <button type="button" class="removeBtn btn btn-primary" data-modify="<%=categoryName%>" data-remove="<%=c.getCategoryName()%>">삭제</button>
+								            <button type="button" class="confirmBtn btn btn-primary" data-modify-confirm="<%=categoryName%>" style="display:none">확인</button>
+								            <button type="button" class="cancelBtn btn btn-primary" data-modify-cancel="<%=categoryName%>" style="display:none">취소</button>
+								        </td>
+								    </tr>    
+									<%
+									    }
+									%>
+									<tr id="addCategoryTr" style="display:none">
+										<td>
+											<form method="post" id="addCategoryForm">
+												<input type="text" name="addCategoryName" class="form-control">
+											</form>
+										</td>
+										<td class="text-right">
+											<button type="button" id="addBtn" class="btn btn-primary">등록</button>
+											<button type="button" class="cancelBtn btn btn-primary">취소</button>
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div class="text-right">
+								<button type="button" id="addCategoryBtn" class="btn btn-primary">카테고리 등록</button>
+							</div>
+              			</div>
+              		</div>	
+				</div>
+			</div>
+		</div>
 	</div>
-	<div>
-		<button type="button" id="addCategoryBtn">카테고리 등록</button>
-	</div>
+	
+	<!-- copy -->
+	<jsp:include page="/inc/copy.jsp"></jsp:include>
+	<!-- 자바스크립트 -->
+	<jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
 
 <script>
