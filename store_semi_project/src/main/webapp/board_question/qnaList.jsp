@@ -101,169 +101,181 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>boardQuestionList</title>
+<title>qnaList</title>
+<jsp:include page="/inc/link.jsp"></jsp:include>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-	<!-- 요청 폼 -->
-	<div class="center">
-		<form action="<%=request.getContextPath()%>/board_question/qnaList.jsp" method="post">
-			<select name="columnName"><!-- select 선택한 값이 유지되도록 분기 -->
-				<%
-					if(columnName.equals("")){
-				%>
-					<option value="" selected="selected">전체</option>
-					<option value="titleContent">제목+내용</option>
-					<option value="title">제목</option>
-					<option value="content">내용</option>
-					<option value="cstmName">작성자</option>
-				<%		
-					}
-					else if(columnName.equals("titleContent")){
-				%>
-					<option value="">전체</option>
-					<option value="titleContent" selected="selected">제목+내용</option>
-					<option value="title">제목</option>
-					<option value="content">내용</option>
-					<option value="cstmName">작성자</option>
-				<%		
-					} else if(columnName.equals("title")){
-				%>
-					<option value="">전체</option>
-					<option value="titleContent">제목+내용</option>
-					<option value="title" selected="selected">제목</option>
-					<option value="content">내용</option>
-					<option value="cstmName">작성자</option>
-				<%		
-					} else if(columnName.equals("content")){
-				%>
-					<option value="">전체</option>
-					<option value="titleContent">제목+내용</option>
-					<option value="title">제목</option>
-					<option value="content" selected="selected">내용</option>
-					<option value="cstmName">작성자</option>
-				<%		
-					} else{
-				%>
-					<option value="">전체</option>
-					<option value="titleContent">제목+내용</option>
-					<option value="title">제목</option>
-					<option value="content">내용</option>
-					<option value="cstmName" selected="selected">작성자</option>
-				<%		
-					}
-				%>
-			</select>
-			<input type ="text" name="searchWord" value="<%=searchWord%>">
-			<button type="submit">검색</button>
-		</form>
-	</div>
+	<!-- navbar -->
+    <jsp:include page="/inc/menu.jsp"></jsp:include>
 	
-	<!-- 리스트 출력 -->
-	<div>
-		<table>
-			<tr>
-				<th>분류</th>
-				<th>문의번호</th>
-				<th>문의제목</th>
-				<th>작성자</th>
-				<th>작성일</th>
-				<th>조회수</th>
-			</tr>
-			<%
-				for(HashMap<String, Object> bq: list){
-					if(loginId.equals((String) bq.get("id"))){
-			%>
-					<tr onclick="location.href='<%=request.getContextPath()%>/board_question/qnaDetail.jsp?boardQNo=<%=(Integer) bq.get("boardQNo")%>'">
-						<td><%=(String) bq.get("boardQCategory")%></td>
-						<td><%=(Integer) bq.get("boardQNo")%></td>
-						<td><%=(String) bq.get("boardQTitle")%></td>
-						<td><%=(String) bq.get("cstmName")%></td>
-						<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
-						<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
-					<%
-						if((Integer) bq.get("boardANoCnt") > 0){
-					%>
-							<td>답변완료</td>
-					<%		
-						} else{
-					%>
-							<td>확인중</td>
-					<%		
-						}
-					%>
-						
-					</tr>
-			<%			
-					} else{
-			%>
-						<tr>
-							<td><%=(String) bq.get("boardQCategory")%></td>
-							<td><%=(Integer) bq.get("boardQNo")%></td>
-							<td><%=(String) bq.get("boardQTitle")%></td>
-							<td><%=(String) bq.get("cstmName")%></td>
-							<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
-							<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
-					<%
-						if((Integer) bq.get("boardANoCnt") > 0){
-					%>
-							<td>답변완료</td>
-					<%		
-						} else{
-					%>
-							<td>확인중</td>
-					<%		
-						}
-					%>
-							<td>비공개</td>
-					</tr>
-			<%			
-					}
-			%>
-				
-			<%		
-				}
-			%>
-		</table>
-	</div>
-	<!-- 페이지 네비게이션 -->
-		<div>
-			<ul>
-				<%
-					if(startPage > 1){
-				%>
-						<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage-pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
-							<span>이전</span>
-						</li>
-				<%		
-					}
-						for(int i = startPage; i <= endPage; i++){
-							if(i == currentPage){
-				%>
-								<li>
-									<span><%=i%></span>
-								</li>
-				<%
-							} else{
-				%>
-						<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=i%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
-							<span><%=i%></span>
-						</li>
-				<%			
-						}
-					}
-						if(endPage != lastPage){
-				%>
-							<li onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage+pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
-								<span>다음</span>
-							</li>	
-				<%			
-						}
-				%>
-			</ul>
-		</div>	    
-	
-	<div>
-		<button type="button" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaAdd.jsp'">문의등록</button>
-	</div>
+	<!-- 메인 -->
+	<div id="all">
+		<div id="content">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<!-- breadcrumb-->
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/home.jsp">홈</a></li>
+								<li aria-current="page" class="breadcrumb-item active">Q&A</li>
+							</ol>
+						</nav>
+						</div>
+						<div class="col-lg-12">
+							<div class="box">
+								<!-- 문의 등록 버튼 -->
+								<div class="text-right">
+									<button type="button" class="btn btn-primary" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaAdd.jsp'">문의등록</button>
+								</div>
+								<br>
+								<!-- 리스트 출력 -->
+								<div>
+									<table class="table">
+										<tr>
+											<th>문의번호</th>
+											<th>분류</th>
+											<th>문의제목</th>
+											<th>작성자</th>
+											<th>작성일</th>
+											<th>조회수</th>
+											<th colspan="2">&nbsp;</th>
+										</tr>
+										<%
+											for(HashMap<String, Object> bq: list){
+												if(loginId.equals((String) bq.get("id"))){
+										%>
+												<tr onclick="location.href='<%=request.getContextPath()%>/board_question/qnaDetail.jsp?boardQNo=<%=(Integer) bq.get("boardQNo")%>'">
+													<td><%=(Integer) bq.get("boardQNo")%></td>
+													<td><%=(String) bq.get("boardQCategory")%></td>
+													<td><%=(String) bq.get("boardQTitle")%></td>
+													<td><%=(String) bq.get("cstmName")%></td>
+													<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
+													<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
+												<%
+													if((Integer) bq.get("boardANoCnt") > 0){
+												%>
+														<td>답변완료</td>
+												<%		
+													} else{
+												%>
+														<td>확인중</td>
+												<%		
+													}
+												%>
+														<td><i class="fa fa-unlock"></i></td>
+												</tr>
+										<%			
+												} else{
+										%>
+													<tr>
+														<td><%=(Integer) bq.get("boardQNo")%></td>
+														<td><%=(String) bq.get("boardQCategory")%></td>
+														<td><%=(String) bq.get("boardQTitle")%></td>
+														<td><%=(String) bq.get("cstmName")%></td>
+														<td><%=((String) bq.get("createdate")).substring(0,10)%></td>
+														<td><%=(Integer) bq.get("boardQCheckCnt")%></td>
+												<%
+													if((Integer) bq.get("boardANoCnt") > 0){
+												%>
+														<td>답변완료</td>
+												<%		
+													} else{
+												%>
+														<td>확인중</td>
+												<%		
+													}
+												%>
+														<td><i class="fa fa-lock"></i></td>
+												</tr>
+										<%			
+												}
+										%>
+											
+										<%		
+											}
+										%>
+									</table>
+								</div>
+								<!-- 검색조회 폼 -->
+								<div class="text-right">
+									<form method="post" id="selectQnAForm">
+										<select name="columnName">
+											<option value="">전체</option>
+											<option value="titleContent">제목+내용</option>
+											<option value="title">제목</option>
+											<option value="content">내용</option>
+											<option value="cstmName">작성자</option>
+										</select>
+										<input type ="text" name="searchWord" value="<%=searchWord%>">
+										<button type="button" id="selectQnABtn" class="btn btn-primary">검색</button>
+									</form>
+								</div>
+								<!-- 페이지 네비게이션 -->
+									<div class="pageNav">
+										<ul class="list-group list-group-horizontal">
+											<%
+												if(startPage > 1){
+											%>
+													<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage-pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+														<span>이전</span>
+													</li>
+											<%		
+												}
+													for(int i = startPage; i <= endPage; i++){
+														if(i == currentPage){
+											%>
+															<li class="list-group-item currentPageNav">
+																<span><%=i%></span>
+															</li>
+											<%
+														} else{
+											%>
+													<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=i%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+														<span><%=i%></span>
+													</li>
+											<%			
+													}
+												}
+													if(endPage != lastPage){
+											%>
+														<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaList.jsp?currentPage=<%=startPage+pageLength%>&searchWord=<%=searchWord%>&columnName=<%=columnName%>'">
+															<span>다음</span>
+														</li>	
+											<%			
+													}
+											%>
+										</ul>
+									</div>	    
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+	<!-- copy -->
+	<jsp:include page="/inc/copy.jsp"></jsp:include>
+	<!-- 자바스크립트 -->
+	<jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
+
+<script>
+	// columnName selected
+	let columnName = '<%=columnName%>';
+	$('select[name="columnName"] option').each(function() {
+	  if ($(this).val() == columnName) {
+	    $(this).prop('selected', true);
+	  }
+	});
+	
+	// selectQnABtn click
+	$('#selectQnABtn').on('click', function() {
+	    let qnaListUrl = '<%=request.getContextPath()%>/board_question/qnaList.jsp';
+	    $('#selectQnAForm').attr('action', qnaListUrl);
+	    $('#selectQnAForm').submit();
+	});
+</script>
 </html>

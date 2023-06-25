@@ -35,7 +35,7 @@ public class BoardQuestionDao {
 		String sql = null;
 		PreparedStatement stmt = null;
 		
-		if(searchWord.equals("") && columnName.equals("")) { // 1. 전체 조회
+		if(searchWord.equals("") || columnName.equals("")) { // 1. 전체 조회
 			
 			sql = "SELECT boardQNo, id, boardQCategory, boardQTitle, boardQContent, boardQCheckCnt, createdate, updatedate, boardANoCnt, cstmName "
 				+ "FROM "
