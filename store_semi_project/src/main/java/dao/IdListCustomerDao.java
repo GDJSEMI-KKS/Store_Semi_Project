@@ -228,19 +228,23 @@ public class IdListCustomerDao {
 					for(int i=1; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ? 셋팅
 						sql += ",?";
 					}
-					sql+= "ORDER BY idLevel DESC, id ASC LIMIT ?, ?";
+					sql+= ")ORDER BY idLevel DESC, id ASC LIMIT ?, ?";
 					
 					stmt = conn.prepareStatement(sql);
+					
+					// int index : ? 번호 값 저장
+					int index =1;
+					
 					for(int i=0; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ?의 값 저장
-						stmt.setInt(i+1, ckIdLevel[i]);
+						stmt.setInt(index++, ckIdLevel[i]);
 						System.out.println(BG_YELLOW+BLUE+ckIdLevel[i] +"<--IdListCustomerDao ckIdLevel[i]"+RESET);
 					}
 					for(int i=0; i<ckCstmRank.length; i+=1) { // ckCstmRank 배열의 길이 만큼 ?의 값 저장
-						stmt.setString(ckIdLevel.length+i+1, ckCstmRank[i]);
+						stmt.setString(index++, ckCstmRank[i]);
 						System.out.println(BG_YELLOW+BLUE+ckCstmRank[i] +"<--IdListCustomerDao ckCstmRank[i]"+RESET);
 					}
 					for(int i=0; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ?의 값 저장
-						stmt.setString(ckIdLevel.length+ckCstmRank.length+i, ckActive[i]);
+						stmt.setString(index++, ckActive[i]);
 						System.out.println(BG_YELLOW+BLUE+ckActive[i] +"<--IdListCustomerDao ckActive[i]"+RESET);
 					}
 					stmt.setInt(ckIdLevel.length+ckCstmRank.length+ckActive.length+1, beginRow);
@@ -487,16 +491,20 @@ public class IdListCustomerDao {
 				sql+= ")ORDER BY idLevel DESC, id ASC) totalRow";
 				
 				stmt = conn.prepareStatement(sql);
+				
+				// int index : ? 번호 값 저장
+				int index =1;
+				
 				for(int i=0; i<ckIdLevel.length; i+=1){ // ckIdLevel 배열의 길이 만큼 ?의 값 저장
-					stmt.setInt(i+1, ckIdLevel[i]);
+					stmt.setInt(index++, ckIdLevel[i]);
 					System.out.println(BG_YELLOW+BLUE+ckIdLevel[i] +"<--IdListCustomerDao ckIdLevel[i]"+RESET);
 				}
 				for(int i=0; i<ckCstmRank.length; i+=1) { // ckCstmRank 배열의 길이 만큼 ?의 값 저장
-					stmt.setString(ckIdLevel.length+i+1, ckCstmRank[i]);
+					stmt.setString(index++, ckCstmRank[i]);
 					System.out.println(BG_YELLOW+BLUE+ckCstmRank[i] +"<--IdListCustomerDao ckCstmRank[i]"+RESET);
 				}
 				for(int i=0; i<ckActive.length; i+=1){ // ckActive 배열의 길이 만큼 ?의 값 저장
-					stmt.setString(ckIdLevel.length+ckCstmRank.length+i, ckActive[i]);
+					stmt.setString(index++, ckActive[i]);
 					System.out.println(BG_YELLOW+BLUE+ckActive[i] +"<--IdListCustomerDao ckActive[i]"+RESET);
 				}
 				System.out.println(BG_YELLOW+BLUE+stmt +"<--IdListCustomerDao 8.stmt"+RESET);

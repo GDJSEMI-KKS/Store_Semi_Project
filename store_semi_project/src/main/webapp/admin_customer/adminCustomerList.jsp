@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="dao.*"%>
-<%@page import="vo.*"%>
-<%@page import="java.util.*"%>
+<%@ page import="dao.*"%>
+<%@ page import="vo.*"%>
+<%@ page import="java.util.*"%>
 <%
 	//RESET ANST CODE 콘솔창 글자색, 배경색 지정
 	final String RESET = "\u001B[0m";
@@ -173,144 +173,221 @@
 <head>
 <meta charset="UTF-8">
 <title>adminCustomerList</title>
+<jsp:include page="/inc/link.jsp"></jsp:include>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
 </head>
 <body>
-	<!-- 리스트 조회 폼 -->
-	<div>
-		<form action="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" method="post">
-			<div>
-				<div>회원</div>
-				<div>
-					<input type ="checkbox" name="ckIdLevel" value="0"> 고객
-					<input type ="checkbox" name="ckIdLevel" value="1"> 사원
-					<input type ="checkbox" name="ckIdLevel" value="2"> 관리자
-				</div>
-				
-				<div>회원등급</div>
-				<div>
-					<input type ="checkbox" name="ckCstmRank" value="gold"> Gold
-					<input type ="checkbox" name="ckCstmRank" value="silver"> Silver
-					<input type ="checkbox" name="ckCstmRank" value="bronze"> Bronze 
-				</div>
-				
-				<div>활성화</div>
-				<div>
-					<input type ="checkbox" name="ckActive" value="Y"> 활성화
-					<input type ="checkbox" name="ckActive" value="N"> 비활성화
+	<!-- 메뉴 -->
+	<jsp:include page="/inc/menu.jsp"></jsp:include>
+	
+	<!-- 메인 -->
+	<div id="all">
+		<div id="content">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<!-- breadcrumb -->
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li aria-current="page" class="breadcrumb-item active">관리자페이지</li>
+								<li aria-current="page" class="breadcrumb-item active">회원관리</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- 관리자메뉴 시작 -->
+					<div class="col-lg-3">
+						<jsp:include page="/inc/adminSideMenu.jsp"></jsp:include>
+					</div>
+					<!-- 관리자메뉴 끝 -->
+					<div class="col-lg-9">
+              			<div class="box">
+              				<div class="box">
+	              				<!-- 리스트 조회 폼 -->
+								<div>
+									<form action="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" method="post">
+										<div>
+											<table class="table-sm">
+												<tr>
+													<th>회원</th>
+													<td>
+														&nbsp;<input type ="checkbox" name="ckIdLevel" value="0"> 고객
+														&nbsp;<input type ="checkbox" name="ckIdLevel" value="1"> 사원
+														&nbsp;<input type ="checkbox" name="ckIdLevel" value="2"> 관리자
+													</td>
+												</tr>
+												<tr>
+													<th>회원등급</th>
+													<td>
+														&nbsp;<input type ="checkbox" name="ckCstmRank" value="gold"> Gold
+														&nbsp;<input type ="checkbox" name="ckCstmRank" value="silver"> Silver
+														&nbsp;<input type ="checkbox" name="ckCstmRank" value="bronze"> Bronze 
+													</td>
+												</tr>
+												<tr>
+													<th>아이디 활성화</th>
+													<td>
+														&nbsp;<input type ="checkbox" name="ckActive" value="Y"> 활성화
+														&nbsp;<input type ="checkbox" name="ckActive" value="N"> 비활성화
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="text-right">
+											<button type="submit" class="btn btn-primary">검색</button>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<!-- Id 검색 폼 -->
+								<div class="text-right">
+									<form action="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" method="post">
+										<input type ="text" name="id">
+										<button type="submit" class="btn btn-primary">아이디 조회</button> 
+									</form>
+								</div>
+								<br>
+							</div>
+							<!-- 조회 리스트, Id검색 분기하여 출력 -->
+							<%
+								if(selectId == null){ // 조회 리스트 출력
+							%>
+									<div>
+										<table class="table">
+											<tr>
+												<th>ID</th>
+												<th>성명</th>
+												<th>회원등급</th>
+												<th>활성화</th>
+											</tr>
+											<%
+												for(HashMap<String, Object> m : adminCustomerList){
+											%>
+												<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) m.get("id")%>'">
+													<td><%=(String) m.get("id")%></td>
+													<td><%=(String) m.get("cstmName")%></td>
+													<td><%=(String) m.get("cstmRank")%></td>
+													<td><%=(String) m.get("active")%></td>
+												</tr>
+											<%		
+												}
+											%>
+										</table>
+									</div>
+							<%		
+								} else{ // 검색 Id 출력
+							%>
+									<div>
+										<table class="table">
+											<tr>
+												<th>ID</th>
+												<th>성명</th>
+												<th>회원등급</th>
+												<th>활성화</th>
+											</tr>
+											<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) selectId.get("id")%>'">
+												<td><%=(String) selectId.get("id")%></td>
+												<td><%=(String) selectId.get("cstmName")%></td>
+												<td><%=(String) selectId.get("cstmRank")%></td>
+												<td><%=(String) selectId.get("active")%></td>
+											</tr>
+										</table>
+									</div>
+							<%		
+								}
+							%>
+							<!-- 페이지 네비게이션 
+							 * selectId가 null이 아닌경우만 페이지 네비게이션 출력
+							-->
+							<%
+								if(selectId == null){ 
+							%>
+									<div class="pageNav">
+										<ul class="list-group list-group-horizontal">
+											<%
+												if(startPage > 1){
+											%>
+													<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>
+													/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
+														<span>이전</span>
+													</li>
+											<%		
+												}
+													for(int i = startPage; i <= endPage; i++){
+														if(i == currentPage){
+											%>
+															<li class="list-group-item currentPageNav">
+																<span><%=i%></span>
+															</li>
+											<%
+														} else{
+											%>
+													<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
+														<span><%=i%></span>
+													</li>
+											<%			
+													}
+												}
+													if(endPage != lastPage){
+											%>
+														<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
+															<span>다음</span>
+														</li>	
+											<%			
+													}
+											%>
+										</ul>
+									</div>
+							<%		
+								}
+							%>
+              			</div>
+              		</div>	
 				</div>
 			</div>
-			<div>
-				<button type="submit">조회</button>
-			</div>
-		</form>
+		</div>
 	</div>
 	
-	<!-- Id 검색 폼 -->
-	<div>
-		<form action="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" method="post">
-			<input type ="text" name="id">
-			<button type="submit">ID검색</button> 
-		</form>
-	</div>
-	
-	<!-- 조회 리스트, Id검색 분기하여 출력 -->
-	<%
-		if(selectId == null){ // 조회 리스트 출력
-	%>
-			<div>
-				<table>
-					<tr>
-						<th>ID</th>
-						<th>성명</th>
-						<th>회원등급</th>
-						<th>활성화</th>
-					</tr>
-					<%
-						for(HashMap<String, Object> m : adminCustomerList){
-					%>
-						<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) m.get("id")%>'">
-							<td><%=(String) m.get("id")%></td>
-							<td><%=(String) m.get("cstmName")%></td>
-							<td><%=(String) m.get("cstmRank")%></td>
-							<td><%=(String) m.get("active")%></td>
-						</tr>
-					<%		
-						}
-					%>
-				</table>
-			</div>
-	<%		
-		} else{ // 검색 Id 출력
-	%>
-			<div>
-				<table>
-					<tr>
-						<th>ID</th>
-						<th>성명</th>
-						<th>회원등급</th>
-						<th>활성화</th>
-					</tr>
-					<tr onclick="location.href='<%=request.getContextPath()%>/admin_customer/customerOne.jsp?id=<%=(String) selectId.get("id")%>'">
-						<td><%=(String) selectId.get("id")%></td>
-						<td><%=(String) selectId.get("cstmName")%></td>
-						<td><%=(String) selectId.get("cstmRank")%></td>
-						<td><%=(String) selectId.get("active")%></td>
-					</tr>
-				</table>
-			</div>
-	<%		
-		}
-	%>
-	
-	
-	<!-- 페이지 네비게이션 
-	 * selectId가 null이 아닌경우만 페이지 네비게이션 출력
-	-->
-	<%
-		if(selectId == null){ 
-	%>
-			<div class="pageNav">
-				<ul class="list-group list-group-horizontal">
-					<%
-						if(startPage > 1){
-					%>
-							<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>
-							/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage-pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-								<span>이전</span>
-							</li>
-					<%		
-						}
-							for(int i = startPage; i <= endPage; i++){
-								if(i == currentPage){
-					%>
-									<li class="list-group-item currentPageNav">
-										<span><%=i%></span>
-									</li>
-					<%
-								} else{
-					%>
-							<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=i%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-								<span><%=i%></span>
-							</li>
-					<%			
-							}
-						}
-							if(endPage != lastPage){
-					%>
-								<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp?currentPage=<%=startPage+pageLength%><%=ckIdLevelStr%><%=ckCstmRankStr%><%=ckActiveStr%>'">
-									<span>다음</span>
-								</li>	
-					<%			
-							}
-					%>
-				</ul>
-			</div>	
-	<%		
-		}
-	%>
-	
-	
+	<!-- copy -->
+	<jsp:include page="/inc/copy.jsp"></jsp:include>
+	<!-- 자바스크립트 -->
+	<jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
-
+<script>
+	// checkbox 선택 유지(ChatGPT 참고)
+	// 페이지 로드 시 저장된 checkbox 상태 복원
+	restoreCheckboxState();
+	  
+	// checkbox가 변경될 때마다 상태 저장
+	$("input[type='checkbox']").on("change", function() {
+		saveCheckboxState();
+	});
+	
+	function saveCheckboxState() {
+	// checkbox 상태를 저장하기 위해 localStorage 사용
+	$("input[type='checkbox']").each(function() {
+		let name = $(this).attr("name");
+		let value = $(this).val();
+		let isChecked = $(this).is(":checked");
+		
+		localStorage.setItem(name + "_" + value, isChecked);
+		});
+	}
+	
+	function restoreCheckboxState() {
+	// 저장된 checkbox 상태 복원
+	$("input[type='checkbox']").each(function() {
+		let name = $(this).attr("name");
+	  	let value = $(this).val();
+	  	let isChecked = localStorage.getItem(name + "_" + value);
+	  
+	 	 if (isChecked === "true") {
+	    	$(this).prop("checked", true);
+	  	} else {
+	    	$(this).prop("checked", false);
+	  	}
+		});
+	}
+</script>
 </html>
