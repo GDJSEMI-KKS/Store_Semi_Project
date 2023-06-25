@@ -53,7 +53,7 @@
               	<%
               		}
               	%>
-	                <li class="list-inline-item"><a href="<%=request.getContextPath()%>/board_question/boardQuestion.jsp">Q&A</a></li>
+	                <li class="list-inline-item"><a href="<%=request.getContextPath()%>/board_question/qnaList.jsp">Q&A</a></li>
               	
               </ul>
             </div>
