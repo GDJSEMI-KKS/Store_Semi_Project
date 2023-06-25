@@ -42,16 +42,9 @@
 	// categoryName : 카테고리명 받을 변수
 	String categoryName = "";
 	if(request.getParameter("categoryName") != null){
-		categoryName = request.getParameter("categoryName");
-		System.out.println(BG_YELLOW+BLUE+categoryName +"<--categoryName"+RESET);
+		categoryName = request.getParameter("categoryName");	
 	}
-	
-	// categoryList : <select> <option>에 사용할 카테고리 리스트
-	ArrayList<String> categoryList = new ArrayList<>();
-	categoryList.add("상품");
-	categoryList.add("교환환불");
-	categoryList.add("결제");
-	categoryList.add("기타");
+	System.out.println(BG_YELLOW+BLUE+categoryName +"<--categoryName"+RESET);
 	
 	/* adminQnAList 페이징
 	* currentPage : 현재 페이지
@@ -119,123 +112,146 @@
 <head>
 <meta charset="UTF-8">
 <title>adminQnAList</title>
+<jsp:include page="/inc/link.jsp"></jsp:include>
 </head>
 <body>
-   
-	<!-- 요청 폼 -->
-	<div class="container">
-		<form action="<%=request.getContextPath()%>/admin_question/adminQnAList.jsp" method="post">
-			<select name="categoryName"><!-- select 선택한 값이 유지되도록 분기 -->
-				
-				<%
-					if(categoryName.equals("")){
-				%>
-						<option value="" selected="selected">전체</option>
-				<%	
-							for(String category : categoryList){	
-				%>
-								<option value="<%=category%>"><%=category%></option>
-				<%
-							}
-					} else {
-				%>
-						<option value="">전체</option>
-				<%	
-							for(String category : categoryList){
-								
-								if(categoryName.equals(category)){
-				%>
-									<option value="<%=category%>" selected="selected"><%=category%></option>
-				<%					
-								} else{
-				%>
-									<option value="<%=category%>"><%=category%></option>
-				<%					
-								}
-							}
-					}
-				%>
-				
-			</select>
-			<button type="submit">검색</button>
-		</form>
+	<!-- 메뉴 -->
+	<jsp:include page="/inc/menu.jsp"></jsp:include>
+	
+	<!-- 메인 -->
+	<div id="all">
+		<div id="content">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<!-- breadcrumb -->
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li aria-current="page" class="breadcrumb-item active">관리자페이지</li>
+								<li aria-current="page" class="breadcrumb-item active">문의관리</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- 관리자메뉴 시작 -->
+					<div class="col-lg-3">
+						<jsp:include page="/inc/adminSideMenu.jsp"></jsp:include>
+					</div>
+					<!-- 관리자메뉴 끝 -->
+					<div class="col-lg-9">
+              			<div class="box">
+							<div class="text-right">
+								<!-- 카테고리별 조회폼 -->
+								<form id="adminQnAListForm">
+									<select id="categoryName" name="categoryName">
+										<option value="">전체</option>
+										<option value="상품">상품</option>
+										<option value="교환환불">교환환불</option>
+										<option value="결제">결제</option>
+										<option value="기타">기타</option>
+									</select>
+								</form>
+							</div>
+							<br>
+							<div>
+								<table class="table">
+									<thead>
+										<tr>
+											<th>카테고리</th>
+											<th>번호</th>
+											<th>주문번호</th>
+											<th>문의제목</th>
+											<th>등록일</th>
+											<th>답변여부</th>
+										</tr>
+									</thead>
+							        <tbody>
+								        <%
+											for(HashMap<String, Object> m : qnaList){
+										%>
+												<tr onclick = "location.href='<%=request.getContextPath()%>/admin_question/adminQnADetail.jsp?qNo=<%=(Integer) m.get("qNo")%>&qCategory=<%=(String) m.get("qCategory")%>'">
+													<td><%=(String) m.get("qCategory")%></td>
+													<td><%=(Integer) m.get("rnum")%></td>
+													<td><%=(Integer) m.get("qNo")%></td>
+													<td><%=(String) m.get("qTitle")%></td>
+													<td><%=((String) m.get("qCreatedate")).substring(0,10)%></td>
+													<%
+														if((Integer) m.get("aNoCnt") > 0){
+													%>
+															<td>답변완료</td>
+													<%		
+														} else{
+													%>
+															<td>미답변</td>
+													<%		
+														}
+													%>
+												</tr>
+										<%		
+											}
+										%>
+							        </tbody>
+							    </table>
+						    </div>
+							<!-- 페이지 네비게이션 -->
+							<div class="pageNav">
+								<ul class="list-group list-group-horizontal">
+									<%
+										if(startPage > 1){
+									%>
+											<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=startPage-pageLength%>&categoryName=<%=categoryName%>'">
+												<span>이전</span>
+											</li>
+									<%		
+										}
+											for(int i = startPage; i <= endPage; i++){
+												if(i == currentPage){
+									%>
+													<li class="list-group-item currentPageNav">
+														<span><%=i%></span>
+													</li>
+									<%
+												} else{
+									%>
+											<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=i%>&categoryName=<%=categoryName%>'">
+												<span><%=i%></span>
+											</li>
+									<%			
+											}
+										}
+											if(endPage != lastPage){
+									%>
+												<li class="list-group-item pageNavLi" onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=startPage+pageLength%>&categoryName=<%=categoryName%>'">
+													<span>다음</span>
+												</li>	
+									<%			
+											}
+									%>
+								</ul>
+							</div>	       
+              			</div>
+              		</div>	
+				</div>
+			</div>
+		</div>
 	</div>
-	<div>
-		<table>
-			<thead>
-				<tr>
-					<th>카테고리</th>
-					<th>번호</th>
-					<th>주문번호</th>
-					<th>문의제목</th>
-					<th>등록일</th>
-					<th>답변여부</th>
-				</tr>
-			</thead>
-	        <tbody>
-		        <%
-					for(HashMap<String, Object> m : qnaList){
-				%>
-						<tr onclick = "location.href='<%=request.getContextPath()%>/admin_question/adminQnADetail.jsp?qNo=<%=(Integer) m.get("qNo")%>&qCategory=<%=(String) m.get("qCategory")%>'">
-							<td><%=(String) m.get("qCategory")%></td>
-							<td><%=(Integer) m.get("rnum")%></td>
-							<td><%=(Integer) m.get("qNo")%></td>
-							<td><%=(String) m.get("qTitle")%></td>
-							<td><%=((String) m.get("qCreatedate")).substring(0,10)%></td>
-							<%
-								if((Integer) m.get("aNoCnt") > 0){
-							%>
-									<td>답변완료</td>
-							<%		
-								} else{
-							%>
-									<td>미답변</td>
-							<%		
-								}
-							%>
-						</tr>
-				<%		
-					}
-				%>
-	        </tbody>
-	     </table>
-     </div>
-     <!-- 페이지 네비게이션 -->
-		<div>
-			<ul>
-				<%
-					if(startPage > 1){
-				%>
-						<li onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=startPage-pageLength%>&categoryName=<%=categoryName%>'">
-							<span>이전</span>
-						</li>
-				<%		
-					}
-						for(int i = startPage; i <= endPage; i++){
-							if(i == currentPage){
-				%>
-								<li>
-									<span><%=i%></span>
-								</li>
-				<%
-							} else{
-				%>
-						<li onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=i%>&categoryName=<%=categoryName%>'">
-							<span><%=i%></span>
-						</li>
-				<%			
-						}
-					}
-						if(endPage != lastPage){
-				%>
-							<li onclick="location.href='<%=request.getContextPath()%>/admin_question/adminQnAList.jsp?currentPage=<%=startPage+pageLength%>&categoryName=<%=categoryName%>'">
-								<span>다음</span>
-							</li>	
-				<%			
-						}
-				%>
-			</ul>
-		</div>	                                              
+	
+	<!-- copy -->
+	<jsp:include page="/inc/copy.jsp"></jsp:include>
+	<!-- 자바스크립트 -->
+	<jsp:include page="/inc/script.jsp"></jsp:include>	
+                                            
 </body>
-
+<script>
+	// select option 선택한 값 가져오기
+	let selectedValue = '<%=categoryName%>'; 
+	$('#categoryName').val(selectedValue);
+	
+	// select option 값 변경시 선택한 값으로 리스트 조회
+	$('#categoryName').on('change', function() {
+		let categoryName = $(this).val();
+		let adminQnAListUrl = '<%=request.getContextPath()%>/admin_question/adminQnAList.jsp';
+		$('#adminQnAListForm').attr('action', adminQnAListUrl);
+	    $('#adminQnAListForm').submit();
+	});
+</script>
 </html>

@@ -269,7 +269,7 @@ public class AdminQuestionDao {
 	}
 	
 	// 수정(answer)
-	public int updateCategory(Answer answer) throws Exception {
+	public int updateAnswer(Answer answer) throws Exception {
 		
 		// 유효성 검사
 		if(answer == null) {
@@ -302,7 +302,7 @@ public class AdminQuestionDao {
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
 		
-		String sql = "UPDATE answer SET id = ?, board_a_content = ?, updatedate = NOW() WHERE board_a_no = ?";
+		String sql = "UPDATE board_answer SET id = ?, board_a_content = ?, updatedate = NOW() WHERE board_a_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, boardAnswer.getId());
 		stmt.setString(2, boardAnswer.getBoardAContent());

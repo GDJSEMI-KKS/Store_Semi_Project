@@ -67,12 +67,12 @@
 	System.out.println(BG_YELLOW+BLUE+qCategory+"<--adminAnswerAddAction.jsp qCategory"+RESET);
 	System.out.println(BG_YELLOW+BLUE+id+"<--adminAnswerAddAction.jsp id"+RESET);
 	
-	/* 요청값 유효성 검사(qContent)
+	/* 요청값 유효성 검사(addAContent)
 	 * 값이 null, ""이면 adminQnADetail.jsp redirection. qNo, qCategory 전달. return. 
 	 * qCategory 인코딩	 
 	*/
-	if(request.getParameter("qContent") == null
-		|| request.getParameter("qContent").equals("")){
+	if(request.getParameter("addAContent") == null
+		|| request.getParameter("addAContent").equals("")){
 		
 		String category = URLEncoder.encode(qCategory,"utf-8");
 		response.sendRedirect(request.getContextPath()+"/admin_question/adminQnADetail.jsp?qNo="+qNo+"&qCategory="+category);
@@ -80,9 +80,9 @@
 	}
 	
 	// 값 저장
-	String qContent = request.getParameter("qContent");
+	String aContent = request.getParameter("addAContent");
 	// 디버깅코드
-	System.out.println(BG_YELLOW+BLUE+qContent+"<--adminAnswerAddAction.jsp qContent"+RESET);
+	System.out.println(BG_YELLOW+BLUE+aContent+"<--adminAnswerAddAction.jsp aContent"+RESET);
 	
 	
 	// category 값의 따라 분기하여 각 dao method 호출하여 실행
@@ -92,7 +92,7 @@
 		Answer answer = new Answer();
 		answer.setqNo(qNo);
 		answer.setId(id);
-		answer.setaContent(qContent);
+		answer.setaContent(aContent);
 		
 		// AdminQuestionDao insertAnswer(answer) Method
 		AdminQuestionDao adminQuestionDao = new AdminQuestionDao();
@@ -114,7 +114,7 @@
 		BoardAnswer boardAnswer = new BoardAnswer();
 		boardAnswer.setBoardQNo(qNo);
 		boardAnswer.setId(id);
-		boardAnswer.setBoardAContent(qContent);
+		boardAnswer.setBoardAContent(aContent);
 		
 		// AdminQuestionDao insertBoardAnswer(boardAnswer) Method
 		AdminQuestionDao adminQuestionDao = new AdminQuestionDao();

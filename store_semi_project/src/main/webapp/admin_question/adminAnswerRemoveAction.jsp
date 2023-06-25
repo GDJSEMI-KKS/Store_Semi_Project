@@ -39,7 +39,7 @@
 		return;	
 	}
 	
-	/* 요청값 유효성 검사(no, category)
+	/* 요청값 유효성 검사(qNo, aNo, qCategory)
 	 * 값이 null, ""이면 adminQnAList.jsp 페이지로 리턴
 	*/
 	if(request.getParameter("qNo") == null
@@ -56,9 +56,9 @@
 	int qNo = Integer.parseInt(request.getParameter("qNo"));
 	int aNo = Integer.parseInt(request.getParameter("aNo"));
 	String qCategory = request.getParameter("qCategory");
-	System.out.println(qNo+"<-- adminAnswerRemoveAction.jsp qNo");
-	System.out.println(aNo+"<-- adminAnswerRemoveAction.jsp aNo");
-	System.out.println(qCategory+"<-- adminAnswerRemoveAction.jsp qCategory");
+	System.out.println(BLUE+BG_YELLOW+qNo+"<-- adminAnswerRemoveAction.jsp qNo"+RESET);
+	System.out.println(BLUE+BG_YELLOW+aNo+"<-- adminAnswerRemoveAction.jsp aNo"+RESET);
+	System.out.println(BLUE+BG_YELLOW+qCategory+"<-- adminAnswerRemoveAction.jsp qCategory"+RESET);
 	
 	// AdminQuestionDao
 	AdminQuestionDao adminQuestionDao = new AdminQuestionDao();
@@ -73,11 +73,11 @@
 	
 	// removeRow 값 확인
 	if(removeRow == 0){
-		System.out.println(removeRow+"<--adminAnswerRemoveAction.jsp 실패 removeRow");
+		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminAnswerRemoveAction.jsp 실패 removeRow"+RESET);
 	} else if(removeRow == 1){
-		System.out.println(removeRow+"<--adminAnswerRemoveAction.jsp 성공 removeRow");
+		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminAnswerRemoveAction.jsp 성공 removeRow"+RESET);
 	} else{
-		System.out.println(removeRow+"<--adminAnswerRemoveAction.jsp error removeRow");
+		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminAnswerRemoveAction.jsp error removeRow"+RESET);
 	}
 	
 	/* redirection adminQnADetail.jsp, qNo, qCategory 전달
