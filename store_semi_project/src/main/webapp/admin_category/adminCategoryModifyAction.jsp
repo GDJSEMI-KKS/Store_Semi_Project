@@ -49,15 +49,33 @@
 	
 	// CategoryDao
 	CategoryDao categoryDao = new CategoryDao();
-	int modifyRow = categoryDao.updateCategory(categoryName, modifyCategoryName);
 	
-	// modifyRow값 확인
-	if(modifyRow == 0){
-		System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp 실패 modifyRow"+RESET);
-	} else if(modifyRow == 1){
-		System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp 성공 modifyRow"+RESET);
+	/* categoryCk값 확인, 분기
+	 * true, adminCategoryList.jsp 페이지로 리턴
+	 * false, categoryDao.updateCategory(categoryName, modifyCategoryName)
+	*/
+	
+	// 카테고리 중복검사
+	boolean categoryCk = categoryDao.selectCategoryOne(categoryName);
+	
+	// 중복되는 카테고리의 따른 분기
+	if(categoryCk == true){
+		System.out.println(BG_YELLOW+BLUE+categoryCk + "<--adminCategoryModifyAction.jsp categoryCk 중복카테고리"+RESET);
+		response.sendRedirect(request.getContextPath()+"/admin_category/adminCategoryList.jsp");
+		return;
+		
 	} else{
-		System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp error modifyRow"+RESET);
+		// 카테고리명 수정
+		int modifyRow = categoryDao.updateCategory(categoryName, modifyCategoryName);
+		
+		// modifyRow값 확인
+		if(modifyRow == 0){
+			System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp 실패 modifyRow"+RESET);
+		} else if(modifyRow == 1){
+			System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp 성공 modifyRow"+RESET);
+		} else{
+			System.out.println(BG_YELLOW+BLUE+modifyRow + "<--adminCategoryModifyAction.jsp error modifyRow"+RESET);
+		}
 	}
 	
 	// redirection adminCategoryList.jsp

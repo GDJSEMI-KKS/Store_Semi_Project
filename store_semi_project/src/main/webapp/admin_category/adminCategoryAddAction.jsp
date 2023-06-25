@@ -53,34 +53,36 @@
 	// CategoryDao
 	CategoryDao categoryDao = new CategoryDao();
 	
+	/* categoryCk값 확인, 분기
+	 * true, adminCategoryList.jsp 페이지로 리턴
+	 * false, categoryDao.insertCategory(categoryName)
+	*/
+	
 	// 카테고리 중복검사
 	boolean categoryCk = categoryDao.selectCategoryOne(categoryName);
 	
-	/* categoryCk값 확인
-	 * true, adminCategoryList.jsp 페이지로 리턴
-	*/
 	if(categoryCk == true){
 		System.out.println(BG_YELLOW+BLUE+categoryCk+"<-- adminCategoryAddAction.jsp categoryCk 중복카테고리"+RESET);
 		response.sendRedirect(request.getContextPath()+"/admin_category/adminCategoryList.jsp");
 		return;	
-	} else if(categoryCk == false){
+	} else {
 		System.out.println(BG_YELLOW+BLUE+categoryCk+"<-- adminCategoryAddAction.jsp categoryCk"+RESET);
-	} else{
-		System.out.println(BG_YELLOW+BLUE+categoryCk+"<-- adminCategoryAddAction.jsp error categoryCk"+RESET);
-	}
-	
-	// 카테고리 삽입
-	int addRow = categoryDao.insertCategory(categoryName);
-	
-	// addRow값 확인
-	if(addRow == 0){
-		System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp insertCategory 실패 addRow"+RESET);
-	} else if(addRow == 1){
-		System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp insertCategory 성공 addRow"+RESET);
 		
-	} else{
-		System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp error addRow"+RESET);
-	}
+		// 카테고리 삽입
+		int addRow = categoryDao.insertCategory(categoryName);
+		
+		// addRow값 확인
+		if(addRow == 0){
+			System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp insertCategory 실패 addRow"+RESET);
+		} else if(addRow == 1){
+			System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp insertCategory 성공 addRow"+RESET);
+			
+		} else{
+			System.out.println(BG_YELLOW+BLUE+addRow+"<-- adminCategoryAddAction.jsp error addRow"+RESET);
+		}
+	} 
+	
+	
 	
 	// redirection adminCategoryList.jsp
 	response.sendRedirect(request.getContextPath()+"/admin_category/adminCategoryList.jsp");

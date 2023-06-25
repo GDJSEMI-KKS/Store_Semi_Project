@@ -50,17 +50,36 @@
 	String categoryName = request.getParameter("categoryName");
 	System.out.println(BLUE+BG_YELLOW+categoryName+"<-- adminCategoryRemoveAction.jsp categoryName"+RESET);
 	
-	// CategoryDao
-	CategoryDao categoryDao = new CategoryDao();
-	int removeRow = categoryDao.deleteCategory(categoryName);
 	
-	// removeRow값 확인
-	if(removeRow == 0){
-		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp 실패 removeRow"+RESET);
-	} else if(removeRow == 1){
-		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp 성공 removeRow"+RESET);
+	// ProductDao
+	ProductDao productDao = new ProductDao();
+	
+	/* product에서 참조하고 있는 카테고리는 삭제 할 수 없어 참조하고 있는 카테고리가 있는지 조회 후 삭제
+	 * true, adminCategoryList.jsp return
+	 * false, categoryDao.deleteCategory(categoryName)
+	*/
+	
+	// 참조카테고리 조회 method
+	boolean categoryCk = productDao.selectCategory(categoryName);
+	
+	if(categoryCk == true){
+		System.out.println(BLUE+BG_YELLOW+categoryCk+"<--참조카테고리 있어 삭제 실패 categoryCk"+RESET);
+		response.sendRedirect(request.getContextPath()+"/admin_category/adminCategoryList.jsp");
+		return;
 	} else{
-		System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp error removeRow"+RESET);
+		// CategoryDao
+		CategoryDao categoryDao = new CategoryDao();
+		// 카테고리 삭제 method
+		int removeRow = categoryDao.deleteCategory(categoryName);
+		
+		// removeRow값 확인
+		if(removeRow == 0){
+			System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp 실패 removeRow"+RESET);
+		} else if(removeRow == 1){
+			System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp 성공 removeRow"+RESET);
+		} else{
+			System.out.println(BLUE+BG_YELLOW+removeRow+"<--adminCategoryRemoveAction.jsp error removeRow"+RESET);
+		}
 	}
 	
 	// redirection adminCategoryList.jsp

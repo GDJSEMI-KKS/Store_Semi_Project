@@ -934,4 +934,28 @@ public class ProductDao {
 		}
 		return map;
 	}
+	
+	// =============== 조회(category_name) ====================
+	
+	public boolean selectCategory(String categoryName) throws Exception {
+		
+		// 유효성 검사
+		if(categoryName == null) {
+			System.out.println("입력 error");
+			return false;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		
+		String sql = "SELECT category_name FROM product WHERE category_name = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, categoryName);
+		ResultSet rs = stmt.executeQuery();
+		
+		if(rs.next()) {
+			return true;
+		}
+		return false;
+	} 
 }
