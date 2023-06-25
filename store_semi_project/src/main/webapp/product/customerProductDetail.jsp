@@ -29,6 +29,7 @@
 	ProductDao pDao = new ProductDao();
 	DiscountDao dDao = new DiscountDao();
 	QuestionDao qDao = new QuestionDao();
+	ReviewDao rDao = new ReviewDao();
 	Product product = new Product();
 	
 	product.setProductNo(productNo);
@@ -111,6 +112,14 @@
 	question.setProductNo(productNo);
 
 	int discountNo = 1;
+	
+	// 리뷰 출력을 위한 리스트
+	// 페이징 상수로 고정 해놨음
+	ArrayList<HashMap<String, Object>> rList = rDao.selectReviewListByProduct(productNo,0,10);
+	Review review = new Review();
+
+	//리뷰이미지 저장위치
+	String reviewDir = request.getServletContext().getRealPath("/review/reviewImg");
 %>
 <!DOCTYPE html>
 <html>
@@ -243,6 +252,44 @@
 		</table>
 		</form>
 	</div>
+	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
+		<table>
+			<tr>
+   				<th>주문번호</th>
+   				<th>리뷰사진</th>
+   				<th>제목</th>
+   				<th>내용</th>
+   				<th>작성일</th>
+   				<th>수정일</th>
+   			</tr>
+			<%
+				for(HashMap<String, Object> r : rList) {
+					// 할인 기간 확인을 위한 변수와 분기
+					
+			%>
+			<tr>
+				<td></td>
+				<td>
+					<a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=r.get("reviewNo")%>">
+						<%=r.get("orderNo")%>
+					</a>
+				</td>
+				<td><img src="<%=request.getContextPath()%>/review/reviewImg/<%=(String)r.get("reviewSaveFilename")%>" alt="준비중" width="auto" height="100px"></td>
+				<td><%=r.get("reviewTitle")%></td>
+   				<td><%=r.get("reviewContent")%></td>
+   				<td><%=r.get("createdate").toString().substring(0, 10)%></td>
+   				<td><%=r.get("updatedate").toString().substring(0, 10)%></td>
+			</tr>
+			<%	
+				}
+			//	if(idLevel ==0 ) {
+			%>
+
+			<%
+			//	}
+			%>
+		</table>
+	</form>
 	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
 		<table>
 			<tr>

@@ -252,38 +252,26 @@ public class ProductDao {
 		Connection conn = dbUtil.getConnection();
 		// sql 전송 후 결과셋 반환받아 저장
 		/*
-		SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, 
-		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, 
-		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,
-		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,
+		SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate,  
+		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,	
 		NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, "-") discountStart, NVL(discount_end, "-") discountEnd, NVL(discount_rate, 0.0) discountRate
 		FROM product p
-		LEFT OUTER JOIN product_img pim
+		INNER join product_img pim
 		ON p.product_no = pim.product_no
 		LEFT OUTER JOIN orders o 
 		ON p.product_no = o.product_no
-		LEFT OUTER JOIN review r
-		ON p.product_no = o.product_no
-		LEFT OUTER JOIN review_img rim
-		ON r.order_no = rim.order_no
 		LEFT OUTER JOIN discount d 
 		ON p.product_no = d.product_no
 		WHERE p.product_no = ?
 		 */
-		String sql = "SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate, \r\n"
-				+ "		r.order_no orderNo, r.review_title reviewTitle, r.review_content reviewContent, r.createdate, r.updatedate, \r\n"
-				+ "		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,\r\n"
-				+ "		rim.review_ori_filename reviewOriFilename, rim.review_save_filename reviewSaveFilename, rim.review_filetype reviewFiletype, rim.createdate, rim.updatedate,\r\n"
+		String sql = "SELECT DISTINCT p.product_no productNo, p.category_name categoryName, p.product_name productName, p.product_price productPrice, p.product_status productStatus, p.product_stock productStock, p.product_info productInfo, p.createdate, p.updatedate,  \r\n"
+				+ "		pim.product_ori_filename productOriFilename, pim.product_save_filename productSaveFilename, pim.product_filetype productFiletype, pim.createdate, pim.updatedate,	\r\n"
 				+ "		NVL(discount_no, 0) discountNo,  NVL(d.product_no, 0) dProductNo, NVL(discount_start, \"-\") discountStart, NVL(discount_end, \"-\") discountEnd, NVL(discount_rate, 0.0) discountRate\r\n"
 				+ "		FROM product p\r\n"
-				+ "		LEFT OUTER JOIN product_img pim\r\n"
+				+ "		INNER join product_img pim\r\n"
 				+ "		ON p.product_no = pim.product_no\r\n"
 				+ "		LEFT OUTER JOIN orders o \r\n"
 				+ "		ON p.product_no = o.product_no\r\n"
-				+ "		LEFT OUTER JOIN review r\r\n"
-				+ "		ON p.product_no = o.product_no\r\n"
-				+ "		LEFT OUTER JOIN review_img rim\r\n"
-				+ "		ON r.order_no = rim.order_no\r\n"
 				+ "		LEFT OUTER JOIN discount d \r\n"
 				+ "		ON p.product_no = d.product_no\r\n"
 				+ "		WHERE p.product_no = ?";
@@ -310,19 +298,7 @@ public class ProductDao {
 			m.put("productFiletype",rs.getString("productFiletype"));
 			m.put("pim.createdate",rs.getString("pim.createdate"));
 			m.put("pim.updatedate",rs.getString("pim.updatedate"));
-			// review 테이블
-			m.put("orderNo",rs.getInt("orderNo"));
-			m.put("reviewTitle",rs.getString("reviewTitle"));
-			m.put("reviewContent",rs.getString("reviewContent"));
-			m.put("r.createdate",rs.getString("r.createdate"));
-			m.put("r.updatedate",rs.getString("r.updatedate"));
-			
-			m.put("reviewOriFilename",rs.getString("reviewOriFilename"));
-			m.put("reviewSaveFilename",rs.getString("reviewSaveFilename"));
-			m.put("reviewFiletype",rs.getString("reviewFiletype"));
-			m.put("rim.createdate",rs.getString("rim.createdate"));
-			m.put("rim.updatedate",rs.getString("rim.updatedate"));
-			
+			// discount 
 			m.put("discountNo",rs.getInt("discountNo"));
 			m.put("dProductNo",rs.getInt("dProductNo"));
 			m.put("discountStart",rs.getString("discountStart"));
