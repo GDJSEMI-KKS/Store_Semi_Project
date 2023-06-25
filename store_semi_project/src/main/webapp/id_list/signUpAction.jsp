@@ -29,7 +29,10 @@
 		|| request.getParameter("cstmBirth") == null
 		|| request.getParameter("cstmPhone") == null
 		|| request.getParameter("cstmEmail") == null
-		|| request.getParameter("cstmAddress") == null
+		|| request.getParameter("zip") == null
+		|| request.getParameter("add1") == null
+		|| request.getParameter("add2") == null
+		|| request.getParameter("cstmAgree") == null
 		|| request.getParameter("cstmAgree") == null
 		|| request.getParameter("id").equals("")
 		|| request.getParameter("pw").equals("")
@@ -39,10 +42,12 @@
 		|| request.getParameter("cstmBirth").equals("")
 		|| request.getParameter("cstmPhone").equals("")
 		|| request.getParameter("cstmEmail").equals("")
-		|| request.getParameter("cstmAddress").equals("")
+		|| request.getParameter("zip").equals("")
+		|| request.getParameter("add1").equals("")
+		|| request.getParameter("add2").equals("")
 		|| request.getParameter("cstmAgree").equals("")){
 		
-		response.sendRedirect(request.getContextPath()+"/id_list/signUp.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/signUp.jsp");
 		return;	
 	}
 
@@ -54,12 +59,26 @@
 	String cstmBirth = request.getParameter("cstmBirth");
 	String cstmPhone = request.getParameter("cstmPhone");
 	String cstmEmail = request.getParameter("cstmEmail");
-	String cstmAddress = request.getParameter("cstmAddress");
 	String cstmAgree = request.getParameter("cstmAgree");
 	int cstmPoint = Integer.parseInt(request.getParameter("cstmPoint"));
 	int cstmSumPrice = Integer.parseInt(request.getParameter("cstmSumPrice"));
 	String addressDefault = request.getParameter("addressDefault");
 	String addressName = request.getParameter("addressName");
+	
+	// zip, add1, add2, add3 합쳐서 주소 저장. 
+	// add3은 null값이 올 수 있어 null 값이 아닌 경우에만 합쳐서 주소에 저장한다.
+	String zip = request.getParameter("zip");
+	String add1 = request.getParameter("add1");
+	String add2 = request.getParameter("add2");
+	String add3 = "*";
+	
+	if(request.getParameter("add3") != null
+			&& !request.getParameter("add3").equals("")){
+		add3 = request.getParameter("add3");
+	}
+	
+	String[] addressArr = {zip, add1, add2, add3};
+	String cstmAddress = String.join("-", addressArr);
 	
 	// 디버깅코드
 	System.out.println(BG_YELLOW+BLUE+id +"<--signUpAction.jsp id"+RESET);
@@ -85,7 +104,7 @@
 	
 	if(duplicateId != null){
 		if(duplicateId.getId().equals(id)){
-			response.sendRedirect(request.getContextPath() + "/id_list/signUp.html");
+			response.sendRedirect(request.getContextPath() + "/id_list/signUp.jsp");
 			System.out.println("중복되는 ID");
 			return;
 		}
@@ -95,7 +114,7 @@
 	 * pw, pwCheck 값이 일치 하지 않으면 signUp.html redirection. return.
 	*/
 	if(!request.getParameter("pw").equals(request.getParameter("pwCheck"))){
-		response.sendRedirect(request.getContextPath() + "/id_list/signUp.html");
+		response.sendRedirect(request.getContextPath() + "/id_list/signUp.jsp");
 		System.out.println("Password 불일치");
 		return;
 	}
@@ -123,12 +142,12 @@
 	
 	if(idListRow == 0){
 		System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 실패 idListRow"+RESET);
-		response.sendRedirect(request.getContextPath()+"/id_list/signUp.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/signUp.jsp");
 		return;	
 		
 	} else if(idListRow == 1){
 		System.out.println(BG_YELLOW+BLUE+idListRow +"<-- signUpAction.jsp insertIdList 성공 idListRow"+RESET);
-		response.sendRedirect(request.getContextPath()+"/id_list/login.html");
+		response.sendRedirect(request.getContextPath()+"/id_list/login.jsp");
 		
 		// vo.Customer 값 저장
 		Customer customer = new Customer();
@@ -160,7 +179,7 @@
 		pwHistory.setId(id);
 		pwHistory.setPw(pw);
 		
-		// PwHistoryDao insertEmployee Metnod
+		// PwHistoryDao insertEmployee Method
 		PwHistoryDao pwHistoryDao = new PwHistoryDao();
 		int pwHistoryRow = pwHistoryDao.insertPwHistory(pwHistory);
 		if(pwHistoryRow == 0){
