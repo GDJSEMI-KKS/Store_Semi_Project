@@ -15,7 +15,7 @@
 */
 body {
   overflow-x: hidden;
-  background-color: #f0f0f0;
+  background-color: #000000;
 }
 
 a, button {
@@ -1995,8 +1995,8 @@ body {
   font-size: 0.9rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
-  background-color: #f0f0f0;
+  color: #FFF;
+  background-color: #000000;
 }
 
 a {

@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/owl.carousel/assets/owl.carousel.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/vendor/owl.carousel/assets/owl.theme.default.css">
 <!-- theme stylesheet-->
-<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/style.default.css" id="theme-stylesheet">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/style.sea.css" id="theme-stylesheet">
 <!-- Custom stylesheet - for your changes-->
-<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/custom.css?v20230623">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/resources_customer/css/custom.css?v20230626">
 <!-- Favicon-->
 <link rel="shortcut icon" href="<%=request.getContextPath()%>/resources_customer/favicon.png">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
