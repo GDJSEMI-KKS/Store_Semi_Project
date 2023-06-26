@@ -109,7 +109,7 @@
 										<th>관리자권한삭제</th>
 										<td>
 											<!-- 관리자->회원 modifyAction으로 보내짐 -->
-											<button type="submit">권한회수</button>
+											<button type="submit" class="btn btn-primary">권한회수</button>
 										</td>
 									</tr>
 							<%
