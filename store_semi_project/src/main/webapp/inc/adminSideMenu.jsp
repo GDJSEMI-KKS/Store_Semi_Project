@@ -10,6 +10,6 @@
 	 <a href="<%=request.getContextPath()%>/admin_customer/adminCustomerList.jsp" class="nav-link "><i class="fa fa-list"></i>회원관리</a>
 	 <a href="<%=request.getContextPath()%>/admin_orders/adminOrders.jsp" class="nav-link "><i class="fa fa-list"></i>주문관리</a>
 	 <a href="<%=request.getContextPath()%>/admin_question/adminQnAList.jsp" class="nav-link "><i class="fa fa-list"></i>문의관리</a>
-	 <a href="<%=request.getContextPath()%>/admin_review_adminReview.jsp" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
+	 <a href="<%=request.getContextPath()%>/admin_review/adminReview.jsp" class="nav-link "><i class="fa fa-list"></i>리뷰관리</a>
   </div>
 </div>
