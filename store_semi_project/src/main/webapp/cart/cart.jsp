@@ -23,6 +23,7 @@
 	if(o instanceof String){
 		loginId = (String)o;
 	} 
+	System.out.println(KMJ + loginId + "<-- cart loginId" + RESET);
 	CartDao cDao = new CartDao();
 	cartList = cDao.selectCartListByPage(loginId);
 	
@@ -75,6 +76,7 @@
                  <h1>장바구니</h1>
                   <%
                   	if(cartList == null || cartList.size() < 1){
+                  		System.out.println(KMJ + cartList.size() + " <--cart cartList.size()" + RESET);
                   %>
                   	<p>장바구니가 비어있습니다.</p>
                   <%
@@ -101,7 +103,9 @@
 	                      			i += 1;
 	                      			productStock = cDao.productCartStock((Integer)m.get("productNo"));
 	                      			discount = disDao.selectProductCurrentDiscount((Integer)m.get("productNo"));
-	                      			disRate = discount.getDiscountRate();
+	                      			if(discount != null){
+	                      				disRate = discount.getDiscountRate();
+	                      			}
 	                      			cartPrice = (Integer)m.get("productPrice") * (Integer)m.get("cartCnt");
 	                      			disPrice = (int)Math.floor(cartPrice*(1-disRate));
 	                      			cartSum += (cartPrice - disPrice);
