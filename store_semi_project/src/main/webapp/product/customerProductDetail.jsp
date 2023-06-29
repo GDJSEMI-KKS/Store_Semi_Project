@@ -125,219 +125,212 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Customer Product Detail</title>
+<jsp:include page="/inc/link.jsp"></jsp:include>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 </head>
 <body>
-	<div >
-		<h1>고객 페이지 : 상품 상세</h1>
-		<div >
-			<a href="<%=request.getContextPath()%>/product/productHome.jsp">
-				<button type="button">목록으로</button>
-			</a>
-		</div>
-		<form action="<%=request.getContextPath()%>/cart/addToCartAction.jsp?p.productNo=<%=productNo%>" method="post">
-			<table >
-			<%
+
+	<!-- 메뉴 -->
+<jsp:include page="/inc/menu.jsp"></jsp:include>
+
+<!-- -----------------------------메인 시작----------------------------------------------- -->
+<div id="all">
+      <div id="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- breadcrumb-->
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/home.jsp">홈</a></li>
+                  <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/product/productHome.jsp">상품목록</a></li>
+                  <li aria-current="page" class="breadcrumb-item active">상품상세보기</li>
+                </ol>
+              </nav>
+            </div>
+            <!--------------------------------------------------------- 상품상세 시작 ------------------------------------------------------------------>
+            <!--  상품 설명 시작 -->
+            <div class="col-lg-12 order-1 order-lg-2">
+            <form action="<%=request.getContextPath()%>/cart/addToCartAction.jsp?p.productNo=<%=productNo%>" method="post">
+            <input type="hidden" name="productNo" value="<%=productNo%>">
+            <input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
+			<input type="hidden" name = "productImg" onchange="previewImage(event)">
+			<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+			<input type = "hidden" name = "discountRate" value="<%=discountRate%>">
+           	<%
 				for(HashMap<String, Object> p : list) {
 					// 할인 기간 확인을 위한 변수와 분기
 					discountNo = Integer.parseInt(p.get("discountNo").toString());
 					System.out.println(SJ+ discountNo +"customerProductDetail discountNo"+ RE );
 			%>
-			<tr>
-				<th >p no.</th>
-				<td><%=productNo%></td>
-				
-			</tr>
-			<tr>
-				<th >카테고리</th>
-				<td><%=p.get("categoryName")%></td>
-			</tr>
-			<tr>
-				<th >이름</th>
-				<td><%=p.get("productName")%></td>
-			</tr>
-			<tr>
-				<th >가격</th>
-				<td><%=p.get("productPrice")%></td>
-			</tr>
-			<tr>
-				<th >할인율</th>
-				<td><!-- 할인율 유무에 따른 분기 -->
-					<%	// 할일율
+              <div id="productMain" class="row">
+                <div class="col-md-6">
+                  <div data-slider-id="1" class="owl-carousel shop-detail-carousel">
+                    <div class="item"><img src="<%=dir%>" alt="준비중" class="img-fluid"></div>
+                    <div class="item"> <img src="<%=dir%>" alt="준비중" class="img-fluid"></div>
+                    <div class="item"> <img src="<%=dir%>" alt="준비중" class="img-fluid"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="box">
+                    <p class="badge badge-danger"><%=p.get("productStatus")%></p>
+                  	<!-- <p><%=p.get("categoryName")%>&nbsp;<%=productNo%></p>  -->
+                    <h1 class="text-center"><%=p.get("productName")%></h1>
+                    <p class="price"><%=p.get("productPrice")%>원</p>
+                    <p class="text-center">할인율
+                   	<%	// 할일율
 						if(p.get("discountRate") == null) {
-							
-					%>		<%=0.0%>
+					%>		
+							<%=0.0%>
 					<%	} else {
 							if(p.get("productNo") == p.get("dProductNo")) {
-								 
-									
 					%>
 								<%=discountRate*100%> %
 					<%			
 							}
 						}
-					%>
-				</td>
-			</tr>
-			<tr>
-				<th >할인가</th>
-				<td> 
-					<%	//할인가
-						if(p.get("discountRate") == null) {
-							
-					%>	
-							<%=p.get("productPrice")%> 
-					<%	} else {
-							if(p.get("productNo") == p.get("dProductNo")) {
-					%>		
-								<%=Math.round(Double.parseDouble(p.get("productPrice").toString())*(1-discountRate))%>
-					<%
+                   	%>
+                    </p>
+                    <p class="text-center">할인가
+                    	<%	//할인가
+							if(p.get("discountRate") == null) {
+						%>	
+								<%=p.get("productPrice")%> 
+						<%	} else {
+								if(p.get("productNo") == p.get("dProductNo")) {
+						%>		
+									<%=Math.round(Double.parseDouble(p.get("productPrice").toString())*(1-discountRate))%>
+						<%
+								}
 							}
-						}
-		
-					%> 
-				</td>
-			</tr>
-			<tr>
-				<th >할인 시작</th>
-				<td><%=" " + dStartYear +"년 "+ dStartMonth +"월 "+ dStartDay + "일 " %></td>
-			</tr>
-			<tr>
-				<th >할인 종료</th>
-				<td><%=" " + dEndYear +"년 "+ dEndMonth+"월 "+ dEndDay+ "일 "%></td>
-			</tr>
-			<tr>
-				<th >상태</th>
-				<td><%=p.get("productStatus")%></td>
-			</tr>
-			<tr>
-				<th >재고</th>
-				<td><%=p.get("productStock")%></td>
-			</tr>
-			<tr>
-				<th >정보</th>
-				<td><%=p.get("productInfo")%></td>
-			</tr>
-			<tr>
-				<th >등록일</th>
-				<td><%=p.get("p.createdate")%></td>
-			</tr>
-			<tr>
-				<th >수정일</th>
-				<td><%=p.get("p.updatedate")%></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-				<td>
-					<div>상품 이미지  
-						<img src="<%=dir%>" id="preview" width="300px">
-						<input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
-						<input type="hidden" name = "productImg" onchange="previewImage(event)">
-						<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
-						<input type = "hidden" name = "discountRate" value="<%=discountRate%>">
-					</div> 
-				</td>
-			</tr>
-			<tr>
-				<td>구매 수량<input type="number" name="cartCnt"></td>
-				<td><input type="hidden" name="productNo" value="<%=productNo%>">
-						<button type="submit">장바구니로</button>
-				</td>
-			</tr>
-				
+                    	%>
+                    </p>
+                    <!-- <p>재고 <%=p.get("productStock")%></p> -->
+                    <p class="text-center">할인기간 <%=" " + dStartYear +"년 "+ dStartMonth +"월 "+ dStartDay + "일 " %> ~ <%=" " + dEndYear +"년 "+ dEndMonth+"월 "+ dEndDay+ "일 "%></p>
+                    <p><input id="cartCnt" class="form-control" type="number" name="cartCnt" min="1" placeholder="구매수량"></p>
+                    <p class="text-center buttons"><button type="submit" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</button></p>
+                  </div>
+                  <div data-slider-id="1" class="owl-thumbs">
+                    <button class="owl-thumb-item"><img src="<%=dir%>" alt="" class="img-fluid"></button>
+                    <button class="owl-thumb-item"><img src="<%=dir%>" alt="" class="img-fluid"></button>
+                    <button class="owl-thumb-item"><img src="<%=dir%>" alt="" class="img-fluid"></button>
+                  </div>
+                </div>
+              </div>
+              <div id="details" class="box">
+              <p></p>
+                <h4>상세 정보</h4>
+                <p><%=p.get("productInfo")%></p>
+              </div>
 			<%	
 				}
 			%>
-		</table>
-		</form>
-	</div>
-	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
-		<table>
-			<tr>
-   				<th>주문번호</th>
-   				<th>리뷰사진</th>
-   				<th>제목</th>
-   				<th>내용</th>
-   				<th>작성일</th>
-   				<th>수정일</th>
-   			</tr>
-			<%
-				for(HashMap<String, Object> r : rList) {
-					// 할인 기간 확인을 위한 변수와 분기
-					
-			%>
-			<tr>
-				<td></td>
-				<td>
-					<a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=r.get("reviewNo")%>">
-						<%=r.get("orderNo")%>
-					</a>
-				</td>
-				<td><img src="<%=request.getContextPath()%>/review/reviewImg/<%=(String)r.get("reviewSaveFilename")%>" alt="준비중" width="auto" height="100px"></td>
-				<td><%=r.get("reviewTitle")%></td>
-   				<td><%=r.get("reviewContent")%></td>
-   				<td><%=r.get("createdate").toString().substring(0, 10)%></td>
-   				<td><%=r.get("updatedate").toString().substring(0, 10)%></td>
-			</tr>
-			<%	
-				}
-			//	if(idLevel ==0 ) {
-			%>
-
-			<%
-			//	}
-			%>
-		</table>
-	</form>
-	<form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
-		<table>
-			<tr>
-				<th >p no.</th>
-				<th >q no.</th>
-				<th >id</th>
-				<th >문의 카테고리</th>
-				<th >문의 제목</th>
-				<th >문의 내용</th>
-				<th >등록일</th>
-				<th >수정일</th>
-				<th >조회수</th>
-			</tr>
-			<%
-				for(Question q : pList) {
-					// 할인 기간 확인을 위한 변수와 분기
-					
-			%>
-			<tr>
-				<td><%=productNo%></td>
-				<td>
-					<a href="<%=request.getContextPath()%>/question/questionDetail.jsp?qNo=<%=q.getqNo()%>">
-						<%=q.getqNo()%>
-					</a>
-				</td>
-				<td><%=q.getId()%></td>
-				<td><%=q.getqCategory()%></td>
-				<td><%=q.getqTitle()%></td>
-				<td><%=q.getqContent()%></td>
-				<td><%=q.getCreatedate()%></td>
-				<td><%=q.getUpdatedate()%></td>
-				<td><%=q.getqCheckCnt()%></td>
-			</tr>
-			<%	
-				}
-			//	if(idLevel ==0 ) {
-			%>
-			<tr>
-				<td>
-					<a href="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>">
-						<button type="button">문의 입력</button>
-					</a>
-				</td>
-			</tr>
-			<%
-			//	}
-			%>
-		</table>
-	</form>
+			</form>
+                <!--  상품 설명 끝 -->
+                     <!-- 리뷰 시작 -->
+                     <div class="box">
+                     <form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
+       					<table class="table">
+       						<tr>
+       			   				<th>주문번호</th>
+       			   				<th>리뷰사진</th>
+       			   				<th>제목</th>
+       			   				<th>내용</th>
+       			   				<th>작성일</th>
+       			   				<th>수정일</th>
+       			   			</tr>
+       						<%
+       							for(HashMap<String, Object> r : rList) {
+       								// 할인 기간 확인을 위한 변수와 분기
+       						%>
+       						<tr>
+       							<td>
+       								<a href="<%=request.getContextPath()%>/review/reviewOne.jsp?reviewNo=<%=r.get("reviewNo")%>">
+       									<%=r.get("orderNo")%>
+       								</a>
+       							</td>
+       							<td><img src="<%=request.getContextPath()%>/review/reviewImg/<%=(String)r.get("reviewSaveFilename")%>" alt="준비중" width="auto" height="100px"></td>
+       							<td><%=r.get("reviewTitle")%></td>
+       			   				<td><%=r.get("reviewContent")%></td>
+       			   				<td><%=r.get("createdate").toString().substring(0, 10)%></td>
+       			   				<td><%=r.get("updatedate").toString().substring(0, 10)%></td>
+       						</tr>
+       						<%	
+       							}
+       						//	if(idLevel ==0 ) {
+       						%>
+       						<%
+       						//	}
+       						%>
+       					</table>
+       				</form>
+                     </div>
+                     <!-- 리뷰 끝 -->
+                     <!-- 문의 시작 -->
+                     <div class="box">
+                     <form action="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>" method="post">
+       				<div>
+       					<table class="table">
+       						<tr>
+       							<th >p no.</th>
+       							<th >q no.</th>
+       							<th >id</th>
+       							<th >문의 카테고리</th>
+       							<th >문의 제목</th>
+       							<th >문의 내용</th>
+       							<th >등록일</th>
+       							<th >수정일</th>
+       							<th >조회수</th>
+       						</tr>
+       						<%
+       							for(Question q : pList) {
+       								// 할인 기간 확인을 위한 변수와 분기
+       						%>
+       						<tr>
+       							<td><%=productNo%></td>
+       							<td>
+       								<a href="<%=request.getContextPath()%>/question/questionDetail.jsp?qNo=<%=q.getqNo()%>">
+       									<%=q.getqNo()%>
+       								</a>
+       							</td>
+       							<td><%=q.getId()%></td>
+       							<td><%=q.getqCategory()%></td>
+       							<td><%=q.getqTitle()%></td>
+       							<td><%=q.getqContent()%></td>
+       							<td><%=q.getCreatedate()%></td>
+       							<td><%=q.getUpdatedate()%></td>
+       							<td><%=q.getqCheckCnt()%></td>
+       						</tr>
+       						<%	
+       							}
+       						%>
+       					</table>
+       				  </div>
+       				  <div class="text-right">
+       				  	<%
+       					//	if(idLevel ==0 ) {
+       					%>
+       					<a href="<%=request.getContextPath()%>/question/addQuestion.jsp?p.productNo=<%=productNo%>">
+       						<button class="btn btn-primary" type="button">문의 입력</button>
+						</a>
+						<%
+						//	}
+						%>
+			  		</div>
+				</form>
+              </div>
+             	<!-- 문의 끝 -->
+           </div>
+           <!-- /.col-md-12-->
+           <!--------------------------------------------------------- 상품상세 끝 ------------------------------------------------------------------>
+         </div>
+       </div>
+     </div>
+   </div>
+<!-- copy -->
+<jsp:include page="/inc/copy.jsp"></jsp:include>
+<!-- 자바스크립트 -->
+<jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
 </html>
