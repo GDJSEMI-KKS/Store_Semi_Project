@@ -208,7 +208,7 @@
                     </p>
                     <!-- <p>재고 <%=p.get("productStock")%></p> -->
                     <p class="text-center">할인기간 <%=" " + dStartYear +"년 "+ dStartMonth +"월 "+ dStartDay + "일 " %> ~ <%=" " + dEndYear +"년 "+ dEndMonth+"월 "+ dEndDay+ "일 "%></p>
-                    <p><input id="cartCnt" class="form-control" type="number" name="cartCnt" min="1" placeholder="구매수량"></p>
+                    <p><input id="cartCnt" class="form-control" type="number" name="cartCnt" min="1" placeholder="구매수량" required></p>
                     <p class="text-center buttons"><button type="submit" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</button></p>
                   </div>
                   <div data-slider-id="1" class="owl-thumbs">

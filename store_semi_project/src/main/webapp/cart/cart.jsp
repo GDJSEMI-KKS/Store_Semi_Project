@@ -107,7 +107,7 @@
 	                      				disRate = discount.getDiscountRate();
 	                      			}
 	                      			cartPrice = (Integer)m.get("productPrice") * (Integer)m.get("cartCnt");
-	                      			disPrice = (int)Math.floor(cartPrice*(1-disRate));
+	                      			disPrice = (int)Math.floor(cartPrice*disRate);
 	                      			cartSum += (cartPrice - disPrice);
 	                      	%>
 	                      			<tr>
