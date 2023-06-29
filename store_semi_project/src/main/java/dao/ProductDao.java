@@ -179,13 +179,13 @@ public class ProductDao {
 		return row;
 	}
 	// 관리자 상품 이미지 삭제
-	public int deleteProductImg(ProductImg productImg) throws Exception {
-		if(productImg == null) {
+	public int deleteProductImg(int productNo) throws Exception {
+		if(productNo == 0) {
 			System.out.println(SJ +"잘못된 매개변수	<-- ProductDao deleteProductImg메서드"+RE);
 			return 0;
 		}
 		// sql 실행시 영향받은 행의 수 
-		int row = 0;
+		int row2 = 0;
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
 		Connection conn = dbUtil.getConnection();
@@ -193,18 +193,11 @@ public class ProductDao {
 		
 		String delBoardSql = "DELETE FROM product_img WHERE product_no = ?";
 	    PreparedStatement delBoardStmt = conn.prepareStatement(delBoardSql);
-	    delBoardStmt.setInt(1, productImg.getProductNo());
+	    delBoardStmt.setInt(1, productNo);
 		System.out.println(SJ +delBoardStmt + "<--- stmt deleteProductImg"+RE);
 		
-	    int delRow = delBoardStmt.executeUpdate();
-	    
-	    if(delRow == 1) {
-	    	System.out.println("삭제완료");
-	    	return row;
-	    } else {
-	    	System.out.println("삭제실패");
-	    }
-		return row;
+	   row2 = delBoardStmt.executeUpdate();
+		return row2;
 	}
 	
 	// 관리자 상품 삭제
@@ -217,12 +210,14 @@ public class ProductDao {
 		int row = 0;
 		// db 접속
 		DBUtil dbUtil = new DBUtil();
-		Connection conn = dbUtil.getConnection();
+		Connection conn = dbUtil.getConnection();	    
+	    System.out.println(SJ +"상품 삭제 시작 deleteProduct"+RE);
 		// sql 전송 후 영향받은 행의 수 반환받아 저장
 		String sql = "DELETE FROM product WHERE product_no = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, productNo);
 		row = stmt.executeUpdate();
+		System.out.println(SJ +stmt + "<--- stmt deleteProduct"+RE);
 		return row;
 	}
 	// 상품 전체 row

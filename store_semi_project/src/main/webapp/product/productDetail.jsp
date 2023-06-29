@@ -281,25 +281,40 @@
 				<td>
 					<div>상품 이미지  
 						<img src="<%=dir%>" id="preview" width="300px">
-						<input type="hidden" name = "beforeProductImg" value="<%=productSaveFilename%>">
 						<input type="hidden" name = "productImg" onchange="previewImage(event)">
 						<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
 						<input type = "hidden" name = "discountRate" value="<%=discountRate%>">
 					</div> 
 				</td>
 			</tr>
-	
 			<tr>
 				<td>
+				
 					<div >
 						<button type="submit">수정</button>
 						<input type = "hidden" name = "dproductNo" value = "<%=p.get("dproductNo")%>">
 						<input type = "hidden" name = "discountRate" value = "<%=p.get("discountRate")%>">
 						<input type = "hidden" name = "discountStart" value = "<%=p.get("discountStart")%>">
 						<input type = "hidden" name = "discountEnd" value = "<%=p.get("discountEnd")%>">
+					
+						
 					</div>
 				</td>
 			</tr>
+		</table>
+	</form>
+	<form action = "<%=request.getContextPath()%>/product/removeProductAction.jsp" method="post" encType="multipart/form-data">
+		<table>
+				<tr>
+					<td>
+						<div>
+							<input type = "hidden" name = "p.productNo" value="<%=productNo%>">
+							<input type = "hidden" name = "productSaveFilename" value="<%=productSaveFilename%>">
+							<button type="submit">삭제</button>
+
+						</div>
+					</td>
+				</tr>
 			<%	
 				}
 			%>
@@ -316,9 +331,10 @@
 				</td>
 			</tr>
 			<tr>
+			
 				<td>
 					<a href="<%=request.getContextPath()%>/question/removeQuestionAction.jsp?p.productNo=<%=productNo%>">
-						<button type="button">삭제</button>
+						<button type="button">문의삭제</button>
 					</a>
 				</td>
 			</tr>

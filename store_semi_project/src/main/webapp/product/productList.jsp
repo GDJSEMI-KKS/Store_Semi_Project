@@ -171,11 +171,6 @@
 						<td><%=p.get("p.updatedate")%></td>
 						<td>
 						
-							<div >
-								<a href="<%=request.getContextPath()%>/product/removeProductAction.jsp?p.productNo=<%=p.get("p.productNo")%>">
-									<button type="button">삭제</button>
-								</a>
-							</div>
 						</td>
 					</tr>
 			<%		
@@ -199,7 +194,7 @@
 		// 최소 페이지가 1보타 클 경우 이전 페이지 표시
 		if(minPage>1) {
 	%>
-			<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=minPage-pagePerPage%>">이전</a>
+			<a href="<%=request.getContextPath()%>/product/productList.jsp?currentPage=<%=minPage-pagePerPage%>">이전</a>
 	<%			
 		}
 		// 최소 페이지부터 최대 페이지까지 표시
@@ -210,7 +205,7 @@
 	<%			
 			}else {					// 현재페이지가 아닌 페이지는 링크 활성화
 	%>	
-				<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=i%>"><%=i%></a>
+				<a href="<%=request.getContextPath()%>/product/productList.jsp?currentPage=<%=i%>"><%=i%></a>
 	<%				
 			}
 		}
@@ -218,7 +213,7 @@
 		// 최대 페이지가 마지막 페이지와 다를 경우 다음 페이지 표시
 		if(maxPage != lastPage) {
 	%>
-			<a href="<%=request.getContextPath()%>/productList.jsp?currentPage=<%=minPage+pagePerPage%>">다음</a>
+			<a href="<%=request.getContextPath()%>/product/productList.jsp?currentPage=<%=minPage+pagePerPage%>">다음</a>
 	<%	
 		}
 	%>
