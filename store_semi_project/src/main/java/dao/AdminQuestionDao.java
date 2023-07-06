@@ -365,43 +365,31 @@ public class AdminQuestionDao {
 		PreparedStatement stmt = null;
 		
 		if(categoryName.equals("")) {
-			sql = "SELECT COUNT(*) "
+			sql = "SELECT sum(qbq.cnt) "
 				+ "FROM "
-				+ "(SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
-				+ "FROM "
-				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
-				+ "FROM question q LEFT OUTER JOIN answer a "
-				+ "ON q.q_no = a.q_no "
-				+ "GROUP BY qNo "
+				+ "(SELECT COUNT(*) cnt "
+				+ "FROM question "
 				+ "UNION ALL "
-				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
-				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
-				+ "ON bq.board_q_no = ba.board_q_no "
-				+ "GROUP BY  bq.board_q_no) qbq "
-				+ "ORDER BY rnum DESC )totalRow";
+				+ "SELECT COUNT(*) cnt "
+				+ "FROM board_question) qbq";
 			
 			stmt = conn.prepareStatement(sql);
 			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 1.stmt"+RESET);
 			
 		} else {
-			sql = "SELECT COUNT(*) "
+			sql = "SELECT sum(qbq.cnt) "
 				+ "FROM "
-				+ "(SELECT ROW_NUMBER() over(ORDER BY qCreatedate ASC) rnum, qNo, qCategory, qTitle, qCreatedate, aNoCnt "
-				+ "FROM "
-				+ "(SELECT q.q_no qNo, q.id id, q.q_category qCategory, q.q_title qTitle, q.createdate qCreatedate, COUNT(a.a_no) aNoCnt "
-				+ "FROM question q LEFT OUTER JOIN answer a "
-				+ "ON q.q_no = a.q_no "
-				+ "GROUP BY qNo "
+				+ "(SELECT COUNT(*) cnt "
+				+ "FROM question "
+				+ "where q_category = ? "
 				+ "UNION ALL "
-				+ "SELECT bq.board_q_no, bq.id, bq.board_q_category, bq.board_q_title, bq.createdate, COUNT(ba.board_a_no) "
-				+ "FROM board_question bq LEFT OUTER JOIN board_answer ba "
-				+ "ON bq.board_q_no = ba.board_q_no "
-				+ "GROUP BY  bq.board_q_no) qbq "
-				+ "WHERE qCategory = ? "
-				+ "ORDER BY rnum DESC )totalRow";
+				+ "SELECT count(*) cnt "
+				+ "FROM board_question "
+				+ "where board_q_category = ?) qbq";
 			
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, categoryName);
+			stmt.setString(2, categoryName);
 			System.out.println(BG_YELLOW+BLUE+stmt +"<--AdminQuestionDao 2.stmt"+RESET);
 		}
 		ResultSet rs = stmt.executeQuery();
