@@ -244,6 +244,25 @@ public class BoardQuestionDao {
 		return row;
 	}
 	
+	// 조회수 수정
+	public int updateBoardQuestionCheckCnt(int boardQNo) throws Exception {
+		
+		// 유효성 검사
+		if(boardQNo == 0) {
+			System.out.println("입력 error");
+			return 0;
+		}
+		
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = dbUtil.getConnection();
+		String sql = "UPDATE board_question SET board_q_check_cnt = board_q_check_cnt + 1 WHERE board_q_no = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, boardQNo);
+		int row = stmt.executeUpdate();
+		
+		return row;
+	}
+	
 	// 삭제
 	public int deleteBoardQuestion(int boardQuestionNo) throws Exception {
 		

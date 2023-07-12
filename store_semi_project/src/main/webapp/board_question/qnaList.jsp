@@ -147,7 +147,7 @@
 											for(HashMap<String, Object> bq: list){
 												if(loginId.equals((String) bq.get("id"))){
 										%>
-												<tr onclick="location.href='<%=request.getContextPath()%>/board_question/qnaDetail.jsp?boardQNo=<%=(Integer) bq.get("boardQNo")%>'">
+												<tr id="qnaDetailTr" onclick="location.href='<%=request.getContextPath()%>/board_question/qnaDetail.jsp?boardQNo=<%=(Integer) bq.get("boardQNo")%>'">
 													<td><%=(Integer) bq.get("boardQNo")%></td>
 													<td><%=(String) bq.get("boardQCategory")%></td>
 													<td><%=(String) bq.get("boardQTitle")%></td>
@@ -277,5 +277,24 @@
 	    $('#selectQnAForm').attr('action', qnaListUrl);
 	    $('#selectQnAForm').submit();
 	});
+	
+	// qnaDetailTr click
+	$('#qnaDetailTr').click(function(){
+		let boardQNoValue = $(this).find('td:first-child').text();
+		
+		$.ajax({
+			url:'<%=request.getContextPath()%>/board_question/boardQCheckCnt.jsp',
+			data: {boardQNo : boardQNoValue},
+			dataType: 'json',
+			success : function(param){
+				console.log('조회수 증가');
+			},
+			error : function(err) {
+				alert('err');
+				console.log(err);
+				}
+			});
+		});
+	
 </script>
 </html>

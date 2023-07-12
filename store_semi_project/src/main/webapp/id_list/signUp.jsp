@@ -206,6 +206,32 @@
       }
  	
  	// 아이디 중복검사
+	$('#idCheck').click(function(){
+	if($('#id').val() == '') {
+		alert('중복검사할 아이디를 입력하세요');
+	} else {
+		$.ajax({
+			url:'<%=request.getContextPath()%>/id_list/checkMemberId.jsp',
+			data: {idCheck : $('#id').val()},
+			dataType: 'json',
+			success : function(param){
+				console.log(param);
+				if(param === true) {
+					alert('이미 사용중인 아이디 입니다');
+					$('#id').val('');
+					$('#id').focus();
+				} else {
+					alert('사용가능한 아이디 입니다');
+					$('#idCheck').prop('disabled', true);
+				}
+			},
+			error : function(err) {
+				alert('err');
+				console.log(err);
+				}
+			});
+		}
+	});
  	
  	// 비밀번호, 비밀번호 확인 일치확인
  	$('#pwCheck').on('keyup', function() {
@@ -277,9 +303,7 @@
  	   	let add1 = $('#sample6_address').val();
  	   	let add2 = $('#sample6_detailAddress').val();
  	   	let gender = $('input[name="cstmGender"]:checked').val();
-     	
- 	   	// id 중복검사 수행 확인
-     	
+ 	   	
 		// 값 유효성 검사
 		if(id.trim() == ''){ // id 공백검사
 			alert('아이디를 입력해주세요');
@@ -351,6 +375,13 @@
 	        return false;
 	    }
 	    
+	 	// id 중복검사 수행 확인
+     	if($('#idCheck').prop('disabled', false)){
+     		alert('아이디 중복검사');
+     		$('#idCheck').focus();
+     		return false;
+     	}
+	 
 	    // 값 유효성 검사 후 signUpAction.jsp 이동
 	    let signUpActionUrl = '<%=request.getContextPath()%>/id_list/signUpAction.jsp';
 		$('#signUpForm').attr('action', signUpActionUrl);

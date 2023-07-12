@@ -45,7 +45,7 @@
 								<h1>회원탈퇴</h1>
 								<hr>
 								<form method="post" id="customerInfoRemoveForm">
-									<input type="hidden" name="id" value="<%=loginId%>">
+									<input type="hidden" id="id" name="id" value="<%=loginId%>">
 									<div class="form-group">
 										<label for="password">비밀번호</label>
 										<input id="password" name="password" type="password" class="form-control">
@@ -83,6 +83,27 @@
 			$('#password').focus();
 			return;
 		}
+		
+		// 비밀번호 일치 확인
+		$.ajax({
+			url:'<%=request.getContextPath()%>/id_list/checkIdPw.jsp',
+			data: {id : $('#id').val(),
+				   password : $('#password').val()},
+			dataType: 'json',
+			success : function(param){
+				console.log(param);
+				if(param === false) {
+					alert('비밀번호가 일치하지 않습니다');
+					$('#password').val('');
+					$('#password').focus();
+				} 
+			},
+			error : function(err) {
+				alert('err');
+				console.log(err);
+				}
+		});
+		
 		// 입력값이 있을 경우, custmoerInfoRemove.jsp로 이동
 		let customerInfoRemoveActionUrl = '<%=request.getContextPath()%>/id_list/customerInfoRemoveAction.jsp';
 		$('#customerInfoRemoveForm').attr('action', customerInfoRemoveActionUrl);

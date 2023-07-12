@@ -4,7 +4,7 @@
 	* session의 값이 null이 아니면 home.jsp 페이지로 리턴
 	*/
 	if(session.getAttribute("loginId") != null){
-		response.sendRedirect(request.getContextPath()+"home.jsp");
+		response.sendRedirect(request.getContextPath()+"/home.jsp");
 		return;
 	}
 %>
@@ -55,7 +55,7 @@
 						<!-- img -->
 						<div class="col-lg-6">
 						<div class="box">
-						          
+							
 						</div>
 					</div>
 				</div>
@@ -69,6 +69,7 @@
     <jsp:include page="/inc/script.jsp"></jsp:include>
 </body>
 <script>
+	// loginBtn click
 	$('#loginBtn').on('click', function(){
 		
 		// id, password 값 저장
@@ -85,10 +86,33 @@
 			$('#password').focus();
 			return;
 		}
+		
+		// 아이디, 비밀번호 일치 확인
+		$.ajax({
+			url:'<%=request.getContextPath()%>/id_list/checkIdPw.jsp',
+			data: {id : $('#id').val(),
+				   password : $('#password').val()},
+			dataType: 'json',
+			success : function(param){
+				console.log(param);
+				if(param === false) {
+					alert('아이디, 비밀번호가 일치하지 않습니다');
+					$('#id').val('');
+					$('#password').val('');
+					$('#id').focus();
+				}
+			},
+			error : function(err) {
+				alert('err');
+				console.log(err);
+				}
+		});
+		
 		// 입력값이 있을 경우, loginAction.jsp로 이동
 		let loginActionFormUrl = '<%=request.getContextPath()%>/id_list/loginAction.jsp';
 		$('#loginForm').attr('action', loginActionFormUrl);
 	    $('#loginForm').submit();
 	});
+	
 </script>
 </html>

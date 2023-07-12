@@ -142,4 +142,27 @@ public class IdListDao {
 		return row;
 	}
 	
+	// 조회(중복id) false: 사용가능, true: 사용불가
+		public boolean checkMemberId(String idCheck) throws Exception {
+			
+			// 유효성 검사
+			if(idCheck == null) {
+				System.out.println("입력 error");
+				return false;
+			}
+			
+			DBUtil dbUtil = new DBUtil();
+			Connection conn = dbUtil.getConnection();
+			
+			String sql = "SELECT id FROM id_list WHERE id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, idCheck);
+			
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) {
+				return true;
+			}
+			return false;
+		}
+	
 }
